@@ -1,21 +1,504 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>Math Lab</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EsukaTION 奕數咖學 | 數學邏輯沙龍</title>
+  
+  <!-- 載入 Tailwind CSS (負責奢華排版) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- 載入 React (負責互動與點擊功能) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- 載入 Babel (負責讓瀏覽器看懂我們的 React 程式碼) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* 隱藏捲軸但保留滾動功能 */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
+<body class="bg-[#0D0D12] text-white selection:bg-[#D4AF37] selection:text-[#0D0D12] font-sans">
+  
+  <!-- 雜訊紋理覆蓋層 (增加實體質感) -->
+  <div class="fixed inset-0 pointer-events-none opacity-[0.03] z-50" style="background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E&quot;);"></div>
 
-<body>
+  <!-- React 應用程式會被塞進這個 div 裡面 -->
+  <div id="root"></div>
 
-<h1>奕數咖學 Math Lab</h1>
+  <!-- 這裡開始是我們的核心程式碼 -->
+  <script type="text/babel">
+    const { useState } = React;
 
-<h2>題目分類</h2>
+    // --- 圖示小元件 (為了單一檔案運作，我們把 SVG 直接寫進來) ---
+    const IconChevronRight = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
+    const IconArrowLeft = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
+    const IconBookOpen = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>;
+    const IconBox = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>;
+    const IconFileText = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>;
+    const IconArrowRight = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
+    const IconFunctionSquare = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect><path d="M9 17c2 0 2.8-1 2.8-2.8V10c0-2 1-3.3 3.2-3"></path><path d="M9 11.2h5.7"></path></svg>;
+    const IconShapes = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"></path><rect x="3" y="14" width="7" height="7" rx="1"></rect><circle cx="17.5" cy="17.5" r="3.5"></circle></svg>;
+    const IconInfinity = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"></path></svg>;
+    const IconFileSignature = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 19.5v.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8.5L18 5.5"></path><path d="M8 18h1"></path><path d="M18.42 9.61a2.1 2.1 0 1 1 2.97 2.97L16.95 17 13 18l.99-3.95 4.43-4.44Z"></path></svg>;
 
-<ul>
-<li><a href="amc/q1.html">AMC 題目</a></li>
-<li><a href="geometry/triangle.html">幾何演示</a></li>
-<li><a href="puzzles/kakuro.html">數學遊戲</a></li>
-</ul>
+    // ☕️ 🌟 專屬 Logo 元件
+    const EsukaLogo = ({ className = "w-10 h-10" }) => (
+      <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+        <defs>
+          <linearGradient id="cupBodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#D4AF37" />
+            <stop offset="100%" stopColor="#856514" />
+          </linearGradient>
+          <filter id="shadow"><feDropShadow dx="0" dy="4" stdDeviation="3" floodOpacity="0.2" /></filter>
+        </defs>
+        <path d="M 88 55 C 115 55 115 85 85 85" stroke="url(#cupBodyGrad)" strokeWidth="8" strokeLinecap="round" filter="url(#shadow)" />
+        <path d="M 26 45 C 26 85, 38 98, 60 98 C 82 98, 94 85, 94 45 Z" fill="url(#cupBodyGrad)" filter="url(#shadow)" />
+        <ellipse cx="60" cy="45" rx="34" ry="10" fill="#F7E7CE" />
+        <ellipse cx="60" cy="45" rx="28" ry="7" fill="#0D0D12" />
+        <path d="M 74 12 L 46 12 L 58 25 L 46 38 L 74 38" stroke="#D4AF37" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
 
+    // ✨ 動態幾何星盤背景 SVG
+    const GeometricBackground = () => (
+      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden mix-blend-screen opacity-30">
+        <svg viewBox="0 0 800 800" className="w-[120%] h-[120%] md:w-[100%] md:h-[100%] animate-spin" style={{ animationDuration: '90s', animationTimingFunction: 'linear' }}>
+          <defs>
+            <radialGradient id="faintGold" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="400" cy="400" r="150" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.6" />
+          <circle cx="400" cy="400" r="250" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.4" strokeDasharray="4 6" />
+          <circle cx="400" cy="400" r="350" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.7" />
+          {Array.from({ length: 36 }).map((_, i) => {
+            const angle = (i * 10 * Math.PI) / 180;
+            const x1 = 400 + Math.cos(angle) * 150;
+            const y1 = 400 + Math.sin(angle) * 150;
+            const x2 = 400 + Math.cos(angle) * 350;
+            const y2 = 400 + Math.sin(angle) * 350;
+            const isMajor = i % 3 === 0;
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#D4AF37" strokeWidth={isMajor ? 1 : 0.5} opacity={isMajor ? 0.5 : 0.2} />;
+          })}
+          <polygon points="400,150 616.5,275 616.5,525 400,650 183.5,525 183.5,275" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5" />
+          <polygon points="400,650 183.5,525 183.5,275 400,150 616.5,275 616.5,525" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.3" transform="rotate(30 400 400)" />
+          <circle cx="400" cy="150" r="3" fill="#F7E7CE" opacity="0.8" />
+          <circle cx="650" cy="400" r="4" fill="#F7E7CE" opacity="0.8" />
+          <circle cx="150" cy="400" r="2" fill="#F7E7CE" opacity="0.8" />
+        </svg>
+      </div>
+    );
+
+    function App() {
+      const [view, setView] = useState('home');
+      const [path, setPath] = useState([]); 
+      const [selectedCategory, setSelectedCategory] = useState(null);
+      const [selectedLevel, setSelectedLevel] = useState(null);
+      const [selectedYear, setSelectedYear] = useState(null);
+      const [selectedQuestion, setSelectedQuestion] = useState(null);
+      const [displayMode, setDisplayMode] = useState('standard'); 
+
+      // ==========================================
+      // 📚 題庫資料庫 (你日後新增題目的地方！)
+      // ==========================================
+      const amcData = {
+        "sr": {
+          "2024": {
+            "Q25": {
+              title: "四面體與內切球",
+              questionText: "一個邊長為 2 的實心正四面體內接於空心圓柱體中。四面體的其中兩條稜邊剛好是圓柱體上下底面的直徑。請問最大內切球的直徑為何？",
+              questionSvg: `<div class="h-[180px] flex items-center justify-center text-slate-500 italic font-medium w-full">Q25 靜態圖示預留區 (白底畫框)</div>`,
+              finalAnswer: "1 + √2 - √3",
+              steps: [
+                { title: "步驟一：建立截面", content: "沿著圓柱的高與直徑切開，我們可以得到一個直角三角形截面..." },
+                { title: "步驟二：尋找最大內切圓", content: "在這個截面中，尋找卡在角落的最大內切圓，其直徑 D 的公式為..." }
+              ],
+              interactiveUrl: "interactive_placeholder" 
+            },
+            "Q26": {
+              title: "數字推理與進位",
+              questionText: "我注意到我的電錶目前的讀數是 896754 單位，其中的所有數碼都互不相同。請問我最少要再使用多少單位的電才能使得所有的數碼再度互不相同？",
+              questionSvg: `<svg viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto max-h-[220px]">
+                <rect x="80" y="20" width="340" height="60" rx="12" fill="#0f172a" />
+                <rect x="90" y="30" width="40" height="40" rx="6" fill="#f8fafc" /><rect x="140" y="30" width="40" height="40" rx="6" fill="#f8fafc" />
+                <rect x="190" y="30" width="40" height="40" rx="6" fill="#f8fafc" /><rect x="240" y="30" width="40" height="40" rx="6" fill="#f8fafc" />
+                <rect x="290" y="30" width="40" height="40" rx="6" fill="#f8fafc" /><rect x="340" y="30" width="40" height="40" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="2"/>
+                <g font-size="28" font-weight="bold" font-family="monospace" text-anchor="middle">
+                  <text x="110" y="60" fill="#1e293b">8</text><text x="160" y="60" fill="#1e293b">9</text>
+                  <text x="210" y="60" fill="#1e293b">6</text><text x="260" y="60" fill="#1e293b">7</text>
+                  <text x="310" y="60" fill="#1e293b">5</text><text x="360" y="60" fill="#ef4444">4</text>
+                </g>
+                <path d="M 250 90 L 250 130" stroke="#0ea5e9" stroke-width="4" stroke-linecap="round"/>
+                <polygon points="250,135 242,125 258,125" fill="#0ea5e9"/>
+                <text x="270" y="115" font-size="16" font-weight="bold" fill="#0ea5e9">尋找下一個不重複數字</text>
+                <rect x="80" y="150" width="340" height="60" rx="12" fill="#0f172a" />
+                <rect x="90" y="160" width="40" height="40" rx="6" fill="#f8fafc" /><rect x="140" y="160" width="40" height="40" rx="6" fill="#f8fafc" />
+                <rect x="190" y="160" width="40" height="40" rx="6" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+                <rect x="240" y="160" width="40" height="40" rx="6" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+                <rect x="290" y="160" width="40" height="40" rx="6" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+                <rect x="340" y="160" width="40" height="40" rx="6" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2"/>
+                <g font-size="28" font-weight="bold" font-family="monospace" text-anchor="middle">
+                  <text x="110" y="190" fill="#1e293b">8</text><text x="160" y="190" fill="#1e293b">9</text>
+                  <text x="210" y="190" fill="#0ea5e9">7</text><text x="260" y="190" fill="#0ea5e9">0</text>
+                  <text x="310" y="190" fill="#0ea5e9">1</text><text x="360" y="190" fill="#0ea5e9">2</text>
+                </g>
+              </svg>`,
+              finalAnswer: "258",
+              steps: [
+                { title: "步驟一：尋找進位點", content: "數字 896754 中已經用掉了 4,5,6,7,8,9。剩下的數字只有 0,1,2,3。<br/>因此，我們必須對<span class='text-[#D4AF37]'>千位數</span>進行進位，將 6 變成 7。" },
+                { title: "步驟二：拼湊最小數值與相減", content: "千位數變成 7 後，前三位是 <span class='text-[#D4AF37] font-bold'>897</span>。<br/>新數字為 <span class='text-[#D4AF37] font-bold'>897012</span>。<br/>相差電量 = 897012 - 896754 = <span class='text-[#D4AF37] font-bold'>258</span> 單位。" }
+              ]
+            }
+          }
+        },
+        "int": {}, "jr": {}, "up": {}, "mp": {}
+      };
+
+      const worksheetsData = [
+        { id: 'w1', title: '代數精粹：方程式與絕對值', desc: '淬鍊代數直覺，從絕對值拆解到高次方程式的圖解心法。' },
+        { id: 'w2', title: '幾何透視：空間與平面', desc: '打破二維限制，培養大腦建構立體輔助線的高階空間感。' },
+        { id: 'w3', title: '數論探微：質數與因數', desc: '回歸數字本質，透過餘數與質因數分解破解AMC經典難題。' }
+      ];
+
+      const categories = [
+        { id: 'amc', name: 'AMC 歷屆題庫', icon: <IconFunctionSquare className="w-7 h-7" />, desc: '完整收錄歷年試題，提供高質感的視覺拆解解析。', tag: 'Core' },
+        { id: 'worksheets', name: '奕數咖學學習單', icon: <IconFileSignature className="w-7 h-7" />, desc: '獨家編寫的系統化講義，搭配圖解淬鍊解題直覺。', tag: 'Premium' },
+        { id: 'geometry', name: '立體幾何展示', icon: <IconShapes className="w-7 h-7" />, desc: '跳脫紙本平面限制，用指尖拖曳旋轉，看透空間。', tag: 'Soon' },
+        { id: 'games', name: '邏輯與趣味數學', icon: <IconInfinity className="w-7 h-7" />, desc: '數獨、Kakuro 等鍛鍊邏輯推演的品味單元。', tag: 'Soon' },
+      ];
+      
+      const amcLevels = [
+        { id: 'mp', name: '國小中年級 (3-4年級)' },
+        { id: 'up', name: '國小高年級 (5-6年級)' },
+        { id: 'jr', name: '中學初級 (7年級)' },
+        { id: 'int', name: '中學中級 (8-9年級)' },
+        { id: 'sr', name: '中學高級 (10-12年級)' },
+      ];
+      
+      const years = Array.from({ length: 11 }, (_, i) => (2024 - i).toString()); 
+      const questionsList = Array.from({ length: 30 }, (_, i) => `Q${String(i + 1).padStart(2, '0')}`); 
+
+      const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      const navigateTo = (newView, data = {}) => {
+        scrollToTop();
+        if (newView === 'amc-detail') {
+          setSelectedQuestion(data.question);
+          setDisplayMode('standard');
+          setPath([{ name: '首頁', view: 'home' }, { name: '典藏沙龍', view: 'amc-levels' }, { name: selectedLevel.name.split(' ')[0], view: 'amc-years', data: { level: selectedLevel } }, { name: data.year, view: 'amc-questions', data: { year: data.year } }]);
+        } else if (newView === 'worksheets') {
+          setPath([{ name: '首頁', view: 'home' }]);
+        } else {
+          if (newView === 'amc-levels') setPath([{ name: '首頁', view: 'home' }]);
+          else if (newView === 'amc-years') { setSelectedLevel(data.level); setPath([{ name: '首頁', view: 'home' }, { name: '典藏沙龍', view: 'amc-levels' }]); }
+          else if (newView === 'amc-questions') { setSelectedYear(data.year); setPath([{ name: '首頁', view: 'home' }, { name: '典藏沙龍', view: 'amc-levels' }, { name: selectedLevel.name.split(' ')[0], view: 'amc-years', data: { level: selectedLevel } }]); }
+          else if (newView === 'home') setPath([]);
+        }
+        setView(newView);
+      };
+
+      const Header = () => (
+        <header className="bg-[#0D0D12]/90 backdrop-blur-xl sticky top-0 z-50 border-b border-white/5 shadow-lg">
+          <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+            <h1 className="cursor-pointer flex items-center group" onClick={() => navigateTo('home')}>
+              <div className="flex items-baseline font-serif">
+                <span className="text-[28px] md:text-[34px] font-light tracking-[0.15em] text-white group-hover:text-[#F7E7CE] transition-colors duration-500">E</span>
+                <span className="text-[#D4AF37] italic font-normal text-[22px] md:text-[26px] mx-1 relative -top-[2px] tracking-normal" style={{ fontFamily: 'Georgia, serif' }}>suka</span>
+                <span className="text-[28px] md:text-[34px] font-light tracking-[0.15em] text-white group-hover:text-[#F7E7CE] transition-colors duration-500">TION</span>
+              </div>
+              <div className="w-[1px] h-6 bg-white/20 mx-5 hidden md:block"></div>
+              <span className="hidden md:block text-[11px] font-sans font-medium text-gray-400 tracking-[0.3em] uppercase mt-1">Math Lab</span>
+            </h1>
+          </div>
+        </header>
+      );
+
+      const Breadcrumbs = () => {
+        if (path.length === 0) return null;
+        return (
+          <div className="flex items-center text-xs md:text-sm text-gray-500 mb-8 md:mb-12 font-light tracking-[0.1em] overflow-x-auto no-scrollbar pb-2">
+            <button onClick={() => { if (path.length > 0) { const lastPath = path[path.length - 1]; setPath(path.slice(0, -1)); setView(lastPath.view); } }} 
+              className="flex items-center text-[#D4AF37] hover:text-[#F7E7CE] mr-4 pr-4 border-r border-white/10 transition-colors whitespace-nowrap">
+              <IconArrowLeft className="w-4 h-4 mr-2" /> 返回
+            </button>
+            <div className="flex items-center whitespace-nowrap">
+              {path.map((p, index) => (
+                <React.Fragment key={index}>
+                  <button className="hover:text-white transition-colors" onClick={() => navigateTo(p.view, p.data)}>{p.name}</button>
+                  <IconChevronRight className="w-3 h-3 mx-3 text-gray-700" />
+                </React.Fragment>
+              ))}
+              <span className="text-white font-medium border-b border-[#D4AF37] pb-0.5">
+                {view === 'amc-levels' && '典藏沙龍'}
+                {view === 'worksheets' && '奕數咖學學習單'}
+                {view === 'amc-years' && selectedLevel?.name.split(' ')[0]}
+                {view === 'amc-questions' && `${selectedYear} 年`}
+                {view === 'amc-detail' && selectedQuestion}
+              </span>
+            </div>
+          </div>
+        );
+      };
+
+      const HomeView = () => (
+        <div className="animate-in fade-in duration-700 space-y-16 pb-16">
+          <div className="relative rounded-[1rem] p-10 md:p-24 border border-white/5 overflow-hidden flex flex-col items-center justify-center text-center min-h-[60vh] bg-[#0A0A0E]">
+            <div className="absolute inset-0 z-0">
+              <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2000&auto=format&fit=crop" alt="Coffee Beans" className="w-full h-full object-cover opacity-[0.15]" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D12] via-[#0D0D12]/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#0D0D12_80%)]"></div>
+            </div>
+            <GeometricBackground />
+            <div className="relative z-10 max-w-4xl flex flex-col items-center">
+              <div className="mb-8 p-4 bg-[#1A1A24]/60 backdrop-blur-md rounded-full border border-white/5 shadow-[0_0_30px_rgba(212,175,55,0.15)]">
+                <EsukaLogo className="w-12 h-12" />
+              </div>
+              <span className="text-[#D4AF37] text-[10px] md:text-xs tracking-[0.4em] mb-8 uppercase font-light">Mathematics & Logic Lab</span>
+              <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-white mb-10 leading-snug md:leading-tight tracking-wider inline-block text-left">
+                身在<span className="bg-gradient-to-r from-[#F7E7CE] via-[#D4AF37] to-[#B5952F] text-transparent bg-clip-text">奕數咖學</span>，<br />
+                我們享受數學。
+              </h2>
+              <p className="font-sans font-light text-gray-300 text-sm md:text-lg tracking-[0.2em] mb-10 max-w-2xl leading-loose text-center">
+                將繁雜推演，化為優雅圖解；<br className="hidden md:block"/>
+                把理性邏輯，釀成醇厚品味。
+              </p>
+              <div className="flex items-center justify-center flex-wrap gap-4 md:gap-6 text-xs md:text-sm tracking-[0.2em] text-[#D4AF37] font-medium mb-10">
+                <span className="bg-[#D4AF37]/10 px-5 py-2.5 rounded-full border border-[#D4AF37]/20 backdrop-blur-sm">特調講義</span>
+                <span className="w-1 h-1 rounded-full bg-[#D4AF37]/50 hidden md:block"></span>
+                <span className="bg-[#D4AF37]/10 px-5 py-2.5 rounded-full border border-[#D4AF37]/20 backdrop-blur-sm">視覺圖解</span>
+                <span className="w-1 h-1 rounded-full bg-[#D4AF37]/50 hidden md:block"></span>
+                <span className="bg-[#D4AF37]/10 px-5 py-2.5 rounded-full border border-[#D4AF37]/20 backdrop-blur-sm">立體幾何</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+              <div>
+                <h3 className="font-serif text-3xl text-white tracking-widest mb-3">典藏沙龍</h3>
+                <p className="text-gray-500 text-sm tracking-widest font-light">選擇您想品味的數學領域</p>
+              </div>
+              <div className="flex-grow h-[1px] bg-gradient-to-r from-[#D4AF37]/50 to-transparent max-w-sm hidden md:block mb-3 ml-8"></div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {categories.map((cat) => (
+                <div key={cat.id} 
+                  onClick={() => (cat.id === 'amc' || cat.id === 'worksheets') ? navigateTo(cat.id === 'amc' ? 'amc-levels' : 'worksheets') : null} 
+                  className={`group relative bg-[#1A1A24] p-10 lg:p-12 border border-white/5 transition-all transform duration-700
+                  ${cat.id === 'amc' || cat.id === 'worksheets' ? 'cursor-pointer hover:-translate-y-2 hover:border-[#D4AF37]/50 hover:bg-[#1A1A24]/80 hover:shadow-[0_15px_30px_rgba(0,0,0,0.5)]' : 'opacity-50 grayscale'}`}>
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="text-[#D4AF37] group-hover:scale-110 transition-transform duration-700 origin-left">{cat.icon}</div>
+                    <div className="px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#D4AF37] text-[10px] tracking-widest uppercase rounded-sm">{cat.tag}</div>
+                  </div>
+                  <h4 className="font-serif text-2xl text-white mb-4 tracking-widest">{cat.name}</h4>
+                  <p className="text-gray-400 text-sm font-light leading-relaxed tracking-[0.1em]">{cat.desc}</p>
+                  {(cat.id === 'amc' || cat.id === 'worksheets') && (
+                    <div className="mt-8 pt-6 border-t border-white/5 flex items-center text-[#D4AF37] text-xs font-light tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      ENTER <IconChevronRight className="w-4 h-4 ml-1" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+
+      const WorksheetsView = () => (
+        <div className="animate-in fade-in duration-700 max-w-5xl mx-auto">
+          <div className="mb-12 border-b border-white/5 pb-6">
+            <h2 className="font-serif text-3xl text-white tracking-widest mb-3">奕數咖學學習單</h2>
+            <p className="text-gray-500 text-sm tracking-widest font-light">淬鍊解題直覺的獨家特調講義</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {worksheetsData.map((sheet, index) => (
+              <div key={sheet.id} className="flex flex-col p-8 lg:p-10 bg-[#1A1A24] border border-white/5 hover:border-[#D4AF37]/50 hover:bg-white/[0.02] transition-all duration-500 group cursor-pointer relative overflow-hidden">
+                <div className="absolute -bottom-6 -right-6 text-white/[0.02] group-hover:text-[#D4AF37]/[0.05] transition-colors duration-500">
+                  <IconFileSignature className="w-40 h-40" />
+                </div>
+                <div className="relative z-10">
+                  <span className="text-[#D4AF37] text-[10px] md:text-xs tracking-[0.3em] mb-4 uppercase block">Volume {String(index + 1).padStart(2, '0')}</span>
+                  <h3 className="font-serif text-xl md:text-2xl text-white group-hover:text-[#D4AF37] tracking-widest mb-4 transition-colors duration-500 leading-snug">{sheet.title}</h3>
+                  <p className="text-gray-500 text-sm font-light leading-relaxed tracking-wide mb-8">{sheet.desc}</p>
+                  <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-gray-400 text-xs tracking-widest uppercase group-hover:text-white transition-colors duration-500">Preview Document</span>
+                    <IconArrowRight className="w-5 h-5 text-[#D4AF37] opacity-0 group-hover:opacity-100 transition-all transform group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      const AmcLevelsView = () => (
+        <div className="animate-in fade-in duration-700">
+          <div className="mb-12 border-b border-white/5 pb-6">
+            <h2 className="font-serif text-3xl text-white tracking-widest mb-3">AMC 歷屆題庫</h2>
+            <p className="text-gray-500 text-sm tracking-widest font-light">請選擇適合您的測驗級別</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {amcLevels.map((lvl) => (
+              <button key={lvl.id} onClick={() => navigateTo('amc-years', { level: lvl })} 
+                className="flex flex-col items-center justify-center p-10 bg-[#1A1A24] border border-white/5 hover:border-[#D4AF37]/50 hover:bg-white/[0.02] transition-all duration-500 group">
+                <span className="font-serif text-xl md:text-2xl text-white group-hover:text-[#D4AF37] tracking-widest mb-4 transition-colors duration-500">{lvl.name.split(' (')[0]}</span>
+                <span className="text-xs text-gray-500 tracking-widest mb-6">{lvl.name.split(' (')[1].replace(')', '')}</span>
+                <div className="w-10 h-[1px] bg-white/10 group-hover:bg-[#D4AF37] transition-colors duration-500"></div>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+
+      const AmcYearsView = () => (
+        <div className="animate-in fade-in duration-700 max-w-5xl mx-auto">
+          <div className="mb-12 border-b border-white/5 pb-6">
+            <h2 className="font-serif text-3xl text-white tracking-widest mb-3">{selectedLevel?.name.split(' ')[0]}</h2>
+            <p className="text-gray-500 text-sm tracking-widest font-light">選擇測驗年份</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {years.map((y) => (
+              <button key={y} onClick={() => navigateTo('amc-questions', { year: y })} 
+                className="py-8 bg-[#1A1A24] border border-white/5 hover:border-[#D4AF37]/50 hover:bg-white/[0.02] text-xl font-serif text-gray-300 hover:text-[#D4AF37] tracking-widest transition-all duration-500 text-center">
+                {y}
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+
+      const AmcQuestionsView = () => (
+        <div className="animate-in fade-in duration-700">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4 border-b border-white/5 pb-6">
+            <div>
+              <span className="text-[#D4AF37] text-xs tracking-[0.3em] uppercase mb-2 block">Question Selection</span>
+              <h2 className="font-serif text-3xl text-white tracking-widest">選擇題目</h2>
+            </div>
+            <div className="text-gray-400 text-sm tracking-widest font-light">
+              {selectedLevel?.name.split(' ')[0]} <span className="mx-2 text-white/20">|</span> <span className="text-[#D4AF37]">{selectedYear} 年</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 md:gap-4">
+            {questionsList.map((q) => {
+              const levelData = amcData[selectedLevel?.id];
+              const hasData = levelData && levelData[selectedYear] && levelData[selectedYear][q];
+              return (
+                <button key={q} onClick={() => navigateTo('amc-detail', { question: q, year: selectedYear })}
+                  className={`aspect-square flex items-center justify-center border font-serif text-lg transition-all duration-500 
+                    ${hasData 
+                      ? 'bg-[#1A1A24] border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0D0D12] shadow-[0_0_15px_rgba(212,175,55,0.1)]' 
+                      : 'bg-transparent border-white/5 text-gray-600 hover:border-white/20 hover:text-gray-300'}`}>
+                  {q.replace('Q','')}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      );
+
+      const AmcDetailView = () => {
+        const data = amcData[selectedLevel?.id]?.[selectedYear]?.[selectedQuestion];
+        if (!data) return (
+          <div className="bg-[#1A1A24] border border-white/5 p-16 md:p-24 text-center mt-8">
+            <div className="w-16 h-16 mx-auto mb-6 border border-white/10 flex items-center justify-center rounded-full">
+              <IconBookOpen className="w-6 h-6 text-gray-600" />
+            </div>
+            <h3 className="font-serif text-2xl text-white mb-4 tracking-widest">本題解析尚未開放</h3>
+            <p className="text-gray-500 font-light text-sm tracking-[0.1em]">專屬內容正在精心建置中，敬請期待。</p>
+          </div>
+        );
+        
+        const has3D = !!data.interactiveUrl;
+        return (
+          <div className="animate-in fade-in duration-700 max-w-6xl mx-auto">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6 border-b border-white/5 pb-8">
+              <div>
+                <span className="text-[#D4AF37] text-xs tracking-[0.3em] mb-3 block">Question {selectedQuestion.replace('Q','')}</span>
+                <h2 className="font-serif text-3xl md:text-4xl text-white tracking-wide leading-tight">{data.title}</h2>
+              </div>
+              {has3D && (
+                <div className="flex bg-[#1A1A24] border border-white/10 p-1 w-full lg:w-auto">
+                  <button onClick={() => setDisplayMode('standard')} 
+                    className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-6 py-3 text-xs md:text-sm tracking-[0.15em] transition-all duration-500 ${displayMode === 'standard' ? 'bg-[#D4AF37] text-[#0D0D12] font-medium' : 'text-gray-500 hover:text-white'}`}>
+                    <IconFileText className="w-4 h-4" /> 圖示解析
+                  </button>
+                  <button onClick={() => setDisplayMode('interactive')} 
+                    className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-6 py-3 text-xs md:text-sm tracking-[0.15em] transition-all duration-500 ${displayMode === 'interactive' ? 'bg-[#D4AF37] text-[#0D0D12] font-medium' : 'text-gray-500 hover:text-white'}`}>
+                    <IconBox className="w-4 h-4" /> 3D 空間
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="mt-6">
+              {displayMode === 'interactive' && has3D ? (
+                <div className="h-[60vh] md:h-[75vh] bg-[#1A1A24] border border-white/5 relative flex flex-col items-center justify-center overflow-hidden">
+                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)]"></div>
+                  <IconBox className="w-12 h-12 text-[#D4AF37] mx-auto mb-8 animate-pulse stroke-[1]" />
+                  <h2 className="font-serif text-2xl md:text-3xl text-white mb-4 tracking-widest">3D 空間演示</h2>
+                  <p className="text-gray-500 font-light tracking-widest text-sm">此處將載入您的專屬立體互動模型</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+                  <div className="lg:col-span-7 bg-[#1A1A24] border border-white/5 p-8 md:p-12 flex flex-col relative">
+                    <p className="text-base md:text-lg text-gray-300 font-light leading-relaxed md:leading-loose tracking-wide mb-10">
+                      {data.questionText}
+                    </p>
+                    <div className="w-full flex-grow flex flex-col items-center justify-center mb-10 bg-[#FAFAFA] p-8 rounded-xl shadow-[inset_0_4px_20px_rgba(0,0,0,0.06)] border border-[#E5E7EB] text-slate-800" 
+                         dangerouslySetInnerHTML={{ __html: data.questionSvg }} />
+                    <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
+                      <span className="text-gray-500 text-xs tracking-[0.3em] uppercase">Final Answer</span>
+                      <div className="bg-gradient-to-r from-[#F7E7CE] via-[#D4AF37] to-[#B5952F] text-[#0D0D12] px-8 py-3 font-serif font-bold text-xl md:text-2xl tracking-widest shadow-[0_0_20px_rgba(212,175,55,0.2)]">
+                        {data.finalAnswer}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="lg:col-span-5 flex flex-col gap-6">
+                    <div className="flex items-center gap-4 mb-2">
+                      <div className="w-8 h-[1px] bg-[#D4AF37]"></div>
+                      <h3 className="font-serif text-xl text-[#D4AF37] tracking-widest">邏輯推演</h3>
+                    </div>
+                    <div className="space-y-6">
+                      {data.steps.map((step, idx) => (
+                        <div key={idx} className="bg-[#1A1A24] border-l-[2px] border-[#D4AF37] p-6 md:p-8 hover:bg-white/[0.02] transition-colors duration-500">
+                          <div className="text-white font-serif text-lg tracking-widest mb-4">{step.title}</div>
+                          <div className="text-gray-400 font-light leading-loose text-sm md:text-[15px] tracking-wide" dangerouslySetInnerHTML={{ __html: step.content }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      return (
+        <div className="min-h-screen">
+          <Header />
+          <main className="max-w-6xl mx-auto px-6 py-10 md:py-16 relative z-10">
+            <Breadcrumbs />
+            {view === 'home' && <HomeView />}
+            {view === 'amc-levels' && <AmcLevelsView />}
+            {view === 'amc-years' && <AmcYearsView />}
+            {view === 'amc-questions' && <AmcQuestionsView />}
+            {view === 'amc-detail' && <AmcDetailView />}
+            {view === 'worksheets' && <WorksheetsView />}
+          </main>
+        </div>
+      );
+    }
+
+    // 啟動 React
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
+
