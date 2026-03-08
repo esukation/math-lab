@@ -1,0 +1,20 @@
+{
+  "Q25": {
+    "title": "四面體與內切球 (立體互動特調版)",
+    "questionText": "一個邊長為 2 的實心正四面體內接於空心圓柱體中。四面體的其中兩條稜邊剛好是圓柱體上下底面的直徑。請問最大內切球的直徑為何？",
+    "questionSvg": "<div class='py-20 text-center text-gray-500'>請點擊右上角的 <strong class='text-[#D4AF37]'>「3D 空間」</strong> 按鈕來體驗完整的互動解析！</div>",
+    "finalAnswer": "1 + √2 - √3",
+    "interactiveUrl": "models/2024_sr_q25.html",
+    "steps": [
+      {
+        "title": "幾何特性的降維打擊",
+        "content": "面對複雜的空間圖形，最好的策略就是尋找對稱面進行降維。在 3D 模型中，我們透過黃色的中心垂直剖面，將原本三維的問題，簡化為在一個<strong class='text-[#D4AF37]'>「直角三角形」</strong>空隙中尋找最大內切圓的問題。"
+      },
+      {
+        "title": "直徑公式推導",
+        "content": "透過畢氏定理與內切圓半徑公式 (r = (a+b-c)/2)，我們可以直接計算出這個隱藏在角落的最大球體直徑：<br/><strong class='text-[#D4AF37]'>D = 1 + √2 - √3</strong>"
+      }
+    ]
+  }
+}
+
