@@ -15,7 +15,6 @@
     /* 移除捲軸並維持功能 */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    
     /* 文字選取顏色 */
     ::selection { background-color: #D4AF37; color: #0D0D12; }
   </style>
@@ -52,10 +51,20 @@
       </svg>
     );
 
-    // ✨ 動態幾何星盤背景
+    // ✨ 完整還原！超美動態幾何星盤背景 (SVG)
     const GeometricBackground = () => (
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden mix-blend-screen opacity-30">
-        <svg viewBox="0 0 800 800" className="w-[120%] h-[120%] md:w-[100%] md:h-[100%] animate-[spin_90s_linear_infinite]">
+        <svg 
+          viewBox="0 0 800 800" 
+          className="w-[120%] h-[120%] md:w-[100%] md:h-[100%] animate-spin"
+          style={{ animationDuration: '90s', animationTimingFunction: 'linear' }}
+        >
+          <defs>
+            <radialGradient id="faintGold" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#D4AF37" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#D4AF37" stopOpacity="0" />
+            </radialGradient>
+          </defs>
           <circle cx="400" cy="400" r="150" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.6" />
           <circle cx="400" cy="400" r="250" fill="none" stroke="#D4AF37" strokeWidth="1" opacity="0.4" strokeDasharray="4 6" />
           <circle cx="400" cy="400" r="350" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.7" />
@@ -70,6 +79,9 @@
           })}
           <polygon points="400,150 616.5,275 616.5,525 400,650 183.5,525 183.5,275" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.5" />
           <polygon points="400,650 183.5,525 183.5,275 400,150 616.5,275 616.5,525" fill="none" stroke="#D4AF37" strokeWidth="0.5" opacity="0.3" transform="rotate(30 400 400)" />
+          <circle cx="400" cy="150" r="3" fill="#F7E7CE" opacity="0.8" />
+          <circle cx="650" cy="400" r="4" fill="#F7E7CE" opacity="0.8" />
+          <circle cx="150" cy="400" r="2" fill="#F7E7CE" opacity="0.8" />
         </svg>
       </div>
     );
@@ -80,7 +92,7 @@
       const [selectedLevel, setSelectedLevel] = useState(null);
       const [selectedYear, setSelectedYear] = useState(null);
       const [selectedQuestion, setSelectedQuestion] = useState(null);
-      const [displayMode, setDisplayMode] = useState('standard');
+      const [displayMode, setDisplayMode] = useState('interactive'); 
       
       const [dbData, setDbData] = useState({});
       const [isLoading, setIsLoading] = useState(false);
@@ -103,7 +115,7 @@
       const years = Array.from({ length: 11 }, (_, i) => (2024 - i).toString()); 
       const questionsList = Array.from({ length: 30 }, (_, i) => `Q${String(i + 1).padStart(2, '0')}`); 
 
-      // 🌟 分批讀取函數：抓取 batch1 ~ batch6 並合併
+      // 🌟 終極魔法：分批讀取系統 (Batch Loading)
       const fetchQuestions = async (levelId, year) => {
         setIsLoading(true);
         setDbData({}); 
@@ -131,7 +143,7 @@
           setPath([{ name: '首頁', view: 'home' }, { name: '典藏沙龍', view: 'amc-levels' }, { name: selectedLevel.name.split(' ')[0], view: 'amc-years', data: { level: selectedLevel } }]);
         } else if (newView === 'amc-detail') {
           setSelectedQuestion(data.question);
-          setDisplayMode('standard');
+          setDisplayMode(dbData[data.question]?.interactiveUrl ? 'interactive' : 'standard');
           setPath([{ name: '首頁', view: 'home' }, { name: '典藏沙龍', view: 'amc-levels' }, { name: selectedLevel.name.split(' ')[0], view: 'amc-years', data: { level: selectedLevel } }, { name: selectedYear, view: 'amc-questions', data: { year: selectedYear } }]);
         } else if (newView === 'worksheets') {
           setPath([{ name: '首頁', view: 'home' }]);
@@ -146,7 +158,6 @@
         setView(newView);
       };
 
-      // 頁首 Header
       const Header = () => (
         <header className="bg-[#0D0D12]/90 backdrop-blur-xl sticky top-0 z-50 border-b border-white/5 shadow-lg">
           <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
@@ -163,7 +174,6 @@
         </header>
       );
 
-      // 麵包屑導航
       const Breadcrumbs = () => {
         if (path.length === 0) return null;
         return (
@@ -190,10 +200,8 @@
         );
       };
 
-      // 1. 首頁畫面
       const HomeView = () => (
         <div className="animate-in fade-in duration-700 space-y-16 pb-16">
-          {/* Hero Section */}
           <div className="relative rounded-[1rem] p-10 md:p-24 border border-white/5 overflow-hidden flex flex-col items-center justify-center text-center min-h-[60vh] bg-[#0A0A0E]">
             <div className="absolute inset-0 z-0">
               <img src="https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2000&auto=format&fit=crop" className="w-full h-full object-cover opacity-[0.15]" />
@@ -225,7 +233,6 @@
             </div>
           </div>
 
-          {/* Category Grid */}
           <div className="pt-6">
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
               <div>
@@ -255,7 +262,6 @@
         </div>
       );
 
-      // 2. 學習單專區 (Mock)
       const WorksheetsView = () => {
         const worksheetsData = [
           { id: 'w1', title: '代數精粹：方程式與絕對值', desc: '淬鍊代數直覺，從絕對值拆解到高次方程式的圖解心法。' },
@@ -291,7 +297,6 @@
         );
       };
 
-      // 3. AMC 級別選擇
       const AmcLevelsView = () => (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in">
           {amcLevels.map((lvl) => (
@@ -303,7 +308,6 @@
         </div>
       );
 
-      // 4. AMC 年份選擇
       const AmcYearsView = () => (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 animate-in fade-in">
           {years.map((y) => (
@@ -314,7 +318,6 @@
         </div>
       );
 
-      // 5. AMC 題目選單 (智慧按鈕亮起)
       const AmcQuestionsView = () => (
         <div className="animate-in fade-in duration-700">
           <div className="flex justify-between items-end mb-10 border-b border-white/5 pb-6">
@@ -341,10 +344,11 @@
         </div>
       );
 
-      // 6. AMC 題目詳情頁面
       const AmcDetailView = () => {
         const data = dbData[selectedQuestion];
         if (!data) return null;
+        const has3D = !!data.interactiveUrl;
+        
         return (
           <div className="animate-in fade-in duration-700 max-w-6xl mx-auto">
             <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-10 gap-6 border-b border-white/5 pb-8">
@@ -352,29 +356,48 @@
                 <span className="text-[#D4AF37] text-xs tracking-[0.3em] mb-3 block uppercase">Question {selectedQuestion.replace('Q','')}</span>
                 <h2 className="font-serif text-3xl md:text-4xl text-white tracking-wide leading-tight">{data.title}</h2>
               </div>
+              {has3D && (
+                <div className="flex bg-[#1A1A24] border border-white/10 p-1 w-full lg:w-auto rounded-lg overflow-hidden">
+                  <button onClick={() => setDisplayMode('standard')} 
+                    className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-6 py-3 text-xs md:text-sm tracking-[0.15em] transition-all duration-500 rounded-md ${displayMode === 'standard' ? 'bg-[#D4AF37] text-[#0D0D12] font-bold' : 'text-gray-500 hover:text-white'}`}>
+                    <IconFileText className="w-4 h-4" /> 圖示解析
+                  </button>
+                  <button onClick={() => setDisplayMode('interactive')} 
+                    className={`flex-1 lg:flex-none flex items-center justify-center gap-3 px-6 py-3 text-xs md:text-sm tracking-[0.15em] transition-all duration-500 rounded-md ${displayMode === 'interactive' ? 'bg-[#D4AF37] text-[#0D0D12] font-bold' : 'text-gray-500 hover:text-white'}`}>
+                    <IconBox className="w-4 h-4" /> 3D 空間
+                  </button>
+                </div>
+              )}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-              {/* 左側：題目區 */}
-              <div className="lg:col-span-7 bg-[#1A1A24] border border-white/5 p-8 md:p-12 flex flex-col relative">
-                <p className="text-base md:text-lg text-gray-300 font-light leading-relaxed tracking-wide mb-10">{data.questionText}</p>
-                <div className="w-full flex-grow flex flex-col items-center justify-center mb-10 bg-[#FAFAFA] p-8 rounded-xl shadow-[inset_0_4px_20px_rgba(0,0,0,0.06)] text-slate-800" dangerouslySetInnerHTML={{ __html: data.questionSvg }} />
-                <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                  <span className="text-gray-500 text-xs tracking-[0.3em] uppercase">Final Answer</span>
-                  <div className="bg-gradient-to-r from-[#F7E7CE] via-[#D4AF37] to-[#B5952F] text-[#0D0D12] px-8 py-3 font-serif font-bold text-xl md:text-2xl tracking-widest shadow-[0_0_20px_rgba(212,175,55,0.2)]">{data.finalAnswer}</div>
+            <div className="mt-6">
+              {displayMode === 'interactive' && has3D ? (
+                // 🌟 3D 傳送門 iframe
+                <div className="w-full h-[75vh] bg-[#0A0A0E] border border-white/10 relative rounded-xl overflow-hidden shadow-[0_0_30px_rgba(212,175,55,0.15)] flex justify-center items-center">
+                  <iframe src={data.interactiveUrl} className="w-full h-full border-0 absolute inset-0" title="3D Interactive Model" allowFullScreen={true}></iframe>
                 </div>
-              </div>
-              {/* 右側：解析區 */}
-              <div className="lg:col-span-5 flex flex-col gap-6">
-                <div className="flex items-center gap-4 mb-2"><div className="w-8 h-[1px] bg-[#D4AF37]"></div><h3 className="font-serif text-xl text-[#D4AF37] tracking-widest">邏輯推演</h3></div>
-                <div className="space-y-6">
-                  {data.steps.map((step, idx) => (
-                    <div key={idx} className="bg-[#1A1A24] border-l-[2px] border-[#D4AF37] p-6 hover:bg-white/[0.02] transition-colors duration-500">
-                      <div className="text-white font-serif text-lg tracking-widest mb-4">{step.title}</div>
-                      <div className="text-gray-400 font-light leading-loose text-sm tracking-wide" dangerouslySetInnerHTML={{ __html: step.content }} />
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+                  <div className="lg:col-span-7 bg-[#1A1A24] border border-white/5 p-8 md:p-12 flex flex-col relative rounded-xl">
+                    <p className="text-base md:text-lg text-gray-300 font-light leading-relaxed tracking-wide mb-10">{data.questionText}</p>
+                    <div className="w-full flex-grow flex flex-col items-center justify-center mb-10 bg-[#FAFAFA] p-8 rounded-xl shadow-[inset_0_4px_20px_rgba(0,0,0,0.06)] text-slate-800" dangerouslySetInnerHTML={{ __html: data.questionSvg }} />
+                    <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
+                      <span className="text-gray-500 text-xs tracking-[0.3em] uppercase">Final Answer</span>
+                      <div className="bg-gradient-to-r from-[#F7E7CE] via-[#D4AF37] to-[#B5952F] text-[#0D0D12] px-8 py-3 font-serif font-bold text-xl tracking-widest shadow-[0_0_20px_rgba(212,175,55,0.2)] rounded-md">{data.finalAnswer}</div>
                     </div>
-                  ))}
+                  </div>
+                  <div className="lg:col-span-5 flex flex-col gap-6">
+                    <div className="flex items-center gap-4 mb-2"><div className="w-8 h-[1px] bg-[#D4AF37]"></div><h3 className="font-serif text-xl text-[#D4AF37] tracking-widest">邏輯推演</h3></div>
+                    <div className="space-y-6">
+                      {data.steps.map((step, idx) => (
+                        <div key={idx} className="bg-[#1A1A24] border-l-[2px] border-[#D4AF37] p-6 hover:bg-white/[0.02] transition-colors duration-500 rounded-r-xl shadow-lg">
+                          <div className="text-white font-serif text-lg tracking-widest mb-4">{step.title}</div>
+                          <div className="text-gray-400 font-light leading-loose text-sm tracking-wide" dangerouslySetInnerHTML={{ __html: step.content }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         );
@@ -402,4 +425,5 @@
   </script>
 </body>
 </html>
+
 
