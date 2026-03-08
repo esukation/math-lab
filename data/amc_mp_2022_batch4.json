@@ -1,0 +1,82 @@
+{
+  "Q16": {
+    "title": "年齡與倍數推算",
+    "questionText": "小莎向她的哥哥說：「你比我大10歲。」她的哥哥說：「妳說對了，我的年齡是妳的三倍。」請問小莎幾歲？",
+    "questionSvg": "<svg viewBox='0 0 500 200' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><rect x='20' y='20' width='460' height='160' rx='10' fill='#f8fafc' stroke='#94a3b8' stroke-width='2'/><text x='40' y='70' font-size='20' font-weight='bold' fill='#1e293b'>哥哥 =</text><rect x='120' y='45' width='80' height='35' rx='5' fill='#fca5a5' /><text x='160' y='68' text-anchor='middle' font-size='18' font-weight='bold' fill='#7f1d1d'>小莎</text><text x='225' y='70' font-size='24' font-weight='bold' fill='#1e293b'>+</text><rect x='250' y='45' width='180' height='35' rx='5' fill='#cbd5e1' stroke='#94a3b8' stroke-width='2'/><text x='340' y='68' text-anchor='middle' font-size='18' font-weight='bold' fill='#1e293b'>10 歲</text><text x='40' y='140' font-size='20' font-weight='bold' fill='#1e293b'>哥哥 =</text><rect x='120' y='115' width='80' height='35' rx='5' fill='#fca5a5' /><text x='160' y='138' text-anchor='middle' font-size='18' font-weight='bold' fill='#7f1d1d'>小莎</text><text x='225' y='140' font-size='24' font-weight='bold' fill='#1e293b'>+</text><rect x='250' y='115' width='80' height='35' rx='5' fill='#fca5a5' /><text x='290' y='138' text-anchor='middle' font-size='18' font-weight='bold' fill='#7f1d1d'>小莎</text><text x='355' y='140' font-size='24' font-weight='bold' fill='#1e293b'>+</text><rect x='380' y='115' width='80' height='35' rx='5' fill='#fca5a5' /><text x='420' y='138' text-anchor='middle' font-size='18' font-weight='bold' fill='#7f1d1d'>小莎</text><line x1='240' y1='85' x2='240' y2='110' stroke='#ef4444' stroke-width='3' stroke-dasharray='4,4'/><line x1='440' y1='85' x2='440' y2='110' stroke='#ef4444' stroke-width='3' stroke-dasharray='4,4'/></svg>",
+    "finalAnswer": "5",
+    "steps": [
+      {
+        "title": "步驟一：列出年齡關係",
+        "content": "條件一：哥哥 = 小莎 + 10 歲。<br/>條件二：哥哥 = 3 × 小莎。"
+      },
+      {
+        "title": "步驟二：比較並求解",
+        "content": "將兩者對照，3 個小莎等於 1 個小莎加上 10 歲。<br/>多出來的 <strong class='text-[#D4AF37]'>2 個小莎</strong> 剛好等於 10 歲，所以小莎是 10 ÷ 2 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>5</strong> 歲。"
+      }
+    ]
+  },
+  "Q17": {
+    "title": "圖形覆蓋與面積",
+    "questionText": "請問共需要用多少片塗色的小瓷磚才能夠將右圖所示的十字形鋪滿？",
+    "questionSvg": "<svg viewBox='0 0 500 240' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><g transform='translate(20, 40)'><text x='70' y='30' text-anchor='middle' font-size='16' font-weight='bold' fill='#1e293b'>1片小瓷磚</text><polygon points='40,80 100,80 70,50' fill='#ef4444' stroke='#1e293b' stroke-width='2'/><text x='70' y='110' text-anchor='middle' font-size='14' fill='#64748b'>= 半個方格</text></g><g transform='translate(220, 20)'><polygon points='60,60 120,60 120,0 180,0 180,60 240,60 240,120 180,120 180,180 120,180 120,120 60,120' fill='#cbd5e1' stroke='#1e293b' stroke-width='3'/><path d='M90 60 v60 M150 0 v180 M210 60 v60 M120 30 h60 M60 90 h180 M120 150 h60' stroke='#94a3b8' stroke-width='1' fill='none'/><rect x='120' y='0' width='60' height='60' fill='none' stroke='#ef4444' stroke-width='3' stroke-dasharray='6,4'/><rect x='120' y='60' width='60' height='60' fill='none' stroke='#ef4444' stroke-width='3' stroke-dasharray='6,4'/><rect x='120' y='120' width='60' height='60' fill='none' stroke='#ef4444' stroke-width='3' stroke-dasharray='6,4'/><rect x='60' y='60' width='60' height='60' fill='none' stroke='#ef4444' stroke-width='3' stroke-dasharray='6,4'/><rect x='180' y='60' width='60' height='60' fill='none' stroke='#ef4444' stroke-width='3' stroke-dasharray='6,4'/></g></svg>",
+    "finalAnswer": "40",
+    "steps": [
+      {
+        "title": "步驟一：計算總方格數",
+        "content": "十字形由 5 個大正方形組成。每個大正方形內含 4 個小方格，總共有 5 × 4 = <strong class='text-[#D4AF37]'>20</strong> 個小方格。"
+      },
+      {
+        "title": "步驟二：換算瓷磚數量",
+        "content": "1 片紅色三角形剛好覆蓋「半個」小方格，所以 1 個方格需 <strong class='text-[#D4AF37]'>2</strong> 片瓷磚。<br/>鋪滿圖形共需要：20 × 2 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>40</strong> 片瓷磚。"
+      }
+    ]
+  },
+  "Q18": {
+    "title": "數字配對與邏輯推理",
+    "questionText": "小舒有編號 1 到 7 的卡片。她正確地將它們放進三條算式中。請問她將會留下哪一張卡片？",
+    "questionSvg": "<svg viewBox='0 0 500 240' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><rect x='40' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/> <text x='60' y='48' text-anchor='middle' font-size='24' font-weight='bold'>1</text><rect x='100' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/> <text x='120' y='48' text-anchor='middle' font-size='24' font-weight='bold'>2</text><rect x='160' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/> <text x='180' y='48' text-anchor='middle' font-size='24' font-weight='bold'>3</text><rect x='220' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/> <text x='240' y='48' text-anchor='middle' font-size='24' font-weight='bold'>4</text><rect x='280' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/> <text x='300' y='48' text-anchor='middle' font-size='24' font-weight='bold'>5</text><rect x='340' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#1e293b' stroke-width='2'/> <text x='360' y='48' text-anchor='middle' font-size='24' font-weight='bold'>6</text><rect x='400' y='20' width='40' height='40' rx='5' fill='#f1f5f9' stroke='#ef4444' stroke-width='3'/> <text x='420' y='48' text-anchor='middle' font-size='24' font-weight='bold' fill='#ef4444'>7</text><g transform='translate(130, 90)'><rect x='0' y='0' width='30' height='30' rx='4' fill='#fff' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='45' y='23' text-anchor='middle' font-size='20' font-weight='bold'>×</text><rect x='60' y='0' width='30' height='30' rx='4' fill='#fff' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='120' y='23' text-anchor='middle' font-size='24' font-weight='bold'>= 12</text><text x='190' y='22' font-size='16' fill='#0ea5e9' font-weight='bold'>→ 填入 3, 4</text><rect x='0' y='45' width='30' height='30' rx='4' fill='#fff' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='45' y='68' text-anchor='middle' font-size='20' font-weight='bold'>+</text><rect x='60' y='45' width='30' height='30' rx='4' fill='#fff' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='120' y='68' text-anchor='middle' font-size='24' font-weight='bold'>= 11</text><text x='190' y='67' font-size='16' fill='#0ea5e9' font-weight='bold'>→ 填入 5, 6</text><rect x='0' y='90' width='30' height='30' rx='4' fill='#fff' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='45' y='113' text-anchor='middle' font-size='20' font-weight='bold'>-</text><rect x='60' y='90' width='30' height='30' rx='4' fill='#fff' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='120' y='113' text-anchor='middle' font-size='24' font-weight='bold'>=  1</text><text x='190' y='112' font-size='16' fill='#0ea5e9' font-weight='bold'>→ 填入 2, 1</text></g></svg>",
+    "finalAnswer": "7",
+    "steps": [
+      {
+        "title": "步驟一：分析乘法與加法",
+        "content": "相乘等於 12 的組合只有 <strong class='text-[#D4AF37]'>3 × 4</strong>（2 × 6 會導致 11 無法湊出）。<br/>剩下的數字中，相加等於 11 的組合為 <strong class='text-[#D4AF37]'>5 + 6</strong>。"
+      },
+      {
+        "title": "步驟二：處理減法與剩餘卡片",
+        "content": "此時剩下的卡片為 1、2、7。能相減等於 1 的組合只有 <strong class='text-[#D4AF37]'>2 - 1 = 1</strong>。<br/>三條算式填滿後，唯一沒有被用到的是卡片 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>7</strong>。"
+      }
+    ]
+  },
+  "Q19": {
+    "title": "反射路徑與規律",
+    "questionText": "警衛從房間中央以 45° 角射出光束，光束在鏡子間來回反射。直到射回警衛為止，總共反射多少次？",
+    "questionSvg": "<svg viewBox='0 0 500 240' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><rect x='50' y='80' width='400' height='80' fill='#f8fafc' stroke='#1e293b' stroke-width='4'/><text x='250' y='65' text-anchor='middle' font-weight='bold' fill='#64748b'>10 m</text><text x='30' y='125' text-anchor='middle' font-weight='bold' fill='#64748b'>2 m</text><circle cx='50' cy='120' r='6' fill='#1e293b'/><text x='30' y='145' font-size='12' font-weight='bold'>警衛</text><polyline points='50,120 90,160 170,80 250,160 330,80 410,160 450,120' fill='none' stroke='#eab308' stroke-width='3'/><polyline points='450,120 410,80 330,160 250,80 170,160 90,80 50,120' fill='none' stroke='#0ea5e9' stroke-width='3' stroke-dasharray='4,4'/><line x1='330' y1='20' x2='360' y2='20' stroke='#eab308' stroke-width='3'/><text x='370' y='25' font-size='12' font-weight='bold'>去程</text><line x1='410' y1='20' x2='440' y2='20' stroke='#0ea5e9' stroke-width='3' stroke-dasharray='4,4'/><text x='450' y='25' font-size='12' font-weight='bold'>回程</text><circle cx='90' cy='160' r='5' fill='#ef4444'/> <text x='90' y='175' text-anchor='middle' font-size='12' fill='#ef4444' font-weight='bold'>1</text><circle cx='250' cy='160' r='5' fill='#ef4444'/> <text x='250' y='175' text-anchor='middle' font-size='12' fill='#ef4444' font-weight='bold'>3</text><circle cx='410' cy='160' r='5' fill='#ef4444'/> <text x='410' y='175' text-anchor='middle' font-size='12' fill='#ef4444' font-weight='bold'>5</text><circle cx='170' cy='80' r='5' fill='#ef4444'/> <text x='170' y='70' text-anchor='middle' font-size='12' fill='#ef4444' font-weight='bold'>2</text><circle cx='330' cy='80' r='5' fill='#ef4444'/> <text x='330' y='70' text-anchor='middle' font-size='12' fill='#ef4444' font-weight='bold'>4</text><circle cx='450' cy='120' r='5' fill='#ef4444'/> <text x='470' y='125' font-size='12' fill='#ef4444' font-weight='bold'>6</text><circle cx='410' cy='80' r='5' fill='#ef4444'/> <text x='410' y='70' text-anchor='middle' font-size='12' fill='#0ea5e9' font-weight='bold'>7</text><circle cx='250' cy='80' r='5' fill='#ef4444'/> <text x='250' y='70' text-anchor='middle' font-size='12' fill='#0ea5e9' font-weight='bold'>9</text><circle cx='90' cy='80' r='5' fill='#ef4444'/> <text x='90' y='70' text-anchor='middle' font-size='12' fill='#0ea5e9' font-weight='bold'>11</text><circle cx='330' cy='160' r='5' fill='#ef4444'/> <text x='330' y='175' text-anchor='middle' font-size='12' fill='#0ea5e9' font-weight='bold'>8</text><circle cx='170' cy='160' r='5' fill='#ef4444'/> <text x='170' y='175' text-anchor='middle' font-size='12' fill='#0ea5e9' font-weight='bold'>10</text></svg>",
+    "finalAnswer": "11",
+    "steps": [
+      {
+        "title": "步驟一：追蹤去程反射",
+        "content": "光線以 45° 前進，每 2m 會在上下牆交替反射 1 次。到達對面牆壁 (10m) 途中反射 <strong class='text-[#D4AF37]'>5</strong> 次，擊中對面牆壁產生第 <strong class='text-[#D4AF37]'>6</strong> 次反射。"
+      },
+      {
+        "title": "步驟二：追蹤回程反射",
+        "content": "光線會以交叉路徑返回。回程同樣會在上下牆壁交替反射 <strong class='text-[#D4AF37]'>5</strong> 次，最後回到警衛手中。<br/>總反射次數 = 5 + 1 + 5 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>11</strong> 次。"
+      }
+    ]
+  },
+  "Q20": {
+    "title": "基礎代數與等量公理",
+    "questionText": "一個罐子與 30 枚珠子共重 115g，相同的罐子與 20 枚珠子共重 85g。請問這個空罐的重量是什麼？",
+    "questionSvg": "<svg viewBox='0 0 500 240' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><rect x='20' y='30' width='300' height='160' rx='10' fill='#f8fafc' stroke='#e2e8f0' stroke-width='2'/><g transform='translate(40, 60)'><path d='M 0 30 L 0 0 Q 15 0 30 0 L 30 30 Z' fill='#94a3b8' stroke='#1e293b' stroke-width='2'/><text x='50' y='22' font-size='24' font-weight='bold'>+</text><circle cx='85' cy='15' r='10' fill='#0ea5e9'/><text x='105' y='22' font-size='20' font-weight='bold'>× 30</text><text x='170' y='24' font-size='24' font-weight='bold' fill='#ef4444'>= 115g</text></g><g transform='translate(40, 130)'><path d='M 0 30 L 0 0 Q 15 0 30 0 L 30 30 Z' fill='#94a3b8' stroke='#1e293b' stroke-width='2'/><text x='50' y='22' font-size='24' font-weight='bold'>+</text><circle cx='85' cy='15' r='10' fill='#0ea5e9'/><text x='105' y='22' font-size='20' font-weight='bold'>× 20</text><text x='170' y='24' font-size='24' font-weight='bold' fill='#ef4444'>=  85g</text></g><path d='M 280 80 Q 330 110 280 145' fill='none' stroke='#1e293b' stroke-width='3' stroke-dasharray='4,4'/><rect x='330' y='60' width='160' height='100' rx='8' fill='#fef2f2' stroke='#ef4444' stroke-width='2'/><text x='410' y='90' text-anchor='middle' font-size='16' font-weight='bold' fill='#1e293b'>相差 10 枚珠子</text><text x='410' y='120' text-anchor='middle' font-size='18' font-weight='bold' fill='#ef4444'>115 - 85 = 30g</text><text x='410' y='145' text-anchor='middle' font-size='14' font-weight='bold' fill='#64748b'>1枚 = 3g</text></svg>",
+    "finalAnswer": "25g",
+    "steps": [
+      {
+        "title": "步驟一：找出差異計算單價",
+        "content": "兩次秤重的差異在於「10 枚珠子」，重量相差了 115 - 85 = <strong class='text-[#D4AF37]'>30g</strong>。<br/>因此，1 枚珠子的重量為 30 ÷ 10 = <strong class='text-[#D4AF37]'>3g</strong>。"
+      },
+      {
+        "title": "步驟二：扣除珠子算空罐",
+        "content": "20 枚珠子的重量為 20 × 3 = 60g。<br/>空罐重量 = 總重 85g - 60g = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>25g</strong>。"
+      }
+    ]
+  }
+}
