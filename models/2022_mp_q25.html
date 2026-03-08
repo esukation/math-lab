@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMC Q25 互動式展開圖解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body { 
+    background-color: #0A0A0E; 
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .app-container {
+    width: 1000px;
+    background: #1A1A24;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .header {
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 2px; }
+  .badge { background: rgba(212,175,55,0.1); color: #D4AF37; border: 1px solid rgba(212,175,55,0.3); padding: 4px 12px; border-radius: 8px; font-size: 18px; margin-right: 15px;}
+
+  .interactive-area {
+    width: 100%;
+    height: 600px;
+    position: relative;
+    background: #0D0D12;
+  }
+
+  svg { width: 100%; height: 100%; display: block; }
+
+  .control-panel {
+    background: #1A1A24;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .status-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #D4AF37;
+    margin: 0;
+  }
+
+  .btn {
+    background: #D4AF37;
+    color: #0D0D12;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(212,175,55,0.2);
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn:hover { background: #E5C158; transform: scale(1.05); }
+  .btn-reset { background: rgba(255,255,255,0.1); color: #FFF; box-shadow: none; display: none; }
+  .btn-reset:hover { background: rgba(255,255,255,0.2); }
+
+  /* 閃耀疊合特效 */
+  @keyframes sparkle {
+    0% { filter: drop-shadow(0 0 0 rgba(212, 175, 55, 0)); }
+    50% { filter: drop-shadow(0 0 30px rgba(212, 175, 55, 1)); }
+    100% { filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.8)); }
+  }
+  .sparkle-effect {
+    animation: sparkle 1.5s ease-in-out forwards;
+  }
+  
+  /* 選項 D 成功時的文字高亮 */
+  .success-text {
+    fill: #ef4444 !important;
+    font-size: 24px !important;
+    transition: all 0.5s;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">
+    <h1><span class="badge">Q25</span> 空間幾何展開圖 - 動態攤平疊合解析</h1>
+  </div>
+  
+  <div class="interactive-area">
+    <svg id="canvas" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+      
+      <!-- 虛線參考標示：引導視覺飛向 D 選項 -->
+      <path d="M 300 250 Q 500 100 675 480" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-dasharray="8,8"/>
+
+      <!-- ================= 下方 5 個選項區 ================= -->
+      <g transform="translate(150, 520)">
+        <rect x="-15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="15" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="15" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="45" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="15" y="45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <circle cx="53" cy="23" r="2.5" fill="#1e293b"/><circle cx="37" cy="67" r="2.5" fill="#1e293b"/>
+        <text x="30" y="-60" text-anchor="middle" font-weight="bold" font-size="16" fill="rgba(255,255,255,0.5)">(A)</text>
+      </g>
+
+      <g transform="translate(325, 520)">
+        <rect x="-45" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <circle cx="37" cy="-37" r="2.5" fill="#1e293b"/><circle cx="-7" cy="37" r="2.5" fill="#1e293b"/>
+        <text x="-15" y="-60" text-anchor="middle" font-weight="bold" font-size="16" fill="rgba(255,255,255,0.5)">(B)</text>
+      </g>
+
+      <g transform="translate(500, 520)">
+        <rect x="15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="15" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-45" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-45" y="45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <circle cx="7" cy="23" r="2.5" fill="#1e293b"/><circle cx="-37" cy="67" r="2.5" fill="#1e293b"/>
+        <text x="-15" y="-60" text-anchor="middle" font-weight="bold" font-size="16" fill="rgba(255,255,255,0.5)">(C)</text>
+      </g>
+
+      <g id="opt-d-group" transform="translate(675, 520)">
+        <rect id="opt-d-highlight" x="-55" y="-60" width="115" height="150" rx="10" fill="none" stroke="transparent" stroke-width="3"/>
+        <g id="d-top" transform="translate(-15, -45)">
+            <rect x="0" y="0" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+            <circle cx="5" cy="25" r="2.5" fill="#1e293b"/> 
+        </g>
+        <rect x="-45" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-15" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/> 
+        <g id="d-right" transform="translate(15, -15)">
+            <rect x="0" y="0" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+            <circle cx="23.5" cy="23" r="2.5" fill="#1e293b"/>
+        </g>
+        <rect x="-15" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/> 
+        <rect x="-15" y="45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/> 
+        
+        <text id="d-label" x="0" y="-60" text-anchor="middle" font-weight="bold" font-size="18" fill="#D4AF37">(D)</text>
+      </g>
+
+      <g transform="translate(850, 520)">
+        <rect x="-30" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="-30" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="0" y="-15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="0" y="15" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="0" y="45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <rect x="30" y="45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
+        <circle cx="-22" cy="-8" r="2.5" fill="#1e293b"/><circle cx="52" cy="67" r="2.5" fill="#1e293b"/>
+        <text x="0" y="-60" text-anchor="middle" font-weight="bold" font-size="16" fill="rgba(255,255,255,0.5)">(E)</text>
+      </g>
+
+      <!-- ================= 核心動畫區：3D Cube 與 6面展開圖 ================= -->
+      <g id="net-container" style="transform: translate(250px, 200px) scale(2.5) rotate(0deg); transform-origin: 0 0;">
+        <polygon id="f_back" points="0,0 70,40 70,-40 0,-80" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5" opacity="0"/>
+        <polygon id="f_bottom" points="-70,40 0,80 70,40 0,0" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5" opacity="0"/>
+        <polygon id="f_left" points="0,-80 -70,-40 -70,40 0,0" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5" opacity="0"/>
+
+        <polygon id="f_top" points="-70,-40 0,-80 70,-40 0,0" fill="rgba(255,255,255,0.9)" stroke="#1e293b" stroke-width="1.5"/>
+        <polygon id="f_front" points="-70,-40 0,0 0,80 -70,40" fill="rgba(255,255,255,0.7)" stroke="#1e293b" stroke-width="1.5"/>
+        <polygon id="f_right" points="0,0 70,-40 70,40 0,80" fill="rgba(255,255,255,0.5)" stroke="#1e293b" stroke-width="1.5"/>
+
+        <circle id="h1" cx="-47" cy="-40" r="2.5" fill="#1e293b"/> 
+        <circle id="h2" cx="55" cy="30" r="2.5" fill="#1e293b"/> 
+
+        <g id="pin">
+            <line x1="-80" y1="-75" x2="-47" y2="-40" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="-80" cy="-75" r="4.5" fill="#dc2626"/>
+            <line x1="-47" y1="-40" x2="55" y2="30" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3"/>
+            <line x1="55" y1="30" x2="80" y2="55" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+            <polygon points="86,64 74,53 84,47" fill="#ef4444"/>
+        </g>
+      </g>
+      
+    </svg>
+  </div>
+  
+  <div class="control-panel">
+    <p id="status-text" class="status-text">👉 點擊按鈕，開始 3D 到 2D 疊合的幾何魔法！</p>
+    <div style="display: flex; gap: 10px;">
+      <button id="reset-btn" class="btn btn-reset" onclick="location.reload()"><i class="fa-solid fa-rotate-left"></i> 重置動畫</button>
+      <button id="play-btn" class="btn" onclick="playAnimation()"><i class="fa-solid fa-magic"></i> 播放展開動畫</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let isAnimating = false;
+  const f_top_3D    = [-70,-40, 0,-80, 70,-40, 0,0];
+  const f_top_2D    = [-15,-15, -15,-45, 15,-45, 15,-15];
+  const f_front_3D  = [-70,-40, 0,0, 0,80, -70,40];
+  const f_front_2D  = [-15,-15, 15,-15, 15,15, -15,15];
+  const f_right_3D  = [0,0, 70,-40, 70,40, 0,80];
+  const f_right_2D  = [15,-15, 45,-15, 45,15, 15,15];
+  const f_left_3D   = [0,-80, -70,-40, -70,40, 0,0];
+  const f_left_2D   = [-45,-15, -15,-15, -15,15, -45,15];
+  const f_bottom_3D = [-70,40, 0,80, 70,40, 0,0];
+  const f_bottom_2D = [-15,15, 15,15, 15,45, -15,45];
+  const f_back_3D   = [0,0, 70,40, 70,-40, 0,-80];
+  const f_back_2D   = [-15,45, 15,45, 15,75, -15,75];
+  const h1_3D = [-47, -40];
+  const h1_2D = [-10, -20];
+  const h2_3D = [55, 30];
+  const h2_2D = [38.5, 8];
+
+  function tweenPolygon(id, startPts, endPts, progress) {
+      const el = document.getElementById(id);
+      let curr = startPts.map((p, i) => p + (endPts[i] - p) * progress);
+      el.setAttribute('points', `${curr[0]},${curr[1]} ${curr[2]},${curr[3]} ${curr[4]},${curr[5]} ${curr[6]},${curr[7]}`);
+  }
+
+  function tweenCircle(id, startPts, endPts, progress) {
+      const el = document.getElementById(id);
+      el.setAttribute('cx', startPts[0] + (endPts[0] - startPts[0]) * progress);
+      el.setAttribute('cy', startPts[1] + (endPts[1] - startPts[1]) * progress);
+  }
+
+  function playAnimation() {
+      if(isAnimating) return;
+      isAnimating = true;
+
+      const status = document.getElementById('status-text');
+      document.getElementById('play-btn').style.display = 'none';
+      
+      status.innerText = "1. 拔出大頭針...";
+      const pin = document.getElementById('pin');
+      pin.style.transition = 'all 0.5s ease-in-out';
+      pin.style.transform = 'translate(-40px, -60px)';
+      pin.style.opacity = '0';
+
+      setTimeout(() => {
+          status.innerText = "2. 顯示背面的隱藏面，準備剝開展開圖...";
+          const hiddenFaces = ['f_back', 'f_bottom', 'f_left'];
+          const visibleFaces = ['f_top', 'f_front', 'f_right'];
+          
+          [...hiddenFaces, ...visibleFaces].forEach(id => {
+              const el = document.getElementById(id);
+              el.style.transition = 'all 0.5s ease';
+              el.setAttribute('fill', 'rgba(255, 255, 255, 0.9)'); 
+              el.setAttribute('stroke', '#D4AF37');
+              el.style.opacity = '1';
+          });
+          document.getElementById('h1').setAttribute('fill', '#ef4444');
+          document.getElementById('h2').setAttribute('fill', '#ef4444');
+
+          setTimeout(() => {
+              status.innerText = "3. 幾何變形：自動攤平成為 6 面的平面展開圖...";
+              let startTime = performance.now();
+              const duration = 1800; 
+              
+              function morph(timestamp) {
+                  let p = (timestamp - startTime) / duration;
+                  if(p > 1) p = 1;
+                  let ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+
+                  tweenPolygon('f_top', f_top_3D, f_top_2D, ease);
+                  tweenPolygon('f_front', f_front_3D, f_front_2D, ease);
+                  tweenPolygon('f_right', f_right_3D, f_right_2D, ease);
+                  tweenPolygon('f_left', f_left_3D, f_left_2D, ease);
+                  tweenPolygon('f_bottom', f_bottom_3D, f_bottom_2D, ease);
+                  tweenPolygon('f_back', f_back_3D, f_back_2D, ease);
+                  
+                  tweenCircle('h1', h1_3D, h1_2D, ease);
+                  tweenCircle('h2', h2_3D, h2_2D, ease);
+
+                  if(p < 1) requestAnimationFrame(morph);
+                  else {
+                      setTimeout(() => {
+                          status.innerText = "4. 華麗對位！平滑縮小並飛向選項 (D)...";
+                          const netGroup = document.getElementById('net-container');
+                          netGroup.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                          netGroup.style.transform = 'translate(675px, 520px) scale(1) rotate(0deg)';
+
+                          document.getElementById('opt-d-highlight').setAttribute('stroke', '#ef4444');
+                          document.getElementById('opt-d-highlight').setAttribute('fill', 'rgba(239, 68, 68, 0.1)');
+
+                          setTimeout(() => {
+                              status.innerHTML = "🎉 <span style='color:#ef4444'>完美疊合！</span> 孔洞位置完全對應 (D) 選項！";
+                              netGroup.classList.add('sparkle-effect');
+                              document.getElementById('d-label').classList.add('success-text');
+                              document.getElementById('reset-btn').style.display = 'flex';
+                          }, 1800);
+                      }, 1000);
+                  }
+              }
+              requestAnimationFrame(morph);
+          }, 800);
+      }, 800);
+  }
+</script>
+</body>
+</html>
