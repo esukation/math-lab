@@ -1,0 +1,82 @@
+{
+  "Q11": {
+    "title": "硬幣背面的數字總和",
+    "questionText": "有三枚硬幣，每枚兩面數字乘積都是 60。正面顯示如下圖，請問背面三個數字之和是什麼？",
+    "questionSvg": "<div class='flex justify-center items-center gap-6 py-10'><div class='flex flex-col items-center gap-2'><svg width='80' height='80' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='#fff' stroke='#1e293b' stroke-width='4'/><text x='50' y='60' font-size='34' font-weight='900' fill='#1e293b' text-anchor='middle'>30</text></svg><span class='font-bold text-gray-500'>硬幣 1</span></div><div class='flex flex-col items-center gap-2'><svg width='80' height='80' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='#fff' stroke='#1e293b' stroke-width='4'/><text x='50' y='60' font-size='34' font-weight='900' fill='#1e293b' text-anchor='middle'>5</text></svg><span class='font-bold text-gray-500'>硬幣 2</span></div><div class='flex flex-col items-center gap-2'><svg width='80' height='80' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='#fff' stroke='#1e293b' stroke-width='4'/><text x='50' y='60' font-size='34' font-weight='900' fill='#1e293b' text-anchor='middle'>4</text></svg><span class='font-bold text-gray-500'>硬幣 3</span></div></div>",
+    "finalAnswer": "29",
+    "steps": [
+      {
+        "title": "步驟一：求出每枚硬幣背面數字",
+        "content": "硬幣 1：60 ÷ 30 = <strong class='text-[#D4AF37]'>2</strong><br/>硬幣 2：60 ÷ 5 = <strong class='text-[#D4AF37]'>12</strong><br/>硬幣 3：60 ÷ 4 = <strong class='text-[#D4AF37]'>15</strong>"
+      },
+      {
+        "title": "步驟二：計算總和",
+        "content": "2 + 12 + 15 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>29</strong>。"
+      }
+    ]
+  },
+  "Q12": {
+    "title": "正方形拼接的周長",
+    "questionText": "最大正方形周長為 36cm。最小正方形面積為 9cm²。請問中型正方形的周長是什麼？",
+    "questionSvg": "<svg viewBox='0 0 240 160' class='w-full h-auto max-h-[280px]'><rect x='10' y='10' width='120' height='120' fill='#fff' stroke='#1f2937' stroke-width='3'/><rect x='130' y='10' width='80' height='80' fill='#fff' stroke='#1f2937' stroke-width='3'/><rect x='130' y='90' width='40' height='40' fill='#fff' stroke='#1f2937' stroke-width='3'/></svg>",
+    "finalAnswer": "24 cm",
+    "steps": [
+      {
+        "title": "步驟一：求出已知邊長",
+        "content": "大邊長 = 36 ÷ 4 = <strong class='text-[#D4AF37]'>9 cm</strong>。<br/>小邊長 = √9 = <strong class='text-[#D4AF37]'>3 cm</strong>。"
+      },
+      {
+        "title": "步驟二：推導中型邊長",
+        "content": "觀察高度：大邊長 = 中邊長 + 小邊長<br/>中邊長 = 9 - 3 = <strong class='text-[#D4AF37]'>6 cm</strong>。<br/>中型周長 = 6 × 4 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>24 cm</strong>。"
+      }
+    ]
+  },
+  "Q13": {
+    "title": "資源儲備的基礎算術",
+    "questionText": "澳洲每天使用 160 百萬公升的汽油。現有儲備的汽油足夠使用 60 天。請問澳洲還需要購買多少汽油才能有足夠 90 天的儲備？",
+    "questionSvg": "<div class='py-20 text-center text-[#D4AF37] text-lg font-serif tracking-widest'>算術應用推演</div>",
+    "finalAnswer": "4800",
+    "steps": [
+      {
+        "title": "步驟一：計算缺少的儲備天數",
+        "content": "目標 90 天 - 目前 60 天 = <strong class='text-[#D4AF37]'>30 天</strong>。"
+      },
+      {
+        "title": "步驟二：計算所需總量",
+        "content": "每天 160 百萬公升 × 30 天 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>4800</strong> 百萬公升。"
+      }
+    ]
+  },
+  "Q14": {
+    "title": "圓餅圖的比例運算",
+    "questionText": "調查學生最喜歡的飲料。圓形圖顯示答案，已知 80 位選擇牛奶。請問有多少位選擇果汁？",
+    "questionSvg": "<svg viewBox='0 0 200 200' class='w-full h-auto max-h-[280px]'><circle cx='100' cy='100' r='95' fill='white' stroke='#1e293b' stroke-width='2'/><path d='M 100 100 L 195 100 A 95 95 0 1 1 17.73 52.5 Z' fill='#e0e7ff' stroke='#1e293b' stroke-width='2'/><path d='M 100 100 L 100 5 A 95 95 0 0 1 195 100 Z' fill='#fef08a' stroke='#1e293b' stroke-width='2'/><path d='M 100 100 L 17.73 52.5 A 95 95 0 0 1 100 5 Z' fill='#fef9c3' stroke='#1e293b' stroke-width='2'/><polyline points='100,85 115,85 115,100' fill='none' stroke='#1e293b' stroke-width='2'/><g font-size='18' font-weight='bold' fill='#1e293b'><text x='55' y='45' text-anchor='middle'>牛奶</text><text x='55' y='70' text-anchor='middle' font-size='14'>60°</text><text x='150' y='50' text-anchor='middle'>果汁</text><text x='100' y='160' text-anchor='middle'>水</text></g></svg>",
+    "finalAnswer": "120",
+    "steps": [
+      {
+        "title": "步驟一：識別角度比例",
+        "content": "牛奶佔 60° ➔ 代表 <strong class='text-[#D4AF37]'>80 人</strong>。<br/>果汁扇形有直角標記 ➔ 代表 <strong class='text-[#D4AF37]'>90°</strong>。"
+      },
+      {
+        "title": "步驟二：利用角度計算",
+        "content": "果汁的角度是牛奶的 1.5 倍 (90 ÷ 60 = 1.5)。<br/>人數 = 80 人 × 1.5 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>120</strong> 人。"
+      }
+    ]
+  },
+  "Q15": {
+    "title": "3 的倍數判別法",
+    "questionText": "這些數中有多少個數可被 3 整除？",
+    "questionSvg": "<div class='bg-white/5 border border-white/10 p-6 rounded-xl text-xl font-bold text-white text-center leading-loose'>1, 12, 123, 1234, 12345,<br/>123456, 1234567, 12345678, 123456789</div>",
+    "finalAnswer": "6",
+    "steps": [
+      {
+        "title": "步驟一：法則：數字位數和需為 3 的倍數",
+        "content": "1 (和1) ➔ 否； 12 (和3) ➔ <strong class='text-[#D4AF37]'>是</strong><br/>123 (和6) ➔ <strong class='text-[#D4AF37]'>是</strong>； 1234 (和10) ➔ 否<br/>12345 (和15) ➔ <strong class='text-[#D4AF37]'>是</strong>； 123456 (和21) ➔ <strong class='text-[#D4AF37]'>是</strong><br/>1234567 ➔ 否； 12345678 ➔ <strong class='text-[#D4AF37]'>是</strong><br/>123456789 ➔ <strong class='text-[#D4AF37]'>是</strong>"
+      },
+      {
+        "title": "步驟二：結論",
+        "content": "符合條件共有 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>6</strong> 個。"
+      }
+    ]
+  }
+}
