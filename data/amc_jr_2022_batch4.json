@@ -1,0 +1,82 @@
+{
+  "Q16": {
+    "title": "空間立體的點數極值",
+    "questionText": "標準骰子的 1與6、2與5、3與4 在相對面。放置任何一枚骰子可看見 1、2 或 3 個面。最少要安排多少枚骰子才能恰好看到 100 個點？",
+    "questionSvg": "<svg viewBox='0 0 340 200' class='w-full h-auto max-h-[280px]'><g transform='translate(10, 40)'><path d='M 60 40 L 100 20 L 140 40 L 100 60 Z' fill='#f472b6' stroke='#9d174d' stroke-width='2' stroke-linejoin='round'/><path d='M 60 40 L 100 60 L 100 120 L 60 100 Z' fill='#db2777' stroke='#9d174d' stroke-width='2' stroke-linejoin='round'/><path d='M 140 40 L 100 60 L 100 120 L 140 100 Z' fill='#f9a8d4' stroke='#9d174d' stroke-width='2' stroke-linejoin='round'/><circle cx='85' cy='35' r='4.5' fill='white'/><circle cx='95' cy='40' r='4.5' fill='white'/><circle cx='105' cy='45' r='4.5' fill='white'/><circle cx='95' cy='30' r='4.5' fill='white'/><circle cx='105' cy='35' r='4.5' fill='white'/><circle cx='115' cy='40' r='4.5' fill='white'/><circle cx='75' cy='65' r='4.5' fill='white'/><circle cx='85' cy='95' r='4.5' fill='white'/><circle cx='115' cy='70' r='4.5' fill='white'/><circle cx='125' cy='65' r='4.5' fill='white'/><circle cx='115' cy='95' r='4.5' fill='white'/><circle cx='125' cy='90' r='4.5' fill='white'/></g><g transform='translate(170, 60)'><path d='M 60 40 L 100 20 L 140 40 L 100 60 Z' fill='#7dd3fc' stroke='#0369a1' stroke-width='2' stroke-linejoin='round'/><path d='M 60 40 L 100 60 L 100 120 L 60 100 Z' fill='#0ea5e9' stroke='#0369a1' stroke-width='2' stroke-linejoin='round'/><path d='M 140 40 L 100 60 L 100 120 L 140 100 Z' fill='#bae6fd' stroke='#0369a1' stroke-width='2' stroke-linejoin='round'/><circle cx='85' cy='35' r='4.5' fill='#991b1b'/><circle cx='95' cy='40' r='4.5' fill='#991b1b'/><circle cx='105' cy='45' r='4.5' fill='#991b1b'/><circle cx='95' cy='30' r='4.5' fill='#991b1b'/><circle cx='105' cy='35' r='4.5' fill='#991b1b'/><circle cx='115' cy='40' r='4.5' fill='#991b1b'/><circle cx='75' cy='65' r='4.5' fill='#991b1b'/><circle cx='85' cy='95' r='4.5' fill='#991b1b'/><circle cx='90' cy='70' r='4.5' fill='#991b1b'/><circle cx='70' cy='90' r='4.5' fill='#991b1b'/><circle cx='80' cy='80' r='4.5' fill='#991b1b'/><circle cx='120' cy='78' r='4.5' fill='#991b1b'/><circle cx='112' cy='90' r='4.5' fill='#991b1b'/><circle cx='128' cy='66' r='4.5' fill='#991b1b'/></g></svg>",
+    "finalAnswer": "7",
+    "steps": [
+      {
+        "title": "步驟一：極大化可見點數",
+        "content": "要用最少枚骰子，每枚骰子露出的點數就要最多。<br/>骰子置於角落時最多可露出 3 個面。<br/>標準骰子相鄰最大的三面為 4、5、6，和為 <strong class='text-[#D4AF37]'>15 點</strong>。"
+      },
+      {
+        "title": "步驟二：執行除法運算",
+        "content": "100 ÷ 15 = 6 ... 餘 10。<br/>6 枚骰子最多提供 90 點。<br/>必須再加 1 枚補足剩餘的 10 點。<br/>共需 6 + 1 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>7</strong> 枚。"
+      }
+    ]
+  },
+  "Q17": {
+    "title": "圖形的翻轉與旋轉",
+    "questionText": "圖標依鉛垂軸 l 作翻轉，再以順時針旋轉 90°，接著依鉛垂軸 l 再次作翻轉。最後看起來像什麼？",
+    "questionSvg": "<div class='flex flex-col items-center gap-6 py-6'><div class='bg-white border-2 border-slate-300 p-2 rounded-xl'><svg width='150' height='50' viewBox='0 0 100 40' style='overflow:visible;'><text x='50' y='30' font-family='sans-serif' font-weight='900' font-size='32' text-anchor='middle' fill='#1e293b'>AMT.</text><line x1='50' y1='-5' x2='50' y2='40' stroke='#94a3b8' stroke-width='2' stroke-dasharray='4,2'/><text x='44' y='-5' font-size='12' fill='#94a3b8'>l</text></svg></div><div class='flex gap-4 w-full justify-center flex-wrap'><div class='text-center border-[3px] border-red-500 rounded-lg p-2 bg-red-50'><svg width='60' height='60' viewBox='-50 -50 100 100'><g transform='rotate(-90)'><text x='0' y='2' font-family='sans-serif' font-weight='900' font-size='30' text-anchor='middle' dominant-baseline='central' fill='#1e293b'>AMT.</text></g></svg><p class='font-bold text-red-500 mt-1'>(A)</p></div><div class='text-center border border-gray-300 rounded-lg p-2 bg-white'><svg width='60' height='60' viewBox='-50 -50 100 100'><g transform='scale(1, -1) rotate(-90)'><text x='0' y='2' font-family='sans-serif' font-weight='900' font-size='30' text-anchor='middle' dominant-baseline='central' fill='#1e293b'>AMT.</text></g></svg><p class='text-gray-500 mt-1'>(B)</p></div><div class='text-center border border-gray-300 rounded-lg p-2 bg-white'><svg width='60' height='60' viewBox='-50 -50 100 100'><g transform='rotate(90)'><text x='0' y='2' font-family='sans-serif' font-weight='900' font-size='30' text-anchor='middle' dominant-baseline='central' fill='#1e293b'>AMT.</text></g></svg><p class='text-gray-500 mt-1'>(C)</p></div><div class='text-center border border-gray-300 rounded-lg p-2 bg-white'><svg width='60' height='60' viewBox='-50 -50 100 100'><g transform='rotate(180)'><text x='0' y='2' font-family='sans-serif' font-weight='900' font-size='30' text-anchor='middle' dominant-baseline='central' fill='#1e293b'>AMT.</text></g></svg><p class='text-gray-500 mt-1'>(D)</p></div><div class='text-center border border-gray-300 rounded-lg p-2 bg-white'><svg width='60' height='60' viewBox='-50 -50 100 100'><g transform='scale(1, -1)'><text x='0' y='2' font-family='sans-serif' font-weight='900' font-size='30' text-anchor='middle' dominant-baseline='central' fill='#1e293b'>AMT.</text></g></svg><p class='text-gray-500 mt-1'>(E)</p></div></div></div>",
+    "finalAnswer": "(A)",
+    "steps": [
+      {
+        "title": "步驟一：幾何邏輯簡化",
+        "content": "操作序列：水平翻轉 ➔ 順時針轉 90° ➔ 水平翻轉。<br/>在座標系中，於鏡像空間做「順時針」旋轉，等同於在原始空間做<strong class='text-[#D4AF37]'>「逆時針旋轉」</strong>。"
+      },
+      {
+        "title": "步驟二：得出結論",
+        "content": "等效結果：直接將原圖<strong class='text-[#D4AF37]'>「逆時針旋轉 90°」</strong>。<br/>「AMT.」逆時針轉 90° 後，變成直立字串。<br/>T 在最上，A 在最下，字體朝左，點在左下角。<br/>完全符合 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>圖形 (A)</strong>。"
+      }
+    ]
+  },
+  "Q18": {
+    "title": "方格表邏輯推演 (Tic-Tac-Toe)",
+    "questionText": "方格表填入 x 或 o：每行每列恰有每種記號各三個；連續三個小方格不可相同。請問左下角三格依序為何？",
+    "questionSvg": "<svg viewBox='0 0 240 240' class='w-full h-auto max-h-[280px]'><g stroke='#94a3b8' stroke-width='2' fill='none'><rect x='0' y='0' width='240' height='240' stroke='#1e293b' stroke-width='4'/><path d='M40,0 V240 M80,0 V240 M120,0 V240 M160,0 V240 M200,0 V240'/><path d='M0,40 H240 M0,80 H240 M0,120 H240 M0,160 H240 M0,200 H240'/></g><g font-size='24' font-weight='900' font-family='sans-serif' fill='#1e293b' text-anchor='middle' dominant-baseline='central'><text x='140' y='20'>o</text><text x='20' y='60'>x</text><text x='60' y='100'>o</text><text x='100' y='100'>o</text><text x='140' y='140'>x</text><text x='220' y='140'>x</text><text x='20' y='180'>x</text><text x='100' y='180'>x</text><text x='180' y='180'>o</text><rect x='0' y='200' width='120' height='40' fill='#e0e7ff' opacity='0.6'/><text x='20' y='220' fill='#0ea5e9'>?</text><text x='60' y='220' fill='#0ea5e9'>?</text><text x='100' y='220' fill='#0ea5e9'>?</text></g></svg>",
+    "finalAnswer": "o x o",
+    "steps": [
+      {
+        "title": "步驟一：規律一 (排他原則)",
+        "content": "「不能連續三個相同」。<br/>觀察第 3 列 (R3) 已有 `_ o o _ _ _`。<br/>左右兩側必為 x，故 R3 必為 <strong class='text-[#D4AF37]'>x o o x _ _</strong>。"
+      },
+      {
+        "title": "步驟二：規律二 (數量平衡)",
+        "content": "觀察第 1 行 (C1)，已有 R2=x, R3=x, R5=x。<br/>3 個 x 已滿！故剩下皆為 o。<br/>得出 C1 為 `o x x o x o`。左下角第一格必為 <strong class='text-[#D4AF37]'>o</strong>。<br/>依此推導 C2、C3，可得左下角順序為 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>o, x, o</strong>。"
+      }
+    ]
+  },
+  "Q19": {
+    "title": "交易卡片交換邏輯",
+    "questionText": "小西、小詩、小泰互相見面並交換卡片。每張卡片都恰交換 1 次，且每個人最終擁有的卡片數量與初始相同。<br/>已知小西交換 11 張、小詩交換 8 張、小泰交換 15 張。請問小詩與小泰之間交換了多少張卡片？",
+    "questionSvg": "<svg viewBox='0 0 200 200' class='w-full h-auto max-h-[280px]'><circle cx='100' cy='40' r='30' fill='#e0e7ff' stroke='#4f46e5' stroke-width='3'/><text x='100' y='40' font-size='20' font-weight='bold' fill='#1e293b' text-anchor='middle' dominant-baseline='central'>小西 11</text><circle cx='40' cy='150' r='30' fill='#fef08a' stroke='#ca8a04' stroke-width='3'/><text x='40' y='150' font-size='20' font-weight='bold' fill='#1e293b' text-anchor='middle' dominant-baseline='central'>小詩 8</text><circle cx='160' cy='150' r='30' fill='#fecaca' stroke='#dc2626' stroke-width='3'/><text x='160' y='150' font-size='20' font-weight='bold' fill='#1e293b' text-anchor='middle' dominant-baseline='central'>小泰 15</text><line x1='85' y1='65' x2='55' y2='125' stroke='#94a3b8' stroke-width='4' stroke-dasharray='6,4'/><line x1='115' y1='65' x2='145' y2='125' stroke='#94a3b8' stroke-width='4' stroke-dasharray='6,4'/><line x1='75' y1='150' x2='125' y2='150' stroke='#ef4444' stroke-width='6'/><text x='100' y='135' font-size='24' font-weight='bold' fill='#ef4444' text-anchor='middle'>?</text></svg>",
+    "finalAnswer": "6",
+    "steps": [
+      {
+        "title": "步驟一：計算總交換次數",
+        "content": "每次交換必定牽涉到「兩人各出一張」，因此總交換卡片數必定是總人次的一半。<br/>總交換次數 = (11 + 8 + 15) ÷ 2 = <strong class='text-[#D4AF37]'>17 次</strong>。"
+      },
+      {
+        "title": "步驟二：反向推理",
+        "content": "總共有 17 次交換，其中小西參與了 11 次。<br/>剩下的交換次數 = 17 - 11 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>6 次</strong>。<br/>這 6 次「沒有小西參與」的交換，必定是小詩與小泰兩人之間的交換。"
+      }
+    ]
+  },
+  "Q20": {
+    "title": "幾何面積比例",
+    "questionText": "在正方形 PQRS 內，從每個頂點畫直線與相對邊的中點相連。請問 PQRS 內有幾分之幾被塗上陰影？",
+    "questionSvg": "<svg viewBox='-20 -20 240 240' class='w-full h-auto max-h-[280px]'><rect x='0' y='0' width='200' height='200' fill='#f8fafc' stroke='#1e293b' stroke-width='3'/><polygon points='0,0 100,50 200,0 150,100 200,200 100,150 0,200 50,100' fill='#fecaca' opacity='0.8'/><polygon points='0,200 50,100 0,0' fill='#e0f2fe' opacity='0.9'/><g stroke='#1e293b' stroke-width='2'><line x1='0' y1='0' x2='200' y2='100'/><line x1='0' y1='0' x2='100' y2='200'/><line x1='200' y1='0' x2='0' y2='100'/><line x1='200' y1='0' x2='100' y2='200'/><line x1='200' y1='200' x2='0' y2='100'/><line x1='200' y1='200' x2='100' y2='0'/><line x1='0' y1='200' x2='200' y2='100'/><line x1='0' y1='200' x2='100' y2='0'/></g><line x1='100' y1='0' x2='100' y2='200' stroke='#0ea5e9' stroke-width='3' stroke-dasharray='6,4'/><circle cx='50' cy='100' r='6' fill='#ef4444'/><text x='-15' y='-5' font-size='20' font-weight='bold' fill='#1e293b'>P</text><text x='205' y='-5' font-size='20' font-weight='bold' fill='#1e293b'>Q</text><text x='205' y='215' font-size='20' font-weight='bold' fill='#1e293b'>R</text><text x='-15' y='215' font-size='20' font-weight='bold' fill='#1e293b'>S</text><text x='95' y='-10' font-size='20' font-weight='bold' fill='#0ea5e9'>X</text><text x='95' y='225' font-size='20' font-weight='bold' fill='#0ea5e9'>Y</text><text x='30' y='105' font-size='20' font-weight='bold' fill='#ef4444'>Z</text></svg>",
+    "finalAnswer": "1/2",
+    "steps": [
+      {
+        "title": "步驟一：建立輔助矩形 PXYS",
+        "content": "畫出連接上下中點的線段 XY。觀察左半邊的矩形 <strong class='text-[#D4AF37]'>PXYS</strong>。<br/>原題的實心連線 PY 與 SX 剛好是這個矩形的對角線！交點 <strong class='text-[#D4AF37]'>Z</strong> 正是矩形的中心。"
+      },
+      {
+        "title": "步驟二：計算邊緣空白面積",
+        "content": "左側淺藍色三角形 △SZP，面積是矩形 PXYS 的 1/4，也就是<strong class='text-[#D4AF37]'>整個大正方形的 1/8</strong>。<br/>大正方形四周共有 4 個一模一樣的空白邊緣三角形。<br/>空白總面積 = 4 × (1/8) = <strong class='text-[#D4AF37]'>1/2</strong>。<br/>故中央星形陰影面積佔 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>1/2</strong>。"
+      }
+    ]
+  }
+}
