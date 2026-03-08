@@ -1,0 +1,102 @@
+{
+  "Q16": {
+    "title": "代數：二次方程式與整數根",
+    "questionText": "對於不同的正整數 k 值，方程 x² + kx + 2024 = 0 中 x 有 0、1 或 2 個整數解。<br/>請問有多少個正整數 k 能夠使得上述方程有 2 個整數解？",
+    "questionSvg": "<svg viewBox='0 0 500 220' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><text x='250' y='20' font-family='sans-serif' font-size='16' fill='#1e293b' text-anchor='middle' font-weight='bold'>根與係數關係推導</text><rect x='50' y='40' width='400' height='50' rx='6' fill='#e0f2fe' stroke='#0ea5e9' stroke-width='2'/><foreignObject x='50' y='40' width='400' height='50'><div xmlns='http://www.w3.org/1999/xhtml' style='display:flex; justify-content:center; align-items:center; height:100%; font-size:16px; font-weight:bold; color:#0369a1;'><math xmlns='http://www.w3.org/1998/Math/MathML'><mi>設兩整數根為</mi><mo>&#xA0;</mo><mi>α</mi><mo>,</mo><mo>&#xA0;</mo><mi>β</mi><mo>⇒</mo><mi>α</mi><mi>β</mi><mo>=</mo><mn>2024</mn><mo>&#xA0;</mo><mo>,</mo><mo>&#xA0;</mo><mi>α</mi><mo>+</mo><mi>β</mi><mo>=</mo><mo>-</mo><mi>k</mi></math></div></foreignObject><path d='M 250 90 L 250 115' stroke='#94a3b8' stroke-width='2' fill='none'/><polygon points='245,110 250,115 255,110' fill='#94a3b8'/><rect x='100' y='115' width='300' height='90' rx='6' fill='#f8fafc' stroke='#cbd5e1' stroke-width='2'/><text x='250' y='140' font-family='sans-serif' font-size='15' fill='#ef4444' text-anchor='middle' font-weight='bold'>k 為正整數 ⇒ (α+β) &lt; 0</text><text x='250' y='165' font-family='sans-serif' font-size='14' fill='#334155' text-anchor='middle'>因為 αβ = 2024 &gt; 0，兩人同號</text><text x='250' y='190' font-family='sans-serif' font-size='14' fill='#1e293b' text-anchor='middle' font-weight='bold'>故 α, β 必皆為「負整數」</text></svg>",
+    "finalAnswer": "8",
+    "steps": [
+      {
+        "title": "步驟一：利用根與係數的關係",
+        "content": "設兩整數根為 α, β。由根與係數關係知：αβ = 2024 且 α + β = -k。<br/>因為 k > 0，所以 <strong class='text-[#D4AF37]'>α + β &lt; 0</strong>。又乘積為正，代表兩根皆為負整數。"
+      },
+      {
+        "title": "步驟二：質因數分解與因數個數",
+        "content": "令 α = -a, β = -b (a, b 為正整數)，則 ab = 2024 且 k = a + b。<br/>將 2024 質因數分解：<strong class='text-[#D4AF37]'>2024 = 8 × 253 = 2³ × 11 × 23</strong>。<br/>2024 的正因數個數為 (3+1)(1+1)(1+1) = 4 × 2 × 2 = <strong class='text-[#D4AF37]'>16</strong> 個。"
+      },
+      {
+        "title": "步驟三：計算符合條件的 k 值",
+        "content": "因 2024 不是完全平方數，這 16 個因數可以完美兩兩配對成 <strong class='text-[#D4AF37]'>16 ÷ 2 = 8</strong> 組相異的 (a, b) 乘積組合。<br/>每一組相異的 (a, b) 對應到唯一的一個正整數 k (即 a+b)。因此共有 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>8</strong> 個不同的 k 值。"
+      }
+    ]
+  },
+  "Q17": {
+    "title": "幾何：直線與圓弧的交點面積",
+    "questionText": "在邊長為 2 的正方形中，右下角為圓心畫一四分之一圓弧。另從左側中點連接至右上角，如圖形成一陰影三角形。<br/>請問陰影部分的面積是什麼？",
+    "questionSvg": "<svg viewBox='0 0 250 250' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><g transform='translate(10, 10)'><rect x='30' y='30' width='180' height='180' fill='#f8fafc' stroke='#1e293b' stroke-width='2'/><path d='M 30 210 A 180 180 0 0 1 210 30' fill='none' stroke='#94a3b8' stroke-width='2'/><line x1='30' y1='120' x2='210' y2='30' stroke='#64748b' stroke-width='2' stroke-dasharray='4 4'/><polygon points='66,102 210,30 210,210' fill='#38bdf8' opacity='0.6' stroke='#0ea5e9' stroke-width='2'/><line x1='210' y1='210' x2='66' y2='102' stroke='#ef4444' stroke-width='2' stroke-dasharray='4 3'/><text x='145' y='145' font-family='sans-serif' font-size='14' fill='#ef4444' font-weight='bold' transform='rotate(36.8, 145, 145)'>半徑 = 2</text><circle cx='66' cy='102' r='5' fill='#0284c7'/><text x='50' y='95' font-family='sans-serif' font-size='15' fill='#0284c7' font-weight='bold'>P</text><text x='215' y='225' font-family='sans-serif' font-size='14' fill='#1e293b' font-weight='bold'>C(2,0)</text><text x='215' y='25' font-family='sans-serif' font-size='14' fill='#1e293b' font-weight='bold'>B(2,2)</text><text x='-5' y='125' font-family='sans-serif' font-size='14' fill='#1e293b' font-weight='bold'>M(0,1)</text><line x1='66' y1='102' x2='210' y2='102' stroke='#ef4444' stroke-width='1.5' stroke-dasharray='2 2'/><text x='110' y='95' font-family='sans-serif' font-size='14' fill='#ef4444' font-weight='bold'>高 = 1.6</text></g></svg>",
+    "finalAnswer": "8 / 5",
+    "steps": [
+      {
+        "title": "步驟一：建立座標系",
+        "content": "設正方形左下角為原點 (0, 0)，右下角為圓心 C(2, 0)。<br/>圓弧方程式為：<strong class='text-[#D4AF37]'>(x - 2)² + y² = 4</strong>。<br/>連線是從左側中點 M(0, 1) 到右上角 B(2, 2) 的直線，方程式為 <strong class='text-[#D4AF37]'>y = 1/2 x + 1</strong>。"
+      },
+      {
+        "title": "步驟二：求解交點 P 座標",
+        "content": "將直線代入圓方程式：(x - 2)² + (1/2 x + 1)² = 4<br/>展開化簡：(5/4)x² - 3x + 1 = 0 ➔ (5x - 2)(x - 2) = 0<br/>除 x = 2 外，交點 P 的 x 座標為 <strong class='text-[#D4AF37]'>x = 0.4</strong>。"
+      },
+      {
+        "title": "步驟三：計算三角形面積",
+        "content": "陰影三角形的底邊為右側邊界 BC，長度為 2。<br/>相對應的「高」為正方形寬度減去 P 點的 x 座標：高 h = 2 - 0.4 = <strong class='text-[#D4AF37]'>1.6</strong>。<br/>面積 = 1/2 × 底 × 高 = 1/2 × 2 × 1.6 = 1.6。<br/>將 1.6 轉換為分數，面積為 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>8 / 5</strong>。"
+      }
+    ]
+  },
+  "Q18": {
+    "title": "統計：中位數的變動分析",
+    "questionText": "右圖為 10 個家庭的點狀圖，包含兩條分別表示 x 軸(人數)與 y 軸(設備數量)的「中位線」。<br/>若再額外加入第 11 個點，請問圖中兩條中位線將有何變化？",
+    "questionSvg": "<svg viewBox='0 0 360 320' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><g transform='translate(10, 20)'><g stroke='#e2e8f0' stroke-width='1'><line x1='40' y1='220' x2='300' y2='220'/><line x1='40' y1='180' x2='300' y2='180'/><line x1='40' y1='140' x2='300' y2='140'/><line x1='40' y1='100' x2='300' y2='100'/><line x1='40' y1='60' x2='300' y2='60'/><line x1='40' y1='20' x2='300' y2='20'/><line x1='80' y1='260' x2='80' y2='20'/><line x1='120' y1='260' x2='120' y2='20'/><line x1='160' y1='260' x2='160' y2='20'/><line x1='200' y1='260' x2='200' y2='20'/><line x1='240' y1='260' x2='240' y2='20'/><line x1='280' y1='260' x2='280' y2='20'/></g><line x1='40' y1='260' x2='320' y2='260' stroke='#1e293b' stroke-width='2'/><line x1='40' y1='20' x2='40' y2='260' stroke='#1e293b' stroke-width='2'/><text x='325' y='265' font-family='sans-serif' font-size='14' fill='#1e293b' font-weight='bold'>人數</text><text x='15' y='15' font-family='sans-serif' font-size='14' fill='#1e293b' font-weight='bold'>設備</text><line x1='200' y1='20' x2='200' y2='260' stroke='#ef4444' stroke-width='2' stroke-dasharray='6 4'/><line x1='40' y1='140' x2='300' y2='140' stroke='#ef4444' stroke-width='2' stroke-dasharray='6 4'/><text x='205' y='30' font-family='sans-serif' font-size='12' fill='#ef4444' font-weight='bold'>x 中線</text><text x='260' y='135' font-family='sans-serif' font-size='12' fill='#ef4444' font-weight='bold'>y 中線</text><g fill='#3b82f6'><circle cx='80' cy='180' r='5'/><circle cx='120' cy='180' r='5'/><circle cx='160' cy='140' r='5'/><circle cx='160' cy='100' r='5'/><circle cx='200' cy='20' r='5'/><circle cx='240' cy='180' r='5'/><circle cx='240' cy='60' r='5'/><circle cx='280' cy='140' r='5'/><circle cx='280' cy='20' r='5'/></g><circle cx='200' cy='140' r='7' fill='#ef4444'/></g></svg>",
+    "finalAnswer": "兩條線都不會移動",
+    "steps": [
+      {
+        "title": "步驟一：分析 N=10 時的中位數定義",
+        "content": "當資料數 N = 10，中位數是由排序後的第 5 與第 6 個數值的平均決定。<br/>觀察圖中資料點：X 軸中位線(人數 x=4) 穿過 <strong class='text-[#D4AF37]'>2</strong> 個點；Y 軸中位線(設備 y=3) 穿過 <strong class='text-[#D4AF37]'>3</strong> 個點。"
+      },
+      {
+        "title": "步驟二：清點線兩側的資料分佈",
+        "content": "垂直線(x=4)的左側有 4 個點，右側有 4 個點。代表第 5 與第 6 名的值<strong class='text-[#D4AF37]'>都是 4</strong>。<br/>水平線(y=3)的下方有 3 個點，上方有 4 個點，線上有 3 個點。代表第 4, 5, 6 名的值<strong class='text-[#D4AF37]'>都是 3</strong>。"
+      },
+      {
+        "title": "步驟三：加入第 11 個點的影響",
+        "content": "加入一個新點後，總數變為 N = 11。新的中位數將直接對應排序後的<strong class='text-[#D4AF37]'>第 6 個數值</strong>。<br/>由於原先的第 5 與第 6 名數值在 X 軸都是 4，在 Y 軸都是 3。<br/>不論新點加在哪一側，推擠後新的第 6 名依然會停留在原本的中位線上！因此 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>兩條線都不會移動</strong>。"
+      }
+    ]
+  },
+  "Q19": {
+    "title": "數論：日曆與閏年週期運算",
+    "questionText": "已知 2024 年二月有 5 個星期四。<br/>請問下一次出現「二月有 5 個星期四」是哪一年？",
+    "questionSvg": "<svg viewBox='0 0 500 200' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><rect x='20' y='10' width='460' height='180' rx='8' fill='#f8fafc' stroke='#cbd5e1' stroke-width='2'/><text x='250' y='35' font-family='sans-serif' font-size='16' fill='#1e293b' text-anchor='middle' font-weight='bold'>每 4 年(一閏)的星期平移規律</text><line x1='50' y1='80' x2='450' y2='80' stroke='#94a3b8' stroke-width='4' stroke-linecap='round'/><circle cx='80' cy='80' r='8' fill='#ef4444'/><text x='80' y='60' font-family='sans-serif' font-size='15' fill='#ef4444' text-anchor='middle' font-weight='bold'>2024</text><text x='80' y='105' font-family='sans-serif' font-size='14' fill='#1e293b' text-anchor='middle'>星期四</text><circle cx='170' cy='80' r='6' fill='#0ea5e9'/><text x='170' y='60' font-family='sans-serif' font-size='14' fill='#0369a1' text-anchor='middle' font-weight='bold'>2028</text><text x='170' y='105' font-family='sans-serif' font-size='13' fill='#64748b' text-anchor='middle'>星期二</text><path d='M 80 120 Q 125 150 170 120' fill='none' stroke='#cbd5e1' stroke-width='2'/><text x='125' y='150' font-family='sans-serif' font-size='12' fill='#64748b' text-anchor='middle'>+5 天</text><circle cx='260' cy='80' r='6' fill='#0ea5e9'/><text x='260' y='60' font-family='sans-serif' font-size='14' fill='#0369a1' text-anchor='middle' font-weight='bold'>2032</text><text x='260' y='105' font-family='sans-serif' font-size='13' fill='#64748b' text-anchor='middle'>星期日</text><path d='M 170 120 Q 215 150 260 120' fill='none' stroke='#cbd5e1' stroke-width='2'/><text x='215' y='150' font-family='sans-serif' font-size='12' fill='#64748b' text-anchor='middle'>+5 天</text><text x='315' y='85' font-family='sans-serif' font-size='20' fill='#94a3b8' text-anchor='middle' font-weight='bold'>...</text><circle cx='400' cy='80' r='8' fill='#10b981'/><text x='400' y='60' font-family='sans-serif' font-size='15' fill='#10b981' text-anchor='middle' font-weight='bold'>2052</text><text x='400' y='105' font-family='sans-serif' font-size='14' fill='#1e293b' text-anchor='middle'>星期四</text><path d='M 260 120 Q 330 160 400 120' fill='none' stroke='#cbd5e1' stroke-width='2' stroke-dasharray='4 4'/><text x='330' y='155' font-family='sans-serif' font-size='12' fill='#64748b' text-anchor='middle'>共累積 35 天 (5週)</text></svg>",
+    "finalAnswer": "2052",
+    "steps": [
+      {
+        "title": "步驟一：確立初始條件",
+        "content": "2024 年是閏年(29天)。二月要有 5 個同日，代表 2 月 1 日必須剛好是該星期。<br/>因此，2024 年 2 月 1 日是<strong class='text-[#D4AF37]'>星期四</strong>。要尋找下一次，該年也必須是閏年，且 2 月 1 日同樣為星期四。"
+      },
+      {
+        "title": "步驟二：計算每四年的平移天數",
+        "content": "我們只需檢查閏年 (間隔 4 年)。這 4 年中包含 3 個平年與 1 個閏年。<br/>平年 365 天 ≡ 1 (mod 7)，閏年 366 天 ≡ 2 (mod 7)。<br/>經過 4 年，星期將會平移：1 × 3 + 2 × 1 = <strong class='text-[#D4AF37]'>5 天</strong>。"
+      },
+      {
+        "title": "步驟三：利用同餘尋找週期",
+        "content": "設經過 k 個「4年週期」，平移總天數為 5k。<br/>要讓星期重複，總天數必須是 7 的倍數：<strong class='text-[#D4AF37]'>5k ≡ 0 (mod 7)</strong>。<br/>最小正整數解為 k = 7。<br/>總共經過時間 = 4 × 7 = 28 年。<br/>2024 + 28 年 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>2052</strong> 年。"
+      }
+    ]
+  },
+  "Q20": {
+    "title": "解析幾何：直線斜率與相似對稱",
+    "questionText": "小荷眼高 1.5m (x=0)，測量桿在前方 5m 處，樹在對岸距離 x=D 處，高為 H。<br/>看樹頂視線交標桿於 1.8m；看倒影(高度 -H)視線交標桿於 1.1m。求樹高 H？",
+    "questionSvg": "<svg viewBox='0 0 550 400' preserveAspectRatio='xMidYMid meet' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><g transform='translate(10, 0)'><rect x='0' y='240' width='530' height='150' fill='#e0f2fe' opacity='0.5'/><line x1='0' y1='240' x2='530' y2='240' stroke='#3b82f6' stroke-width='2'/><text x='500' y='235' font-family='sans-serif' font-size='14' fill='#0284c7' font-weight='bold'>水面 0m</text><line x1='160' y1='100' x2='160' y2='240' stroke='#1e293b' stroke-width='4'/><line x1='460' y1='100' x2='460' y2='240' stroke='#10b981' stroke-width='8'/><line x1='460' y1='240' x2='460' y2='380' stroke='#34d399' stroke-width='8' stroke-dasharray='8 4'/><text x='460' y='90' font-family='sans-serif' font-size='14' fill='#059669' font-weight='bold' text-anchor='middle'>樹頂 H</text><text x='460' y='395' font-family='sans-serif' font-size='14' fill='#059669' font-weight='bold' text-anchor='middle'>倒影 -H</text><circle cx='60' cy='180' r='5' fill='#ef4444'/><text x='50' y='175' font-family='sans-serif' font-size='14' fill='#ef4444' font-weight='bold' text-anchor='end'>眼(1.5m)</text><line x1='60' y1='180' x2='460' y2='100' stroke='#ef4444' stroke-width='2' stroke-dasharray='4 2'/><circle cx='160' cy='160' r='4' fill='#1e293b'/><line x1='160' y1='160' x2='185' y2='160' stroke='#64748b' stroke-dasharray='2 2'/><text x='190' y='165' font-family='sans-serif' font-size='13' fill='#1e293b' font-weight='bold'>1.8m</text><line x1='60' y1='180' x2='460' y2='380' stroke='#ef4444' stroke-width='2' stroke-dasharray='4 2'/><circle cx='160' cy='230' r='4' fill='#1e293b'/><line x1='160' y1='230' x2='185' y2='230' stroke='#64748b' stroke-dasharray='2 2'/><text x='190' y='235' font-family='sans-serif' font-size='13' fill='#1e293b' font-weight='bold'>1.1m</text><path d='M 60 260 L 60 275 L 160 275 L 160 260' fill='none' stroke='#64748b' stroke-width='1.5'/><text x='110' y='295' font-family='sans-serif' font-size='13' fill='#64748b' font-weight='bold' text-anchor='middle'>5m</text><path d='M 60 310 L 60 325 L 460 325 L 460 310' fill='none' stroke='#64748b' stroke-width='1.5'/><text x='260' y='345' font-family='sans-serif' font-size='13' fill='#64748b' font-weight='bold' text-anchor='middle'>水平總距離 D</text><text x='260' y='20' font-family='sans-serif' font-size='12' fill='#94a3b8' font-weight='bold' text-anchor='middle'>(空間視線示意圖，依比例幾何縮放繪製)</text></g></svg>",
+    "finalAnswer": "10.5",
+    "steps": [
+      {
+        "title": "步驟一：建立座標系",
+        "content": "設水面為 y=0。小荷眼睛座標 (0, 1.5)。<br/>樹在 x=D 處，頂部座標為 (D, H)，倒影因為對稱於水面，位於 <strong class='text-[#D4AF37]'>(D, -H)</strong>。"
+      },
+      {
+        "title": "步驟二：計算兩條視線斜率",
+        "content": "標桿在 x=5。<br/>視線1 (看樹頂) 通過 (5, 1.8)，斜率 m₁ = (1.8 - 1.5) / 5 = <strong class='text-[#D4AF37]'>0.06</strong>。<br/>視線2 (看倒影) 通過 (5, 1.1)，斜率 m₂ = (1.1 - 1.5) / 5 = <strong class='text-[#D4AF37]'>-0.08</strong>。"
+      },
+      {
+        "title": "步驟三：利用斜率推算未知數",
+        "content": "對於樹頂：H = 1.5 + 0.06D<br/>對於倒影：-H = 1.5 - 0.08D ➔ H = 0.08D - 1.5<br/>兩式相等等：1.5 + 0.06D = 0.08D - 1.5 ➔ 0.02D = 3 ➔ <strong class='text-[#D4AF37]'>D = 150 (m)</strong>。<br/>將 D 代回方程：H = 1.5 + 0.06(150) = 1.5 + 9 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>10.5</strong>。"
+      }
+    ]
+  }
+}
