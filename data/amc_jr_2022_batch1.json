@@ -1,0 +1,82 @@
+{
+  "Q01": {
+    "title": "菱形周長計算",
+    "questionText": "請問這個菱形的周長是什麼？",
+    "questionSvg": "<svg viewBox='0 0 150 150' class='w-full h-auto max-h-[280px]'><polygon points='75,10 140,75 75,140 10,75' fill='#fff' stroke='#1e293b' stroke-width='4'/><text x='35' y='45' font-family='sans-serif' font-size='18' font-weight='bold' fill='#1e293b' transform='rotate(-45 35 45)'>9 cm</text></svg>",
+    "finalAnswer": "36 cm",
+    "steps": [
+      {
+        "title": "步驟一：菱形的幾何性質",
+        "content": "菱形的四條邊長度<strong class='text-[#D4AF37]'>完全相等</strong>。"
+      },
+      {
+        "title": "步驟二：代入計算",
+        "content": "已知一邊長為 9 cm。<br/>周長 = 9 × 4 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>36 cm</strong>。"
+      }
+    ]
+  },
+  "Q02": {
+    "title": "氣溫的負數運算",
+    "questionText": "在山上的氣溫為 4°C，但是經過一晚後下降了 7°C。請問清晨時的氣溫是什麼？",
+    "questionSvg": "<div class='py-20 text-center text-[#D4AF37] text-lg font-serif tracking-widest'>生活情境推演</div>",
+    "finalAnswer": "-3°C",
+    "steps": [
+      {
+        "title": "步驟一：列出減法算式",
+        "content": "起始氣溫為 4°C，下降 7°C 代表<strong class='text-[#D4AF37]'>減去 7</strong>。"
+      },
+      {
+        "title": "步驟二：執行計算",
+        "content": "4 - 7 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>-3°C</strong>。"
+      }
+    ]
+  },
+  "Q03": {
+    "title": "基礎乘法運算",
+    "questionText": "請問 20 × 22 的乘積是什麼？",
+    "questionSvg": "<div class='py-20 text-center text-[40px] font-bold text-[#0ea5e9] tracking-widest'>20 × 22</div>",
+    "finalAnswer": "440",
+    "steps": [
+      {
+        "title": "步驟一：拆解倍數",
+        "content": "利用乘法律：20 × 22 = <strong class='text-[#D4AF37]'>2 × 10 × 22</strong>"
+      },
+      {
+        "title": "步驟二：心算步驟",
+        "content": "先算 2 × 22 = 44。<br/>再乘以 10，得 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>440</strong>。"
+      }
+    ]
+  },
+  "Q04": {
+    "title": "機率與面積比例",
+    "questionText": "哪一項轉盤轉到紅色的機會是白色的兩倍？",
+    "questionSvg": "<div class='flex flex-wrap justify-center gap-6 py-6'><div class='text-center'><svg width='65' height='65' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='white' stroke='#334155' stroke-width='2'/><path d='M50,50 L50,2 A48,48 0 0,1 98,50 Z' fill='#ef4444'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155'/><line x1='2' y1='50' x2='98' y2='50' stroke='#334155'/><circle cx='50' cy='50' r='4' fill='#1e293b'/><line x1='50' y1='50' x2='50' y2='15' stroke='#1e293b' stroke-width='3' transform='rotate(30 50 50)'/></svg><p class='text-sm font-bold mt-2'>(A)</p></div><div class='text-center'><svg width='65' height='65' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='white' stroke='#334155' stroke-width='2'/><path d='M50,50 L50,2 A48,48 0 0,1 91.6,74 Z' fill='#ef4444'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155' transform='rotate(60 50 50)'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155' transform='rotate(120 50 50)'/><circle cx='50' cy='50' r='4' fill='#1e293b'/><line x1='50' y1='50' x2='50' y2='15' stroke='#1e293b' stroke-width='3' transform='rotate(45 50 50)'/></svg><p class='text-sm font-bold mt-2'>(B)</p></div><div class='text-center'><svg width='65' height='65' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='white' stroke='#334155' stroke-width='2'/><path d='M50,50 L50,2 A48,48 0 0,1 50,98 Z' fill='#ef4444'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155'/><line x1='2' y1='50' x2='98' y2='50' stroke='#334155'/><circle cx='50' cy='50' r='4' fill='#1e293b'/><line x1='50' y1='50' x2='50' y2='15' stroke='#1e293b' stroke-width='3' transform='rotate(15 50 50)'/></svg><p class='text-sm font-bold mt-2'>(C)</p></div><div class='text-center'><svg width='65' height='65' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='white' stroke='#ef4444' stroke-width='4'/><path d='M50,50 L50,2 A48,48 0 1,1 8.4,74 Z' fill='#ef4444'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155' transform='rotate(60 50 50)'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155' transform='rotate(120 50 50)'/><circle cx='50' cy='50' r='4' fill='#1e293b'/><line x1='50' y1='50' x2='50' y2='15' stroke='#1e293b' stroke-width='3' transform='rotate(30 50 50)'/></svg><p class='text-sm font-bold mt-2 text-red-500'>(D)</p></div><div class='text-center'><svg width='65' height='65' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='white' stroke='#334155' stroke-width='2'/><path d='M50,50 L50,2 A48,48 0 1,1 2,50 Z' fill='#ef4444'/><line x1='50' y1='2' x2='50' y2='98' stroke='#334155'/><line x1='2' y1='50' x2='98' y2='50' stroke='#334155'/><circle cx='50' cy='50' r='4' fill='#1e293b'/><line x1='50' y1='50' x2='50' y2='15' stroke='#1e293b' stroke-width='3' transform='rotate(60 50 50)'/></svg><p class='text-sm font-bold mt-2'>(E)</p></div></div>",
+    "finalAnswer": "(D)",
+    "steps": [
+      {
+        "title": "步驟一：轉化題目條件",
+        "content": "紅色機會是白色的 2 倍，代表：<strong class='text-[#D4AF37]'>紅色面積 : 白色面積 = 2 : 1</strong>。"
+      },
+      {
+        "title": "步驟二：計算紅色的佔比",
+        "content": "總份數 = 2 + 1 = 3。<br/>紅色佔全體的 <strong class='text-[#D4AF37]'>2 / 3</strong>。<br/>觀察圖形，(D) 選項為 6 等分且紅色佔 4 份（4/6 = 2/3）。故選 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>(D)</strong>。"
+      }
+    ]
+  },
+  "Q05": {
+    "title": "時間的區間計算",
+    "questionText": "羅老師的音樂課從 4:28 pm 開始，於 5:05 pm 結束。請問這堂課共歷時多久？",
+    "questionSvg": "<div class='py-20 text-center text-[#D4AF37] text-lg font-serif tracking-widest'>生活時間計算</div>",
+    "finalAnswer": "37 分鐘",
+    "steps": [
+      {
+        "title": "步驟一：分段計算至整點",
+        "content": "4:28 pm 到 5:00 pm：<br/>60 - 28 = <strong class='text-[#D4AF37]'>32 分鐘</strong>。"
+      },
+      {
+        "title": "步驟二：整點後計算",
+        "content": "5:00 pm 到 5:05 pm：共 5 分鐘。<br/>總歷時：32 + 5 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>37 分鐘</strong>。"
+      }
+    ]
+  }
+}
