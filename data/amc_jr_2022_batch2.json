@@ -1,0 +1,86 @@
+{
+  "Q06": {
+    "title": "幾何面積比例",
+    "questionText": "請問右圖正方形的幾分之幾被塗上陰影？",
+    "questionSvg": "<svg viewBox='0 0 140 140' class='w-full h-auto max-h-[280px]'><rect x='20' y='20' width='100' height='100' fill='white' stroke='#1e293b' stroke-width='2'/><polygon points='20,20 20,120 70,120' fill='#0ea5e9' stroke='#1e293b' stroke-width='2'/><text x='70' y='14' font-size='16' font-weight='bold' text-anchor='middle'>2</text><text x='128' y='70' font-size='16' font-weight='bold'>2</text><text x='8' y='70' font-size='16' font-weight='bold'>2</text><text x='45' y='136' font-size='16' font-weight='bold' text-anchor='middle'>1</text></svg>",
+    "finalAnswer": "1/4",
+    "steps": [
+      {
+        "title": "步驟一：正方形總面積",
+        "content": "邊長為 2。<br/>總面積 = 2 × 2 = <strong class='text-[#D4AF37]'>4</strong>。"
+      },
+      {
+        "title": "步驟二：陰影三角形面積",
+        "content": "底為 1，高為 2 (正方形邊長)。<br/>三角形面積 = (1 × 2) ÷ 2 = <strong class='text-[#D4AF37]'>1</strong>。<br/>佔比：1 / 4。選擇 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>(B)</strong>。"
+      }
+    ]
+  },
+  "Q07": {
+    "title": "指數與減法運算",
+    "questionText": "請問算式 10³ - 11² 的值是什麼？",
+    "questionSvg": "<div class='py-20 text-center text-[40px] font-bold text-[#0ea5e9] tracking-widest'>10³ - 11²</div>",
+    "finalAnswer": "879",
+    "steps": [
+      {
+        "title": "步驟一：展開指數",
+        "content": "10³ = 10 × 10 × 10 = <strong class='text-[#D4AF37]'>1000</strong><br/>11² = 11 × 11 = <strong class='text-[#D4AF37]'>121</strong>"
+      },
+      {
+        "title": "步驟二：執行減法",
+        "content": "1000 - 121 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>879</strong>"
+      }
+    ]
+  },
+  "Q08": {
+    "title": "分數在數線上的位置",
+    "questionText": "請問以下哪一個選項內的分數在數線上介於 4 與 5 之間？",
+    "questionSvg": "<div class='flex flex-col items-center gap-4 py-8 text-xl font-bold text-gray-400'><div>(A) 7 / 2</div><div>(B) 15 / 4</div><div>(C) 16 / 5</div><div class='text-[#D4AF37]'>(D) 17 / 4</div><div>(E) 18 / 5</div></div>",
+    "finalAnswer": "17 / 4",
+    "steps": [
+      {
+        "title": "步驟一：將假分數化為小數",
+        "content": "(A) 7 ÷ 2 = 3.5<br/>(B) 15 ÷ 4 = 3.75<br/>(C) 16 ÷ 5 = 3.2<br/><strong class='text-[#D4AF37]'>(D) 17 ÷ 4 = 4.25</strong><br/>(E) 18 ÷ 5 = 3.6"
+      },
+      {
+        "title": "步驟二：確認範圍",
+        "content": "只有 4.25 落在 4 與 5 之間。故選 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>(D)</strong>。"
+      }
+    ]
+  },
+  "Q09": {
+    "title": "等腰三角形角度計算",
+    "questionText": "在圖中的三角形 PQR 中，PQ = PR 且 ∠QPR = 48°。請問 ∠PQR 是什麼？",
+    "questionSvg": "<svg viewBox='0 0 200 200' class='w-full h-auto max-h-[280px]'><polygon points='100,45 35,175 165,175' fill='#fff' stroke='#1e293b' stroke-width='3'/><text x='100' y='25' font-size='24' font-weight='900' fill='#1e293b' text-anchor='middle'>P</text><text x='20' y='185' font-size='24' font-weight='900' fill='#1e293b' text-anchor='middle'>Q</text><text x='180' y='185' font-size='24' font-weight='900' fill='#1e293b' text-anchor='middle'>R</text><path d='M 85 75 A 30 30 0 0 0 115 75' fill='none' stroke='#1e293b' stroke-width='2'/><text x='100' y='95' font-size='20' font-weight='700' fill='#1e293b' text-anchor='middle'>48°</text><line x1='58' y1='105' x2='72' y2='119' stroke='#0ea5e9' stroke-width='4'/><line x1='128' y1='119' x2='142' y2='105' stroke='#0ea5e9' stroke-width='4'/></svg>",
+    "finalAnswer": "66°",
+    "steps": [
+      {
+        "title": "步驟一：性質：底角相等",
+        "content": "因 PQ = PR，三角形 PQR 為等腰三角形。<br/>故底角 <strong class='text-[#D4AF37]'>∠PQR = ∠PRQ</strong>。"
+      },
+      {
+        "title": "步驟二：內角和定理",
+        "content": "三角形內角和 = 180°。<br/>兩底角之和 = 180° - 48° = <strong class='text-[#D4AF37]'>132°</strong>。<br/>∠PQR = 132° ÷ 2 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>66°</strong>。"
+      }
+    ]
+  },
+  "Q10": {
+    "title": "時間單位的換算",
+    "questionText": "請問在星期日中午之後的「四分之一個星期」是星期幾的幾點鐘？",
+    "questionSvg": "<div class='py-20 text-center text-[#D4AF37] text-lg font-serif tracking-widest'>時間推演邏輯</div>",
+    "finalAnswer": "星期二上午 6 點",
+    "steps": [
+      {
+        "title": "步驟一：計算一週總時數",
+        "content": "1 星期 = 7 天 = 7 × 24 = <strong class='text-[#D4AF37]'>168 小時</strong>。"
+      },
+      {
+        "title": "步驟二：求四分之一時間",
+        "content": "168 ÷ 4 = 42 小時。<br/>這等於 <strong class='text-[#D4AF37]'>1 天 (24小時) 再加 18 小時</strong>。"
+      },
+      {
+        "title": "步驟三：疊加時間",
+        "content": "星期日中午 + 1 天 = 星期一中午。<br/>星期一中午 + 18 小時 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>星期二上午 6 點</strong>。"
+      }
+    ]
+  }
+}
