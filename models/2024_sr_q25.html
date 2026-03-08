@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Q25 立體幾何 360° 互動模型</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 0; background-color: #0f172a; font-family: 'Noto Sans TC', sans-serif; overflow: hidden; }
+        
+        /* 玻璃擬態材質 */
+        .glass-panel { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(16px); }
+        
+        /* 3D 互動區專用設定 */
+        #canvas-container { cursor: grab; }
+        #canvas-container:active { cursor: grabbing; }
+        
+        math { font-size: 1.1em; color: #38bdf8; }
+        
+        /* 讓 SVG 支援 3D 深度錯覺與平滑過渡 */
+        polygon, circle, polyline { transition: fill 0.3s ease-out, stroke-width 0.3s; }
+
+        /* 按鈕切換動畫 */
+        .mode-btn { transition: all 0.2s ease-in-out; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-200 h-screen w-screen flex flex-col md:flex-row">
+
+    <!-- 左側 / 上方：資訊面板與控制按鈕 -->
+    <div class="w-full md:w-[400px] lg:w-[450px] max-h-[45vh] md:max-h-screen p-6 md:p-10 glass-panel z-10 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.5)] border-b md:border-b-0 md:border-r border-white/10 overflow-y-auto flex-shrink-0">
+        
+        <div class="flex flex-col gap-3 mb-4">
+            <span class="bg-sky-500 text-slate-900 font-bold px-3 py-1 rounded-lg text-sm w-max">Q25 空間幾何解析</span>
+            <h1 class="text-2xl md:text-3xl font-bold text-white leading-tight">四面體與內切球<br>3D 互動模型</h1>
+        </div>
+        
+        <!-- 視角切換控制區 -->
+        <div class="flex flex-col gap-2 mb-6 bg-slate-900/50 p-2 rounded-xl border border-slate-700/50">
+            <button id="btn-slice" onclick="setMode('slice')" class="mode-btn w-full py-2.5 rounded-lg font-bold text-sm text-white bg-sky-600 shadow-lg shadow-sky-900/50 border border-sky-400">
+                🔍 剖面解析模式 (單球 + 截面)
+            </button>
+            <button id="btn-full" onclick="setMode('full')" class="mode-btn w-full py-2.5 rounded-lg font-bold text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-600">
+                🧊 完整對稱模式 (四球)
+            </button>
+        </div>
+        
+        <div class="text-slate-300 text-sm leading-relaxed space-y-3 mb-6">
+            <p>
+                <strong class="text-white">拖曳畫面即可 360° 旋轉視角。</strong>
+            </p>
+            <p id="desc-text" class="transition-opacity duration-300">
+                透過黃色的中心垂直剖面，我們可以清楚看見：能夠容納最大球體的空間，實際上就是圓柱半徑、圓柱高與四面體斜面所構成的<strong class="text-red-400">「直角三角形」空隙</strong>。紅色的虛線標示了這個決定性的直角三角形！
+            </p>
+        </div>
+        
+        <!-- 公式區塊 -->
+        <div class="bg-slate-900/80 rounded-xl p-4 border border-slate-700 mt-auto">
+            <div class="text-xs text-slate-400 mb-2">截面直角三角形內切圓 (最大球體直徑)：</div>
+            <div class="font-bold text-lg text-center tracking-wider">
+                <math xmlns="http://www.w3.org/1998/Math/MathML">
+                    <mi>D</mi><mo>=</mo><mn>1</mn><mo>+</mo><msqrt><mn>2</mn></msqrt><mo>-</mo><msqrt><mn>3</mn></msqrt>
+                </math>
+            </div>
+        </div>
+    </div>
+
+    <!-- 右側 / 下方：3D 渲染畫布 -->
+    <div id="canvas-container" class="flex-1 relative touch-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-800 to-slate-950 flex justify-center items-center">
+        
+        <svg id="scene" viewBox="-400 -400 800 800" preserveAspectRatio="xMidYMid meet" class="w-full h-full max-w-[800px] max-h-[800px]">
+            <defs>
+                <!-- 球體的立體漸層效果 -->
+                <radialGradient id="sphereGrad" cx="30%" cy="30%" r="70%">
+                    <stop offset="0%" stop-color="#fca5a5" />
+                    <stop offset="70%" stop-color="#ef4444" />
+                    <stop offset="100%" stop-color="#991b1b" />
+                </radialGradient>
+            </defs>
+            <g id="renderGroup"></g>
+        </svg>
+
+        <div class="absolute bottom-6 left-0 right-0 flex justify-center pointer-events-none">
+            <div class="bg-slate-800/80 backdrop-blur-sm border border-slate-600/50 px-5 py-2.5 rounded-full flex items-center gap-2 shadow-lg animate-bounce text-sky-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+                <span class="text-sm font-bold tracking-wide">拖曳畫面旋轉視角</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 數學常數與幾何定義 ---
+        const SCALE = 160; 
+        const R = 1; 
+        const H = Math.sqrt(2); 
+        const SEGMENTS = 36; 
+        const r_sph = (1 + Math.sqrt(2) - Math.sqrt(3)) / 2;
+
+        // 四面體頂點 (頂部直徑在 x 軸，底部直徑在 z 軸)
+        const t1 = { x: 1, y: -H/2, z: 0 };
+        const t2 = { x: -1, y: -H/2, z: 0 };
+        const t3 = { x: 0, y: H/2, z: 1 };
+        const t4 = { x: 0, y: H/2, z: -1 };
+
+        let faces = [];
+        let currentMode = 'slice'; // 預設為剖面模式
+
+        // 動態建構 3D 場景內容
+        function buildScene() {
+            faces = [];
+
+            // 1. 四面體的 4 個面 (依照模式調整透明度，剖面模式時讓四面體變透明凸顯切面)
+            let tetAlpha = currentMode === 'slice' ? 0.15 : 0.6;
+            faces.push({ type: 'poly', pts: [t1, t2, t3], fill: `rgba(56, 189, 248, ${tetAlpha})`, stroke: '#38bdf8', strokeWidth: 1 });
+            faces.push({ type: 'poly', pts: [t1, t2, t4], fill: `rgba(14, 165, 233, ${tetAlpha})`, stroke: '#38bdf8', strokeWidth: 1 });
+            faces.push({ type: 'poly', pts: [t1, t3, t4], fill: `rgba(2, 132, 199, ${tetAlpha})`, stroke: '#38bdf8', strokeWidth: 1 });
+            faces.push({ type: 'poly', pts: [t2, t3, t4], fill: `rgba(3, 105, 161, ${tetAlpha})`, stroke: '#38bdf8', strokeWidth: 1 });
+
+            // 2. 圓柱體
+            const cyl_top = [];
+            const cyl_bot = [];
+            for(let i=0; i<SEGMENTS; i++) {
+                let theta = (i / SEGMENTS) * 2 * Math.PI;
+                cyl_top.push({ x: Math.cos(theta), y: -H/2, z: Math.sin(theta) });
+                cyl_bot.push({ x: Math.cos(theta), y: H/2, z: Math.sin(theta) });
+            }
+
+            for(let i=0; i<SEGMENTS; i++) {
+                let p1 = cyl_top[i];
+                let p2 = cyl_top[(i+1)%SEGMENTS];
+                let p3 = cyl_bot[(i+1)%SEGMENTS];
+                let p4 = cyl_bot[i];
+                let alpha = 0.03 + 0.06 * Math.sin(i / SEGMENTS * 4 * Math.PI);
+                faces.push({ type: 'poly', pts: [p1, p2, p3, p4], fill: `rgba(226, 232, 240, ${alpha})`, stroke: 'rgba(148, 163, 184, 0.15)', strokeWidth: 1 });
+            }
+            faces.push({ type: 'poly', pts: cyl_top, fill: 'rgba(255,255,255,0.02)', stroke: '#cbd5e1', strokeWidth: 2 });
+            faces.push({ type: 'poly', pts: cyl_bot, fill: 'rgba(255,255,255,0.02)', stroke: '#cbd5e1', strokeWidth: 2 });
+
+            // 3. 模式切換邏輯
+            if (currentMode === 'full') {
+                // 完整模式：顯示 4 個球體
+                faces.push({ type: 'sphere', pt: { x: 0, y: -H/2 + r_sph, z: 1 - r_sph }, r: r_sph, fill: 'url(#sphereGrad)' });
+                faces.push({ type: 'sphere', pt: { x: 0, y: -H/2 + r_sph, z: -(1 - r_sph) }, r: r_sph, fill: 'url(#sphereGrad)' });
+                faces.push({ type: 'sphere', pt: { x: 1 - r_sph, y: H/2 - r_sph, z: 0 }, r: r_sph, fill: 'url(#sphereGrad)' });
+                faces.push({ type: 'sphere', pt: { x: -(1 - r_sph), y: H/2 - r_sph, z: 0 }, r: r_sph, fill: 'url(#sphereGrad)' });
+            } else {
+                // 剖面模式：顯示黃色切面 (X=0平面) 與 1 個球體
+                
+                // 黃色剖面 (分為兩塊以優化 SVG 深度排序)
+                faces.push({ type: 'poly', pts: [{x:0, y:-H/2, z:0}, {x:0, y:-H/2, z:1}, {x:0, y:H/2, z:1}, {x:0, y:H/2, z:0}], fill: 'rgba(253, 224, 71, 0.3)', stroke: '#facc15', strokeWidth: 1.5 });
+                faces.push({ type: 'poly', pts: [{x:0, y:-H/2, z:-1}, {x:0, y:-H/2, z:0}, {x:0, y:H/2, z:0}, {x:0, y:H/2, z:-1}], fill: 'rgba(253, 224, 71, 0.3)', stroke: '#facc15', strokeWidth: 1.5 });
+                
+                // 紅色粗虛線：解題所用的「直角三角形」空隙
+                faces.push({ type: 'outline', pts: [{x:0, y:-H/2, z:0}, {x:0, y:-H/2, z:1}, {x:0, y:H/2, z:1}], stroke: '#ef4444', strokeWidth: 3.5, dash: '8 6' });
+                
+                // 單一球體 (剛好內切於上述紅色直角三角形內)
+                faces.push({ type: 'sphere', pt: { x: 0, y: -H/2 + r_sph, z: 1 - r_sph }, r: r_sph, fill: 'url(#sphereGrad)' });
+            }
+        }
+
+        // --- 視角與渲染引擎 ---
+        let rotX = 0.25; 
+        let rotY = 0.65; 
+
+        function rotatePoint(p) {
+            let x1 = p.x * Math.cos(rotY) - p.z * Math.sin(rotY);
+            let z1 = p.x * Math.sin(rotY) + p.z * Math.cos(rotY);
+            let y2 = p.y * Math.cos(rotX) - z1 * Math.sin(rotX);
+            let z2 = p.y * Math.sin(rotX) + z1 * Math.cos(rotX);
+            return { x: x1, y: y2, z: z2 };
+        }
+
+        const renderGroup = document.getElementById('renderGroup');
+
+        function render() {
+            let renderList = [];
+
+            faces.forEach(face => {
+                if(face.type === 'poly' || face.type === 'outline') {
+                    let projPts = face.pts.map(p => rotatePoint(p));
+                    let avgZ = projPts.reduce((sum, p) => sum + p.z, 0) / projPts.length;
+                    // 為了讓紅色虛線永遠浮在黃色平面之上，微調其 Z 軸權重
+                    if(face.type === 'outline') avgZ -= 0.05; 
+                    renderList.push({ face, projPts, avgZ });
+                } else if(face.type === 'sphere') {
+                    let projCenter = rotatePoint(face.pt);
+                    renderList.push({ face, projCenter, avgZ: projCenter.z });
+                }
+            });
+
+            // 畫家演算法
+            renderList.sort((a, b) => a.avgZ - b.avgZ);
+
+            let svgContent = '';
+            renderList.forEach(item => {
+                if(item.face.type === 'poly') {
+                    let pointsStr = item.projPts.map(p => `${(p.x * SCALE).toFixed(2)},${(p.y * SCALE).toFixed(2)}`).join(' ');
+                    svgContent += `<polygon points="${pointsStr}" fill="${item.face.fill}" stroke="${item.face.stroke}" stroke-width="${item.face.strokeWidth}" stroke-linejoin="round" />`;
+                } else if(item.face.type === 'outline') {
+                    let pointsStr = item.projPts.map(p => `${(p.x * SCALE).toFixed(2)},${(p.y * SCALE).toFixed(2)}`).join(' ');
+                    svgContent += `<polygon points="${pointsStr}" fill="none" stroke="${item.face.stroke}" stroke-width="${item.face.strokeWidth}" stroke-dasharray="${item.face.dash}" stroke-linejoin="round" />`;
+                } else if(item.face.type === 'sphere') {
+                    let cx = (item.projCenter.x * SCALE).toFixed(2);
+                    let cy = (item.projCenter.y * SCALE).toFixed(2);
+                    let r = (item.face.r * SCALE).toFixed(2);
+                    svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${item.face.fill}" />`;
+                }
+            });
+
+            renderGroup.innerHTML = svgContent;
+        }
+
+        // --- UI 控制與互動 ---
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // 按鈕樣式切換
+            const btnSlice = document.getElementById('btn-slice');
+            const btnFull = document.getElementById('btn-full');
+            const descText = document.getElementById('desc-text');
+            
+            if (mode === 'slice') {
+                btnSlice.className = "mode-btn w-full py-2.5 rounded-lg font-bold text-sm text-white bg-sky-600 shadow-lg shadow-sky-900/50 border border-sky-400";
+                btnFull.className = "mode-btn w-full py-2.5 rounded-lg font-bold text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-600";
+                descText.innerHTML = '透過黃色的中心垂直剖面，我們可以清楚看見：能夠容納最大球體的空間，實際上就是圓柱半徑、圓柱高與四面體斜面所構成的<strong class="text-red-400">「直角三角形」空隙</strong>。紅色的虛線標示了這個決定性的直角三角形！';
+            } else {
+                btnFull.className = "mode-btn w-full py-2.5 rounded-lg font-bold text-sm text-white bg-sky-600 shadow-lg shadow-sky-900/50 border border-sky-400";
+                btnSlice.className = "mode-btn w-full py-2.5 rounded-lg font-bold text-sm text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-600";
+                descText.innerHTML = '在這個完整對稱模型中，您可以觀察到正四面體是如何完美內接於圓柱體中的。<br><br>由於四面體的幾何對稱性，圖中一共會產生 <strong class="text-red-400">4 個完全相同的角落空隙</strong>，都可以放入大小相同的最大球體。';
+            }
+            
+            buildScene();
+            render();
+        }
+
+        let isDragging = false;
+        let lastX = 0, lastY = 0;
+        let autoRotate = true;
+
+        function getEventPos(e) {
+            return e.touches ? { x: e.touches[0].clientX, y: e.touches[0].clientY } : { x: e.clientX, y: e.clientY };
+        }
+
+        const container = document.getElementById('canvas-container');
+
+        const startDrag = (e) => {
+            isDragging = true;
+            autoRotate = false; 
+            let pos = getEventPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+            document.querySelector('.animate-bounce').style.display = 'none'; 
+        };
+
+        const doDrag = (e) => {
+            if (!isDragging) return;
+            e.preventDefault(); 
+            let pos = getEventPos(e);
+            let dx = pos.x - lastX;
+            let dy = pos.y - lastY;
+            
+            rotY += dx * 0.008;
+            rotX -= dy * 0.008;
+            rotX = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, rotX));
+
+            lastX = pos.x;
+            lastY = pos.y;
+            render();
+        };
+
+        const endDrag = () => { isDragging = false; };
+
+        container.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', doDrag);
+        window.addEventListener('mouseup', endDrag);
+
+        container.addEventListener('touchstart', startDrag, {passive: false});
+        window.addEventListener('touchmove', doDrag, {passive: false});
+        window.addEventListener('touchend', endDrag);
+
+        function animateLoop() {
+            if(autoRotate) {
+                rotY += 0.004; 
+                render();
+            }
+            requestAnimationFrame(animateLoop);
+        }
+
+        // 初始化
+        window.onload = () => {
+            buildScene();
+            render();
+            animateLoop();
+        };
+    </script>
+</body>
+</html>
+
+
