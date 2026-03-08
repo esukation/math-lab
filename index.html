@@ -51,7 +51,7 @@
       </svg>
     );
 
-    // ✨ 完整還原！超美動態幾何星盤背景 (SVG)
+    // ✨ 動態幾何星盤背景
     const GeometricBackground = () => (
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden mix-blend-screen opacity-30">
         <svg 
@@ -115,7 +115,6 @@
       const years = Array.from({ length: 11 }, (_, i) => (2024 - i).toString()); 
       const questionsList = Array.from({ length: 30 }, (_, i) => `Q${String(i + 1).padStart(2, '0')}`); 
 
-      // 🌟 終極魔法：分批讀取系統 (Batch Loading)
       const fetchQuestions = async (levelId, year) => {
         setIsLoading(true);
         setDbData({}); 
@@ -371,14 +370,14 @@
             </div>
             <div className="mt-6">
               {displayMode === 'interactive' && has3D ? (
-                // 🌟 3D 傳送門 iframe
                 <div className="w-full h-[75vh] bg-[#0A0A0E] border border-white/10 relative rounded-xl overflow-hidden shadow-[0_0_30px_rgba(212,175,55,0.15)] flex justify-center items-center">
-                  <iframe src={data.interactiveUrl} className="w-full h-full border-0 absolute inset-0" title="3D Interactive Model" allowFullScreen={true}></iframe>
+                  <iframe src={data.interactiveUrl} className="w-full h-full border-0 absolute inset-0" title="3D Interactive Model" allowFullScreen></iframe>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
                   <div className="lg:col-span-7 bg-[#1A1A24] border border-white/5 p-8 md:p-12 flex flex-col relative rounded-xl">
-                    <p className="text-base md:text-lg text-gray-300 font-light leading-relaxed tracking-wide mb-10">{data.questionText}</p>
+                    {/* 這裡加入 dangerouslySetInnerHTML 讓 <br/> 變成真實的換行 */}
+                    <div className="text-base md:text-lg text-gray-300 font-light leading-relaxed tracking-wide mb-10" dangerouslySetInnerHTML={{ __html: data.questionText }} />
                     <div className="w-full flex-grow flex flex-col items-center justify-center mb-10 bg-[#FAFAFA] p-8 rounded-xl shadow-[inset_0_4px_20px_rgba(0,0,0,0.06)] text-slate-800" dangerouslySetInnerHTML={{ __html: data.questionSvg }} />
                     <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
                       <span className="text-gray-500 text-xs tracking-[0.3em] uppercase">Final Answer</span>
@@ -418,12 +417,8 @@
         </div>
       );
     }
-    
-    // 啟動應用程式
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
 </body>
 </html>
-
-
