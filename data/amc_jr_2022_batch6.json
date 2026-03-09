@@ -64,23 +64,38 @@
     ]
   },
   "Q30": {
-    "title": "整數的非重複拆分 (雙解法教學)",
+    "title": "整數的非重複拆分",
     "questionText": "總共有多少種不同的方法將 100 寫成三個「不同」正整數之和？(不考慮順序，如 34+5+61 與 61+34+5 視為相同方法)。",
-    "questionSvg": "<div class='bg-slate-100 border border-slate-300 p-6 rounded-xl text-center'><p class='text-2xl font-bold text-slate-800 mb-2'>a + b + c = 100</p><p class='text-[#D4AF37] font-bold mb-4'>條件：1 ≤ a &lt; b &lt; c</p><svg width='240' height='40' viewBox='0 0 240 40' class='mx-auto'><circle cx='20' cy='20' r='10' fill='#94a3b8'/><circle cx='50' cy='20' r='10' fill='#94a3b8'/><line x1='75' y1='5' x2='75' y2='35' stroke='#ef4444' stroke-width='4'/><circle cx='100' cy='20' r='10' fill='#94a3b8'/><circle cx='130' cy='20' r='10' fill='#94a3b8'/><circle cx='160' cy='20' r='10' fill='#94a3b8'/><line x1='185' y1='5' x2='185' y2='35' stroke='#ef4444' stroke-width='4'/><circle cx='210' cy='20' r='10' fill='#94a3b8'/></svg><div class='mt-4 flex justify-center gap-2 flex-wrap'><span class='px-3 py-1 bg-[#0ea5e9]/10 text-[#0ea5e9] rounded-md text-sm font-bold border border-[#0ea5e9]/20'>解法一：高中隔板法</span><span class='px-3 py-1 bg-[#ef4444]/10 text-[#ef4444] rounded-md text-sm font-bold border border-[#ef4444]/20'>解法二：國中列舉法</span></div></div>",
     "finalAnswer": "784",
-    "steps": [
-      {
-        "title": "解法一：高中隔板法",
-        "content": "將 100 拆成 3 份，等同在 99 個空隙插 2 個隔板，共 C(99, 2) = <strong class='text-[#D4AF37]'>4851</strong> 種。<br/>扣除兩數相同的情況 (49×3=147種)，三數皆不同的排列法有 4851 - 147 = 4704 種。<br/>因不考慮順序，需除以 3! (6種)：4704 ÷ 6 = <strong class='text-[#D4AF37]'>784</strong>。"
-      },
-      {
-        "title": "解法二：國中規律列舉法",
-        "content": "強制排序 1 ≤ a &lt; b &lt; c 避免重複。<br/>若 a=1, b+c=99 ➔ b可為2~49，共 <strong class='text-[#0ea5e9]'>48</strong> 種<br/>若 a=2, b+c=98 ➔ b可為3~48，共 <strong class='text-[#ef4444]'>46</strong> 種<br/>若 a=3, b+c=97 ➔ b可為4~48，共 <strong class='text-[#0ea5e9]'>45</strong> 種<br/>...依此類推至 a=32，共 <strong class='text-[#ef4444]'>1</strong> 種。"
-      },
-      {
-        "title": "等差數列求和",
-        "content": "分兩組等差數列求和：<br/>奇數列：48 + 45 + ... + 3 = <strong class='text-[#0ea5e9]'>408</strong><br/>偶數列：46 + 43 + ... + 1 = <strong class='text-[#ef4444]'>376</strong><br/>總和：408 + 376 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>784</strong> 種方法。"
-      }
-    ]
+    "method1": {
+      "questionSvg": "<div class='bg-slate-100 border border-[#0ea5e9]/50 p-8 rounded-xl text-center'><p class='text-3xl font-bold text-slate-800 mb-4'>a + b + c = 100</p><p class='text-[#0ea5e9] font-bold text-xl'>強制排序，避免重複：<br/>1 ≤ a &lt; b &lt; c</p></div>",
+      "steps": [
+        {
+          "title": "步驟一：依序討論最小數 a",
+          "content": "若 a=1，b+c=99 ➔ b可為2~49，共 <strong class='text-[#0ea5e9]'>48</strong> 種<br/>若 a=2，b+c=98 ➔ b可為3~48，共 <strong class='text-[#ef4444]'>46</strong> 種<br/>若 a=3，b+c=97 ➔ b可為4~48，共 <strong class='text-[#0ea5e9]'>45</strong> 種<br/>若 a=4，b+c=96 ➔ b可為5~47，共 <strong class='text-[#ef4444]'>43</strong> 種<br/>...依此類推，至 a=32，b+c=68 ➔ b只能是33，共 <strong class='text-[#ef4444]'>1</strong> 種"
+        },
+        {
+          "title": "步驟二：分成兩組等差數列求和",
+          "content": "<span class='text-[#0ea5e9] font-bold'>奇數列</span>：48 + 45 + ... + 3 = (48+3) × 16 ÷ 2 = <strong class='text-[#0ea5e9]'>408</strong><br/><span class='text-[#ef4444] font-bold'>偶數列</span>：46 + 43 + ... + 1 = (46+1) × 16 ÷ 2 = <strong class='text-[#ef4444]'>376</strong><br/>總和：408 + 376 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded text-xl'>784</strong> 種方法。"
+        }
+      ]
+    },
+    "method2": {
+      "questionSvg": "<div class='bg-slate-100 border border-[#ef4444]/50 p-6 rounded-xl text-center'><p class='text-2xl font-bold text-slate-800 mb-2'>a + b + c = 100</p><p class='text-red-500 font-bold mb-4'>條件：a, b, c 皆為不同正整數</p><svg width='240' height='40' viewBox='0 0 240 40' class='mx-auto'><circle cx='20' cy='20' r='10' fill='#94a3b8'/><circle cx='50' cy='20' r='10' fill='#94a3b8'/><line x1='75' y1='5' x2='75' y2='35' stroke='#ef4444' stroke-width='4'/><circle cx='100' cy='20' r='10' fill='#94a3b8'/><circle cx='130' cy='20' r='10' fill='#94a3b8'/><circle cx='160' cy='20' r='10' fill='#94a3b8'/><line x1='185' y1='5' x2='185' y2='35' stroke='#ef4444' stroke-width='4'/><circle cx='210' cy='20' r='10' fill='#94a3b8'/></svg></div>",
+      "steps": [
+        {
+          "title": "步驟一：任意正整數解",
+          "content": "將 100 拆成 3 份，等同於在 99 個空隙中插入 2 個隔板。<br/>方法數 = C(99, 2) = <strong class='text-[#D4AF37]'>4851</strong> 種。"
+        },
+        {
+          "title": "步驟二：扣除數字重複的狀況",
+          "content": "若有兩數相同 (a+a+b=100)，則 2a+b=100。a 可為 1~49，共 49 種。<br/>考量排列順序，重複狀況共有 49 × 3 = <strong class='text-[#D4AF37]'>147</strong> 種。<br/>三數皆「不同」的排列法 = 4851 - 147 = <strong class='text-[#D4AF37]'>4704</strong> 種。"
+        },
+        {
+          "title": "步驟三：消除順序差異",
+          "content": "題目要求「不考慮順序」，故需除以 3! (即 6 種排列)。<br/>4704 ÷ 6 = <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded text-xl'>784</strong> 種方法。"
+        }
+      ]
+    }
   }
 }
