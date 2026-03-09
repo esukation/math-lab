@@ -4,66 +4,62 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AMC Q25 互動式展開圖解析</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
   * { box-sizing: border-box; }
-  body { 
+  body, html { 
     background-color: #0A0A0E; 
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: sans-serif;
     margin: 0; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    min-height: 100vh;
-    padding: 20px;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* 強制防止出現任何捲軸 */
   }
   
   .app-container {
-    width: 1000px;
-    background: #1A1A24;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    background: #1A1A24;
   }
 
   .header {
     background: rgba(255,255,255,0.02);
     border-bottom: 1px solid rgba(255,255,255,0.05);
     color: white;
-    padding: 20px 40px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
   }
-  .header h1 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: 2px; }
-  .badge { background: rgba(212,175,55,0.1); color: #D4AF37; border: 1px solid rgba(212,175,55,0.3); padding: 4px 12px; border-radius: 8px; font-size: 18px; margin-right: 15px;}
+  .header h1 { margin: 0; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+  .badge { background: rgba(212,175,55,0.1); color: #D4AF37; border: 1px solid rgba(212,175,55,0.3); padding: 2px 8px; border-radius: 6px; font-size: 14px; margin-right: 10px;}
 
   .interactive-area {
+    flex-grow: 1;
     width: 100%;
-    height: 600px;
     position: relative;
     background: #0D0D12;
   }
 
+  /* 讓 SVG 完全自適應容器，不會溢出 */
   svg { width: 100%; height: 100%; display: block; }
 
   .control-panel {
     background: #1A1A24;
     border-top: 1px solid rgba(255,255,255,0.05);
-    padding: 20px 40px;
+    padding: 12px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
   }
 
   .status-text {
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
     color: #D4AF37;
     margin: 0;
@@ -73,53 +69,42 @@
     background: #D4AF37;
     color: #0D0D12;
     border: none;
-    padding: 12px 24px;
-    border-radius: 10px;
-    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
     font-weight: 900;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(212,175,55,0.2);
     transition: all 0.3s;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 6px;
   }
   .btn:hover { background: #E5C158; transform: scale(1.05); }
   .btn-reset { background: rgba(255,255,255,0.1); color: #FFF; box-shadow: none; display: none; }
   .btn-reset:hover { background: rgba(255,255,255,0.2); }
 
-  /* 閃耀疊合特效 */
   @keyframes sparkle {
     0% { filter: drop-shadow(0 0 0 rgba(212, 175, 55, 0)); }
     50% { filter: drop-shadow(0 0 30px rgba(212, 175, 55, 1)); }
     100% { filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.8)); }
   }
-  .sparkle-effect {
-    animation: sparkle 1.5s ease-in-out forwards;
-  }
-  
-  /* 選項 D 成功時的文字高亮 */
-  .success-text {
-    fill: #ef4444 !important;
-    font-size: 24px !important;
-    transition: all 0.5s;
-  }
+  .sparkle-effect { animation: sparkle 1.5s ease-in-out forwards; }
+  .success-text { fill: #ef4444 !important; font-size: 24px !important; transition: all 0.5s; }
 </style>
 </head>
 <body>
 
 <div class="app-container">
   <div class="header">
-    <h1><span class="badge">Q25</span> 空間幾何展開圖 - 動態攤平疊合解析</h1>
+    <h1><span class="badge">Q25</span> 動態攤平疊合解析</h1>
   </div>
   
   <div class="interactive-area">
-    <svg id="canvas" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+    <svg id="canvas" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
       
-      <!-- 虛線參考標示：引導視覺飛向 D 選項 -->
       <path d="M 300 250 Q 500 100 675 480" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3" stroke-dasharray="8,8"/>
 
-      <!-- ================= 下方 5 個選項區 ================= -->
       <g transform="translate(150, 520)">
         <rect x="-15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
         <rect x="15" y="-45" width="30" height="30" fill="rgba(255,255,255,0.8)" stroke="#1e293b" stroke-width="1.5"/>
@@ -182,7 +167,7 @@
         <text x="0" y="-60" text-anchor="middle" font-weight="bold" font-size="16" fill="rgba(255,255,255,0.5)">(E)</text>
       </g>
 
-      <!-- ================= 核心動畫區：3D Cube 與 6面展開圖 ================= -->
+      <!-- 核心動畫區：3D Cube 與 6面展開圖 -->
       <g id="net-container" style="transform: translate(250px, 200px) scale(2.5) rotate(0deg); transform-origin: 0 0;">
         <polygon id="f_back" points="0,0 70,40 70,-40 0,-80" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5" opacity="0"/>
         <polygon id="f_bottom" points="-70,40 0,80 70,40 0,0" fill="rgba(212,175,55,0.1)" stroke="#D4AF37" stroke-width="1.5" opacity="0"/>
@@ -208,9 +193,9 @@
   </div>
   
   <div class="control-panel">
-    <p id="status-text" class="status-text">👉 點擊按鈕，開始 3D 到 2D 疊合的幾何魔法！</p>
+    <p id="status-text" class="status-text">👉 點擊按鈕，開始幾何魔法！</p>
     <div style="display: flex; gap: 10px;">
-      <button id="reset-btn" class="btn btn-reset" onclick="location.reload()"><i class="fa-solid fa-rotate-left"></i> 重置動畫</button>
+      <button id="reset-btn" class="btn btn-reset" onclick="location.reload()"><i class="fa-solid fa-rotate-left"></i> 重置</button>
       <button id="play-btn" class="btn" onclick="playAnimation()"><i class="fa-solid fa-magic"></i> 播放展開動畫</button>
     </div>
   </div>
@@ -276,7 +261,7 @@
           document.getElementById('h2').setAttribute('fill', '#ef4444');
 
           setTimeout(() => {
-              status.innerText = "3. 幾何變形：自動攤平成為 6 面的平面展開圖...";
+              status.innerText = "3. 自動攤平成為平面展開圖...";
               let startTime = performance.now();
               const duration = 1800; 
               
@@ -298,7 +283,7 @@
                   if(p < 1) requestAnimationFrame(morph);
                   else {
                       setTimeout(() => {
-                          status.innerText = "4. 華麗對位！平滑縮小並飛向選項 (D)...";
+                          status.innerText = "4. 飛向選項 (D)...";
                           const netGroup = document.getElementById('net-container');
                           netGroup.style.transition = 'transform 1.8s cubic-bezier(0.4, 0, 0.2, 1)';
                           netGroup.style.transform = 'translate(675px, 520px) scale(1) rotate(0deg)';
@@ -307,7 +292,7 @@
                           document.getElementById('opt-d-highlight').setAttribute('fill', 'rgba(239, 68, 68, 0.1)');
 
                           setTimeout(() => {
-                              status.innerHTML = "🎉 <span style='color:#ef4444'>完美疊合！</span> 孔洞位置完全對應 (D) 選項！";
+                              status.innerHTML = "🎉 <span style='color:#ef4444'>完美疊合！</span>";
                               netGroup.classList.add('sparkle-effect');
                               document.getElementById('d-label').classList.add('success-text');
                               document.getElementById('reset-btn').style.display = 'flex';
