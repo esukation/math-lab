@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMC Q17 互動動畫解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { box-sizing: border-box; }
+  body { 
+    background-color: #cbd5e1; 
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .app-container {
+    width: 1100px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .header {
+    background: #1e293b;
+    color: white;
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header h1 { 
+    margin: 0; 
+    font-size: 28px; 
+    font-weight: 900; 
+    letter-spacing: 1px; 
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .badge { background: #ef4444; padding: 6px 16px; border-radius: 8px; font-size: 20px; }
+
+  .question-text {
+    background: #f8fafc;
+    padding: 20px 40px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #334155;
+    border-bottom: 2px solid #e2e8f0;
+    margin: 0;
+  }
+
+  .interactive-area {
+    width: 100%;
+    height: 450px;
+    position: relative;
+    background: #ffffff;
+  }
+
+  svg { width: 100%; height: 100%; display: block; }
+
+  .control-panel {
+    background: #f0f9ff;
+    border-top: 2px solid #e2e8f0;
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .counter-box {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .status-text {
+    font-size: 24px;
+    font-weight: 900;
+    color: #0369a1;
+    margin: 0;
+    font-family: 'Poppins', 'Noto Sans TC', sans-serif;
+  }
+
+  .progress-number {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ef4444;
+    background: #fff;
+    padding: 5px 20px;
+    border-radius: 12px;
+    border: 2px solid #fca5a5;
+    min-width: 130px;
+    text-align: center;
+  }
+
+  .btn {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn:hover { background: #0284c7; transform: scale(1.05); }
+  
+  .btn-reset { 
+    background: #64748b; 
+    box-shadow: 0 4px 15px rgba(100, 116, 139, 0.4); 
+    display: none; 
+  }
+  .btn-reset:hover { background: #475569; }
+
+  /* 飛行動畫的過渡設定 */
+  #fly-tri {
+    transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* 動態生成的三角形漸顯設定 */
+  .anim-tri {
+    transition: opacity 0.15s ease-in;
+  }
+  .cut-line {
+    transition: opacity 0.4s ease-in;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">
+    <h1><span class="badge">Q17</span> 圖形覆蓋與面積 - 動態幾何解構</h1>
+  </div>
+  
+  <p class="question-text">請問共需要用多少片塗色的小瓷磚才能夠將右圖所示的十字形鋪滿？</p>
+  
+  <div class="interactive-area">
+    <svg viewBox="0 0 1100 450" xmlns="http://www.w3.org/2000/svg">
+      
+      <!-- ==================== 左側：起始區域 ==================== -->
+      <g id="start-area" opacity="1" style="transition: opacity 0.3s;">
+        <!-- 虛線外框 (標示1/8格的概念) -->
+        <rect x="50" y="150" width="100" height="100" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="6,4" rx="8"/>
+        <text x="100" y="130" text-anchor="middle" font-size="20" font-weight="bold" fill="#64748b">1片小瓷磚</text>
+        <text x="100" y="280" text-anchor="middle" font-size="16" font-weight="bold" fill="#94a3b8">剛好是正方形的 1/8</text>
+      </g>
+
+      <!-- ==================== 右側：十字架底層 (放置在較上方的程式碼，確保被覆蓋) ==================== -->
+      <!-- 基礎十字架輪廓 (5個 100x100 的正方形) -->
+      <!-- 中心點: (600, 150) -->
+      <g id="cross-base" transform="translate(0, 0)">
+        <!-- 中心 (550, 150) -->
+        <rect x="550" y="150" width="100" height="100" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+        <!-- 上面 (550, 50) -->
+        <rect x="550" y="50" width="100" height="100" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+        <!-- 下面 (550, 250) -->
+        <rect x="550" y="250" width="100" height="100" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+        <!-- 左面 (450, 150) -->
+        <rect x="450" y="150" width="100" height="100" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+        <!-- 右面 (650, 150) -->
+        <rect x="650" y="150" width="100" height="100" fill="#f8fafc" stroke="#1e293b" stroke-width="3"/>
+      </g>
+
+      <!-- 用來放置動態生成的「填滿三角形」的容器 -->
+      <g id="triangles-container"></g>
+
+      <!-- ==================== 飛行瓷磚 (圖層順序關鍵：移到這裡保證在十字架上方！) ==================== -->
+      <!-- 基準點: x=50, y=150, size=100。 左下角三角形的座標：(100,250), (50,250), (100,200) -->
+      <g id="fly-tri" style="transform: translate(0px, 0px);">
+        <polygon points="100,250 50,250 100,200" fill="#ef4444" stroke="#7f1d1d" stroke-width="2"/>
+      </g>
+
+      <!-- 用來放置動態生成的「切割虛線」的容器 (放在最上層，讓線條覆蓋在顏色上) -->
+      <g id="cut-lines-container"></g>
+
+      <!-- 箭頭指引 (動畫播放時隱藏) -->
+      <g id="guide-arrow" style="transition: opacity 0.3s;">
+        <path d="M 180 200 Q 300 120 420 180" fill="none" stroke="#0ea5e9" stroke-width="4" stroke-dasharray="8,6" marker-end="url(#arr-blue)"/>
+        <text x="300" y="140" text-anchor="middle" font-size="18" font-weight="bold" fill="#0ea5e9">飛入對應位置</text>
+      </g>
+      
+      <defs>
+        <marker id="arr-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#0ea5e9" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+  
+  <div class="control-panel">
+    <div class="counter-box">
+      <p class="status-text">已鋪滿數量：</p>
+      <div id="counter" class="progress-number">0 / 40</div>
+    </div>
+    <div style="display: flex; gap: 15px;">
+      <button id="reset-btn" class="btn btn-reset" onclick="resetAnimation()"><i class="fa-solid fa-rotate-left"></i> 重置</button>
+      <button id="play-btn" class="btn" onclick="startAnimation()"><i class="fa-solid fa-play"></i> 播放鋪滿動畫</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let isAnimating = false;
+  
+  // 定義 5 個正方形的起點 (x, y) 以及寬度 (s=100)
+  const squareSize = 100;
+  const squares = [
+    { x: 450, y: 150 }, // 左
+    { x: 550, y: 150 }, // 中
+    { x: 650, y: 150 }, // 右
+    { x: 550, y: 50 },  // 上
+    { x: 550, y: 250 }  // 下
+  ];
+
+  // 取得一個正方形的 8 個三角形點位 (基於對角線與十字線切割)
+  function getTrianglePoints(sq) {
+    const x = sq.x;
+    const y = sq.y;
+    const s = squareSize;
+    const cx = x + s / 2;
+    const cy = y + s / 2;
+    
+    return [
+      `${x},${y} ${cx},${y} ${cx},${cy}`,             // Top-Left 1
+      `${cx},${y} ${x+s},${y} ${cx},${cy}`,           // Top-Right 1
+      `${x+s},${y} ${x+s},${cy} ${cx},${cy}`,         // Right-Top
+      `${x+s},${cy} ${x+s},${y+s} ${cx},${cy}`,       // Right-Bottom
+      `${x+s},${y+s} ${cx},${y+s} ${cx},${cy}`,       // Bottom-Right
+      `${cx},${y+s} ${x},${y+s} ${cx},${cy}`,         // Bottom-Left (目標飛行位!)
+      `${x},${y+s} ${x},${cy} ${cx},${cy}`,           // Left-Bottom
+      `${x},${cy} ${x},${y} ${cx},${cy}`              // Left-Top
+    ];
+  }
+
+  // 畫出一個正方形的切割虛線
+  function drawCutLines(sq) {
+    const x = sq.x;
+    const y = sq.y;
+    const s = squareSize;
+    const cx = x + s / 2;
+    const cy = y + s / 2;
+    
+    const lines = [
+      `M${x},${y} L${x+s},${y+s}`,     // \
+      `M${x+s},${y} L${x},${y+s}`,     // /
+      `M${cx},${y} L${cx},${y+s}`,     // |
+      `M${x},${cy} L${x+s},${cy}`      // -
+    ];
+    
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    g.setAttribute("d", lines.join(" "));
+    g.setAttribute("stroke", "#94a3b8");
+    g.setAttribute("stroke-width", "2");
+    g.setAttribute("stroke-dasharray", "4,4");
+    g.setAttribute("fill", "none");
+    g.setAttribute("opacity", "0");
+    g.classList.add("cut-line");
+    
+    document.getElementById("cut-lines-container").appendChild(g);
+    
+    // 觸發漸顯
+    setTimeout(() => { g.setAttribute("opacity", "1"); }, 50);
+  }
+
+  function startAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    document.getElementById('play-btn').style.display = 'none';
+    document.getElementById('guide-arrow').style.opacity = '0';
+    document.getElementById('start-area').style.opacity = '0.3';
+    
+    const counter = document.getElementById('counter');
+    
+    // Step 1: 三角形飛行
+    // 目標：左側方塊 (450, 150) 的第 6 個三角形位置。
+    // 起點是 (50, 150) 所在的區塊。x 平移量 = 450 - 50 = 400。y = 0。
+    const flyTri = document.getElementById('fly-tri');
+    flyTri.style.transform = `translate(400px, 0px)`;
+    
+    counter.innerText = "1 / 40";
+
+    // Step 2: 畫出左邊方格的切割線
+    setTimeout(() => {
+      drawCutLines(squares[0]);
+    }, 900);
+
+    // Step 3: 填滿左邊方格剩餘的 7 片
+    setTimeout(() => {
+      let triCount = 1;
+      const triPoints = getTrianglePoints(squares[0]);
+      const container = document.getElementById('triangles-container');
+      
+      triPoints.forEach((pts, index) => {
+        if (index === 5) return; // 跳過已經飛過去的那一片
+        
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("points", pts);
+        poly.setAttribute("fill", "#fca5a5");
+        poly.setAttribute("stroke", "#b91c1c");
+        poly.setAttribute("stroke-width", "1.5");
+        poly.setAttribute("opacity", "0");
+        poly.classList.add("anim-tri");
+        container.appendChild(poly);
+        
+        setTimeout(() => {
+          poly.setAttribute("opacity", "1");
+          triCount++;
+          counter.innerText = `${triCount} / 40`;
+        }, index * 80);
+      });
+
+      // Step 4: 畫出剩下的十字架切割線並進行大波浪填滿
+      setTimeout(() => {
+        for(let i=1; i<5; i++) drawCutLines(squares[i]);
+        
+        setTimeout(() => {
+          let globalDelay = 0;
+          for(let i=1; i<5; i++) {
+            const ptsArray = getTrianglePoints(squares[i]);
+            ptsArray.forEach((pts) => {
+              const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+              poly.setAttribute("points", pts);
+              poly.setAttribute("fill", "#fca5a5");
+              poly.setAttribute("stroke", "#b91c1c");
+              poly.setAttribute("stroke-width", "1.5");
+              poly.setAttribute("opacity", "0");
+              poly.classList.add("anim-tri");
+              container.appendChild(poly);
+              
+              setTimeout(() => {
+                poly.setAttribute("opacity", "1");
+                triCount++;
+                counter.innerText = `${triCount} / 40`;
+                
+                // 動畫結束
+                if(triCount === 40) {
+                  document.getElementById('reset-btn').style.display = 'flex';
+                  counter.style.background = '#fef2f2';
+                }
+              }, globalDelay);
+              
+              globalDelay += 40; // 快速波浪節奏
+            });
+          }
+        }, 500);
+
+      }, 800); // 等左邊填完
+
+    }, 1300);
+  }
+
+  function resetAnimation() {
+    isAnimating = false;
+    document.getElementById('play-btn').style.display = 'flex';
+    document.getElementById('reset-btn').style.display = 'none';
+    
+    // 清除動態生成的元素
+    document.getElementById("cut-lines-container").innerHTML = "";
+    document.getElementById("triangles-container").innerHTML = "";
+    
+    // 復位飛行三角形與文字
+    const flyTri = document.getElementById('fly-tri');
+    flyTri.style.transition = 'none'; // 瞬間歸位
+    flyTri.style.transform = `translate(0px, 0px)`;
+    
+    // 強制重繪後再把 transition 加回來
+    setTimeout(() => {
+      flyTri.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    }, 50);
+
+    document.getElementById('guide-arrow').style.opacity = '1';
+    document.getElementById('start-area').style.opacity = '1';
+    
+    const counter = document.getElementById('counter');
+    counter.innerText = "0 / 40";
+    counter.style.background = '#fff';
+  }
+</script>
+
+</body>
+</html>
