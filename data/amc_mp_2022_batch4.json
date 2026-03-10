@@ -19,6 +19,7 @@
     "title": "圖形覆蓋與面積",
     "questionText": "請問共需要用多少片塗色的小瓷磚才能夠將右圖所示的十字形鋪滿？",
     "questionSvg": "<svg viewBox='0 0 500 240' xmlns='http://www.w3.org/2000/svg' class='w-full h-auto max-h-[280px]'><g transform='translate(20, 40)'><text x='70' y='30' text-anchor='middle' font-size='16' font-weight='bold' fill='#1e293b'>1片小瓷磚</text><polygon points='40,80 100,80 70,50' fill='#ef4444' stroke='#1e293b' stroke-width='2'/></g><path d='M 120 100 Q 180 80 265 110' fill='none' stroke='#0ea5e9' stroke-width='3' marker-end='url(#arrB)'/><text x='180' y='85' text-anchor='middle' font-size='14' font-weight='bold' fill='#0ea5e9'>對應至 8 片中的 1 片</text><g transform='translate(220, 20)'><polygon points='60,60 120,60 120,0 180,0 180,60 240,60 240,120 180,120 180,180 120,180 120,120 60,120' fill='#f8fafc' stroke='#1e293b' stroke-width='3'/><line x1='120' y1='60' x2='120' y2='120' stroke='#1e293b' stroke-width='2'/><line x1='180' y1='60' x2='180' y2='120' stroke='#1e293b' stroke-width='2'/><line x1='120' y1='60' x2='180' y2='60' stroke='#1e293b' stroke-width='2'/><line x1='120' y1='120' x2='180' y2='120' stroke='#1e293b' stroke-width='2'/><line x1='60' y1='60' x2='120' y2='120' stroke='#1e293b' stroke-width='1.5' stroke-dasharray='3,3'/><line x1='60' y1='120' x2='120' y2='60' stroke='#1e293b' stroke-width='1.5' stroke-dasharray='3,3'/><line x1='90' y1='60' x2='90' y2='120' stroke='#1e293b' stroke-width='1.5' stroke-dasharray='3,3'/><line x1='60' y1='90' x2='120' y2='90' stroke='#1e293b' stroke-width='1.5' stroke-dasharray='3,3'/><polygon points='60,90 90,90 60,120' fill='#ef4444' stroke='#1e293b' stroke-width='2'/></g><defs><marker id='arrB' viewBox='0 0 10 10' refX='5' refY='5' markerWidth='5' markerHeight='5' orient='auto'><path d='M 0 0 L 10 5 L 0 10 z' fill='#0ea5e9' /></marker></defs></svg>",
+    "interactiveUrl": "models/2022_mp_q17.html",
     "finalAnswer": "40",
     "steps": [
       {
@@ -27,7 +28,7 @@
       },
       {
         "title": "步驟二：計算全部有幾片",
-        "content": "整個十字架共有 5 個相同的正方形。<br/>全部的小三角形數量 = 5 個正方形 × 每格 8 片 = <strong class='text-[#D4AF37]'>40 片</strong>。<br/>所以鋪滿整個圖形共需要 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>40</strong> 片小瓷磚，選擇 (E)。"
+        "content": "整個十字架共有 5 個相同的正方形。<br/>全部的小三角形數量 = 5 個正方形 × 每格 8 片 = <strong class='text-[#D4AF37]'>40 片</strong>。<br/>所以鋪滿整個圖形共需要 <strong class='text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded'>40</strong> 片小瓷磚，選擇 (E)。<br/><span class='text-gray-400 text-xs'>(點擊上方「3D 空間」按鈕，觀看超療癒的拼圖動畫！)</span>"
       }
     ]
   },
