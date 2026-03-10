@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMC Q19 互動動畫解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { box-sizing: border-box; }
+  
+  /* 鎖定視窗，絕對不出現滾動條 */
+  body { 
+    background-color: #cbd5e1; 
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0; 
+    padding: 0;
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh;
+    overflow: hidden; 
+  }
+  
+  /* 應用程式容器 */
+  .app-container {
+    width: 95%;
+    max-width: 1100px;
+    height: 94vh;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* 手機與直立窄螢幕：自動解除鎖定 */
+  @media screen and (max-aspect-ratio: 1/1), screen and (max-width: 800px) {
+    body {
+      height: auto;
+      min-height: 100vh;
+      overflow: auto;
+      padding: 20px 10px;
+      align-items: flex-start;
+    }
+    .app-container { height: auto; }
+    .interactive-area { min-height: 350px; }
+  }
+
+  /* 緊湊型標題 */
+  .header {
+    background: #1e293b;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .header h1 { 
+    margin: 0; 
+    font-size: 26px; 
+    font-weight: 900; 
+    letter-spacing: 1px; 
+  }
+
+  .question-text {
+    background: #f8fafc;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #334155;
+    border-bottom: 2px solid #e2e8f0;
+    margin: 0;
+    line-height: 1.5;
+    flex-shrink: 0;
+  }
+
+  /* SVG 區域 */
+  .interactive-area {
+    flex-grow: 1;
+    width: 100%;
+    position: relative;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 0; 
+  }
+  svg { width: 100%; height: 100%; max-height: 100%; display: block; }
+
+  /* 控制面板 */
+  .control-panel {
+    background: #f0f9ff;
+    border-top: 2px solid #e2e8f0;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .btn {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn:hover { background: #0284c7; transform: scale(1.05); }
+  .btn-reset { background: #64748b; box-shadow: 0 4px 15px rgba(100, 116, 139, 0.4); display: none; }
+  .btn-reset:hover { background: #475569; }
+
+  /* 點擊與文字特效 */
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .marker { opacity: 0; }
+  .marker.show { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+  /* 頂部數字彈跳過渡 */
+  #main-counter {
+    transition: font-size 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), fill 0.3s;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">
+    <h1>Q19. 反射路徑與規律 - 動態光束追蹤</h1>
+  </div>
+  
+  <p class="question-text">警衛從房間中央以 45° 角射出光束，光束在鏡子間來回反射。直到射回警衛為止，總共反射多少次？</p>
+  
+  <div class="interactive-area">
+    <svg id="canvas" viewBox="-20 -10 840 360" xmlns="http://www.w3.org/2000/svg">
+      
+      <!-- ================= 頂部左側：簡潔動態計數器 ================= -->
+      <g transform="translate(-20, 40)">
+        <rect x="0" y="-30" width="155" height="45" rx="8" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2"/>
+        <text x="10" y="0" font-size="20" font-weight="bold" fill="#1e293b">反射次數：</text>
+        <text x="115" y="2" font-size="28" font-weight="900" fill="#ef4444" id="main-counter">0</text>
+      </g>
+      
+      <!-- ================= 房間本體 ================= -->
+      <!-- 房間外框 (向下平移至 y=90) -->
+      <rect x="100" y="90" width="600" height="200" fill="#f8fafc" stroke="#1e293b" stroke-width="6"/>
+      
+      <!-- 警衛起點標示 -->
+      <circle cx="100" cy="190" r="10" fill="#1e293b"/>
+      <text x="40" y="240" font-size="18" font-weight="bold" fill="#1e293b">警衛起點</text>
+      <path d="M 45 215 Q 70 190 85 190" fill="none" stroke="#1e293b" stroke-width="3" marker-end="url(#arrow-dark)"/>
+
+      <!-- 動態光束路徑與反射點容器 -->
+      <g id="beam-container"></g>
+      <g id="markers-container"></g>
+      
+      <!-- 發光的光球 -->
+      <circle id="light-ball" cx="100" cy="190" r="8" fill="#fde047" stroke="#eab308" stroke-width="4" filter="drop-shadow(0 0 8px #fef08a)" opacity="0"/>
+
+      <!-- 底部圖例 -->
+      <g transform="translate(0, 325)">
+        <line x1="320" y1="0" x2="350" y2="0" stroke="#eab308" stroke-width="4"/>
+        <text x="360" y="5" font-size="16" font-weight="bold" fill="#1e293b">去程</text>
+        <line x1="420" y1="0" x2="450" y2="0" stroke="#0ea5e9" stroke-width="4" stroke-dasharray="6,4"/>
+        <text x="460" y="5" font-size="16" font-weight="bold" fill="#1e293b">回程</text>
+      </g>
+
+      <defs>
+        <marker id="arrow-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e293b" />
+        </marker>
+      </defs>
+    </svg>
+  </div>
+  
+  <div class="control-panel">
+    <button id="reset-btn" class="btn btn-reset" onclick="resetAnimation()"><i class="fa-solid fa-rotate-left"></i> 重置路徑</button>
+    <button id="play-btn" class="btn" onclick="startAnimation()"><i class="fa-solid fa-bolt"></i> 發射光束</button>
+  </div>
+</div>
+
+<script>
+  let isAnimating = false;
+  let animationTimeouts = [];
+
+  const exactPath = [
+    {x: 100, y: 190, num: null, color: '#eab308'}, 
+    {x: 160, y: 290, num: 1, pos: 'bottom', color: '#eab308'},
+    {x: 280, y: 90,  num: 2, pos: 'top', color: '#eab308'}, 
+    {x: 400, y: 290, num: 3, pos: 'bottom', color: '#eab308'}, 
+    {x: 520, y: 90,  num: 4, pos: 'top', color: '#eab308'}, 
+    {x: 640, y: 290, num: 5, pos: 'bottom', color: '#eab308'}, 
+    {x: 700, y: 190, num: 6, pos: 'right', color: '#eab308'}, 
+    {x: 640, y: 90,  num: 7, pos: 'top', color: '#0ea5e9'}, 
+    {x: 520, y: 290, num: 8, pos: 'bottom', color: '#0ea5e9'}, 
+    {x: 400, y: 90,  num: 9, pos: 'top', color: '#0ea5e9'}, 
+    {x: 280, y: 290, num: 10, pos: 'bottom', color: '#0ea5e9'}, 
+    {x: 160, y: 90,  num: 11, pos: 'top', color: '#0ea5e9'}, 
+    {x: 100, y: 190, num: null, pos: 'end', color: '#0ea5e9'} 
+  ];
+
+  function drawSegment(start, end, color, duration, isDashed) {
+    return new Promise(resolve => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      g.setAttribute("x1", start.x);
+      g.setAttribute("y1", start.y);
+      g.setAttribute("x2", start.x); 
+      g.setAttribute("y2", start.y); 
+      g.setAttribute("stroke", color);
+      g.setAttribute("stroke-width", "4");
+      if (isDashed) g.setAttribute("stroke-dasharray", "8,8");
+      
+      document.getElementById("beam-container").appendChild(g);
+
+      const ball = document.getElementById("light-ball");
+      ball.setAttribute("opacity", "1");
+
+      const startTime = performance.now();
+
+      function animateLine(time) {
+        let p = (time - startTime) / duration;
+        if (p > 1) p = 1;
+        
+        const currentX = start.x + (end.x - start.x) * p;
+        const currentY = start.y + (end.y - start.y) * p;
+
+        g.setAttribute("x2", currentX);
+        g.setAttribute("y2", currentY);
+        
+        ball.setAttribute("cx", currentX);
+        ball.setAttribute("cy", currentY);
+
+        if (p < 1) {
+          const frame = requestAnimationFrame(animateLine);
+          animationTimeouts.push(frame); 
+        } else {
+          resolve();
+        }
+      }
+      
+      const frame = requestAnimationFrame(animateLine);
+      animationTimeouts.push(frame);
+    });
+  }
+
+  function createMarker(point) {
+    const wrapper = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    wrapper.setAttribute("transform", `translate(${point.x}, ${point.y})`);
+
+    const innerGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    innerGroup.setAttribute("class", "marker");
+
+    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("r", "16");
+    circle.setAttribute("fill", point.color === '#eab308' ? '#fca5a5' : '#bfdbfe');
+    circle.setAttribute("stroke", point.color === '#eab308' ? '#ef4444' : '#0ea5e9');
+    circle.setAttribute("stroke-width", "3");
+
+    const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.setAttribute("text-anchor", "middle");
+    text.setAttribute("alignment-baseline", "central");
+    text.setAttribute("font-size", "18");
+    text.setAttribute("font-weight", "bold");
+    text.setAttribute("fill", point.color === '#eab308' ? '#b91c1c' : '#1e3a8a');
+    text.setAttribute("y", "2"); 
+    text.textContent = point.num;
+
+    let labelY = 0;
+    let labelX = 0;
+    if (point.pos === 'bottom') labelY = 35;
+    else if (point.pos === 'top') labelY = -35;
+    else if (point.pos === 'right') labelX = 35;
+
+    const labelGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    labelGroup.setAttribute("transform", `translate(${labelX}, ${labelY})`);
+    
+    circle.setAttribute("cx", "0");
+    circle.setAttribute("cy", "0");
+    text.setAttribute("x", "0");
+    
+    labelGroup.appendChild(circle);
+    labelGroup.appendChild(text);
+    innerGroup.appendChild(labelGroup);
+
+    const hit = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    hit.setAttribute("r", "8");
+    hit.setAttribute("fill", point.color === '#eab308' ? '#ef4444' : '#0ea5e9');
+    innerGroup.appendChild(hit);
+
+    wrapper.appendChild(innerGroup);
+    document.getElementById("markers-container").appendChild(wrapper);
+    
+    setTimeout(() => {
+      innerGroup.classList.add("show");
+    }, 50);
+  }
+
+  async function startAnimation() {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    document.getElementById('play-btn').style.display = 'none';
+    
+    const mainCounter = document.getElementById('main-counter');
+    mainCounter.textContent = "0";
+    mainCounter.setAttribute("fill", "#ef4444");
+
+    for (let i = 0; i < exactPath.length - 1; i++) {
+      const start = exactPath[i];
+      const end = exactPath[i+1];
+      const isReturn = end.color === '#0ea5e9';
+      
+      const dist = Math.hypot(end.x - start.x, end.y - start.y);
+      const duration = dist * 3.5; 
+
+      await drawSegment(start, end, end.color, duration, isReturn);
+
+      // 當碰到牆壁時更新左上角數字
+      if (end.num !== null) {
+        createMarker(end);
+        
+        mainCounter.textContent = end.num;
+        mainCounter.setAttribute('fill', isReturn ? '#0ea5e9' : '#ef4444');
+        
+        // 數字彈跳特效
+        mainCounter.style.fontSize = "42px";
+        setTimeout(() => { mainCounter.style.fontSize = "28px"; }, 250);
+      }
+    }
+
+    setTimeout(() => {
+      document.getElementById("light-ball").setAttribute("opacity", "0"); 
+      document.getElementById('reset-btn').style.display = 'flex';
+    }, 500);
+  }
+
+  function resetAnimation() {
+    animationTimeouts.forEach(t => cancelAnimationFrame(t));
+    animationTimeouts = [];
+
+    isAnimating = false;
+    document.getElementById('play-btn').style.display = 'flex';
+    document.getElementById('reset-btn').style.display = 'none';
+    
+    document.getElementById("beam-container").innerHTML = "";
+    document.getElementById("markers-container").innerHTML = "";
+    
+    document.getElementById("light-ball").setAttribute("cx", "100");
+    document.getElementById("light-ball").setAttribute("cy", "190");
+    document.getElementById("light-ball").setAttribute("opacity", "0");
+    
+    const mainCounter = document.getElementById('main-counter');
+    mainCounter.textContent = "0";
+    mainCounter.setAttribute("fill", "#ef4444");
+    mainCounter.style.fontSize = "28px";
+  }
+</script>
+
+</body>
+</html>
