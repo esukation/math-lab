@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<!-- 加入 viewport 確保手機端能正確觸發 RWD 與防止手動縮放破壞版面 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AMC 2022 初級卷 Q30 動態解析</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  * { box-sizing: border-box; }
+  
+  body { 
+    background-color: #cbd5e1; 
+    font-family: 'Noto Sans TC', sans-serif;
+    margin: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden; /* 防止整個網頁出現滾動條，打造 App 體驗 */
+  }
+  
+  /* =========================================================
+     電腦與平板 (橫向) 預設大版面
+     ========================================================= */
+  .app-container {
+    width: 95%;
+    max-width: 1400px;
+    height: 90vh;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* 頂部標題 */
+  .header {
+    background: #1e293b;
+    color: white;
+    padding: 12px 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+  }
+  .header .badge { background: #ef4444; padding: 4px 12px; border-radius: 6px; font-size: 18px; font-weight: bold; }
+  .header h1 { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: 1px; }
+
+  /* 數字池橫幅 */
+  .pool-bar {
+    background: #f0f9ff;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: wrap; /* 允許在極小螢幕折行 */
+  }
+  .pool-label { font-size: 16px; font-weight: 900; color: #0369a1; margin-right: 10px; }
+  .num-box {
+    width: 35px; height: 35px;
+    background: #fff; border: 2px solid #cbd5e1; border-radius: 8px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 18px; font-weight: bold; color: #1e293b;
+  }
+  .num-box.wide { width: 50px; }
+  .num-dots { font-size: 20px; font-weight: bold; color: #94a3b8; letter-spacing: 2px; margin: 0 5px; }
+
+  /* 題目橫幅 */
+  .question-bar {
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+  .question-bar .q-text { font-size: 18px; font-weight: 700; color: #1e293b; line-height: 1.5; margin: 0; flex: 1; }
+
+  .target-seq-box {
+    background: #fef2f2; border: 2px solid #ef4444; padding: 6px 12px;
+    border-radius: 8px; color: #ef4444; font-weight: 900; font-size: 16px;
+    white-space: nowrap; transition: opacity 0.4s ease;
+  }
+
+  /* 內容區容器 (預設為左右並排 Row) */
+  .content {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    overflow: hidden;
+  }
+
+  /* SVG 動畫區 */
+  .animation-area {
+    flex: 0 0 55%;
+    background: #ffffff;
+    position: relative;
+    border-right: 2px solid #e2e8f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+  .animation-area svg { width: 100%; height: 100%; max-height: 100%; }
+
+  /* 文字解說區 */
+  .text-area {
+    flex: 0 0 45%;
+    display: flex;
+    flex-direction: column;
+    background: #fcfcfd;
+    overflow: hidden; 
+  }
+
+  /* 允許內部滾動 */
+  .dynamic-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  /* 美化滾動條 */
+  .dynamic-content::-webkit-scrollbar { width: 6px; }
+  .dynamic-content::-webkit-scrollbar-track { background: transparent; }
+  .dynamic-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+  .step-counter { color: #0ea5e9; font-weight: 900; font-size: 16px; margin-bottom: 5px; letter-spacing: 1px; }
+  .step-title { font-size: 24px; font-weight: 900; color: #1e293b; margin: 0 0 10px 0; line-height: 1.3; }
+  .step-desc { font-size: 18px; color: #334155; line-height: 1.5; margin: 0; }
+
+  .conclusion-card { background: #fef2f2; border-left: 6px solid #ef4444; padding: 12px 16px; border-radius: 0 10px 10px 0; font-weight: bold; color: #991b1b; font-size: 20px; margin-top: 15px; }
+
+  /* 控制列 (固定在底部) */
+  .control-panel {
+    padding: 15px 30px;
+    border-top: 2px solid #e2e8f0;
+    background: #fff;
+    display: flex;
+    gap: 15px;
+    flex-shrink: 0;
+  }
+  .btn {
+    flex: 1; padding: 12px 0; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px;
+  }
+  .btn-prev { background: #e2e8f0; color: #475569; }
+  .btn-prev:hover:not(:disabled) { background: #cbd5e1; }
+  .btn-next { background: #0ea5e9; color: #fff; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
+  .btn-next:hover { background: #0284c7; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+
+  /* SVG 動畫設定：安全淡入淡出 */
+  .scene { opacity: 0; pointer-events: none; transition: opacity 0.4s ease-in-out; }
+  .scene.active { opacity: 1; pointer-events: auto; }
+  .hidden { display: none !important; }
+  .hl-red { color: #ef4444; font-weight: bold; }
+
+
+  /* =========================================================
+     📱 手機與平板專用 RWD 響應式排版 (直立模式)
+     ========================================================= */
+  @media screen and (max-width: 850px) {
+    /* 移除背景留白，滿版顯示 */
+    body { padding: 0; }
+    
+    .app-container {
+      width: 100vw;
+      height: 100vh;
+      max-width: 100%;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .header { padding: 10px 15px; }
+    .header h1 { font-size: 20px; }
+    .header .badge { font-size: 16px; padding: 4px 8px; }
+
+    /* 數字池：縮小並允許折行 */
+    .pool-bar { padding: 8px 10px; gap: 5px; }
+    .pool-label { font-size: 14px; margin-right: 5px; }
+    .num-box { width: 30px; height: 30px; font-size: 14px; }
+    .num-box.wide { width: 40px; }
+
+    /* 題目列改為上下排版 */
+    .question-bar { flex-direction: column; padding: 12px 15px; gap: 10px; align-items: flex-start; }
+    .question-bar .q-text { font-size: 16px; }
+    .target-seq-box { font-size: 14px; padding: 6px 10px; align-self: stretch; text-align: center; }
+
+    /* 內容區：改為上下排列 (Column) */
+    .content { flex-direction: column; }
+
+    /* 上方圖形區：限制高度，讓出空間給文字 */
+    .animation-area {
+      flex: 0 0 35%; /* 佔據畫面上方 35% */
+      min-height: 200px;
+      border-right: none;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    /* 下方文字區：佔滿剩餘空間並可滾動 */
+    .text-area { flex: 1; }
+    .dynamic-content { padding: 15px; }
+    .step-title { font-size: 20px; }
+    .step-desc { font-size: 16px; }
+    .conclusion-card { font-size: 18px; padding: 10px; }
+
+    /* 控制按鈕區：加強觸控面積 */
+    .control-panel { padding: 10px 15px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+    .btn { padding: 15px 0; font-size: 18px; }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- 頂部標題 -->
+  <div class="header">
+    <div class="badge">Q30</div>
+    <h1>總和組合計數 - 逐步圖解</h1>
+  </div>
+  
+  <!-- 獨立出的奇數池橫幅 -->
+  <div class="pool-bar">
+    <span class="pool-label">可挑選的奇數池：</span>
+    <div class="num-box">1</div>
+    <div class="num-box">3</div>
+    <div class="num-box">5</div>
+    <div class="num-box">7</div>
+    <div class="num-box">9</div>
+    <div class="num-dots">...</div>
+    <div class="num-box wide">101</div>
+    <div class="num-box wide">103</div>
+    <div class="num-box wide">105</div>
+  </div>
+
+  <!-- 橫跨左右的題目區 -->
+  <div class="question-bar">
+    <div class="q-text">我從 1、3、5、7、9、...、105 之中選出三個互不相同的數，然後將它們相加。請問我總共可以得到多少個相異的總和？</div>
+    <div id="target-seq-box" class="target-seq-box hidden">🎯 目標數列：9, 11, 13, ..., 309</div>
+  </div>
+
+  <div class="content">
+    <!-- SVG 動畫區 (中心點設定在 X=400) -->
+    <div class="animation-area">
+      <svg viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444" /></marker>
+          <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a" /></marker>
+          <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#0ea5e9" /></marker>
+        </defs>
+
+        <!-- Scene 1: 試著湊湊看 -->
+        <g id="scene-try" class="scene" transform="translate(225, 200)">
+            <rect x="0" y="0" width="50" height="50" rx="8" fill="#fca5a5"/><text x="25" y="32" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+            <text x="75" y="34" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="0" width="50" height="50" rx="8" fill="#fca5a5"/><text x="125" y="32" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+            <text x="175" y="34" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="0" width="50" height="50" rx="8" fill="#fca5a5"/><text x="225" y="32" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+            <text x="275" y="34" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="35" font-size="36" font-weight="bold" fill="#1e293b">9</text>
+
+            <rect x="0" y="100" width="50" height="50" rx="8" fill="#fca5a5"/><text x="25" y="132" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+            <text x="75" y="134" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="100" width="50" height="50" rx="8" fill="#fca5a5"/><text x="125" y="132" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+            <text x="175" y="134" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="100" width="50" height="50" rx="8" fill="#fca5a5"/><text x="225" y="132" text-anchor="middle" font-size="24" font-weight="bold">7</text>
+            <text x="275" y="134" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="135" font-size="36" font-weight="bold" fill="#1e293b">11</text>
+        </g>
+
+        <!-- Scene 2: 重複陷阱 -->
+        <g id="scene-dup" class="scene" transform="translate(160, 200)">
+            <rect x="0" y="0" width="50" height="50" rx="8" fill="#bfdbfe"/><text x="25" y="32" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+            <text x="75" y="34" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="0" width="50" height="50" rx="8" fill="#bfdbfe"/><text x="125" y="32" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+            <text x="175" y="34" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="0" width="50" height="50" rx="8" fill="#bfdbfe"/><text x="225" y="32" text-anchor="middle" font-size="24" font-weight="bold">9</text>
+            <text x="275" y="34" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="35" font-size="36" font-weight="bold" fill="#ef4444">15</text>
+
+            <rect x="0" y="90" width="50" height="50" rx="8" fill="#bfdbfe"/><text x="25" y="122" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+            <text x="75" y="124" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="90" width="50" height="50" rx="8" fill="#bfdbfe"/><text x="125" y="122" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+            <text x="175" y="124" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="90" width="50" height="50" rx="8" fill="#bfdbfe"/><text x="225" y="122" text-anchor="middle" font-size="24" font-weight="bold">7</text>
+            <text x="275" y="124" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="125" font-size="36" font-weight="bold" fill="#ef4444">15</text>
+
+            <!-- 警告框修正：向右推並加入指示箭頭，徹底解決中文字重疊問題 -->
+            <rect x="290" y="-15" width="80" height="170" fill="none" stroke="#ef4444" stroke-width="4" stroke-dasharray="6,4" rx="10"/>
+            <path d="M 370 70 L 390 70" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)"/>
+            <text x="480" y="65" text-anchor="middle" font-size="26" font-weight="bold" fill="#ef4444">總和重複了！</text>
+            <text x="480" y="100" text-anchor="middle" font-size="18" font-weight="bold" fill="#1e293b">不能用排列組合算</text>
+          </g>
+        </g>
+
+        <!-- Scene 3: 最小和與奇偶性 -->
+        <g id="scene-min-odd" class="scene" transform="translate(160, 200)">
+            <text x="120" y="35" text-anchor="end" font-size="26" font-weight="bold" fill="#1e293b">最小的總和：</text>
+            <g transform="translate(140, 0)">
+                <rect x="0" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="25" y="32" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+                <text x="75" y="34" font-size="28" font-weight="bold">+</text>
+                <rect x="100" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="125" y="32" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+                <text x="175" y="34" font-size="28" font-weight="bold">+</text>
+                <rect x="200" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="225" y="32" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+                <text x="275" y="34" font-size="28" font-weight="bold">=</text>
+                <text x="325" y="35" font-size="40" font-weight="bold" fill="#16a34a">9</text>
+            </g>
+            <!-- 屬性解說框 -->
+            <rect x="50" y="120" width="450" height="90" rx="15" fill="#fef2f2" stroke="#ef4444" stroke-width="3"/>
+            <text x="275" y="160" font-size="24" font-weight="bold" fill="#ef4444" text-anchor="middle">奇數 + 奇數 + 奇數 = 奇數</text>
+            <text x="275" y="190" font-size="18" font-weight="bold" fill="#1e293b" text-anchor="middle">因此總和絕對不可能是偶數 (如 10, 12...)</text>
+        </g>
+
+        <!-- Scene 4: 範圍與最大和 -->
+        <g id="scene-max" class="scene" transform="translate(140, 150)">
+            <text x="110" y="35" text-anchor="end" font-size="26" font-weight="bold" fill="#1e293b">最小的總和：</text>
+            <g transform="translate(130, 0)">
+                <rect x="0" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="25" y="32" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+                <text x="75" y="34" font-size="28" font-weight="bold">+</text>
+                <rect x="100" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="125" y="32" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+                <text x="175" y="34" font-size="28" font-weight="bold">+</text>
+                <rect x="200" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="225" y="32" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+                <text x="275" y="34" font-size="28" font-weight="bold">=</text>
+                <text x="325" y="35" font-size="40" font-weight="bold" fill="#16a34a">9</text>
+            </g>
+            <text x="110" y="135" text-anchor="end" font-size="26" font-weight="bold" fill="#1e293b">最大的總和：</text>
+            <g transform="translate(130, 100)">
+                <rect x="0" y="0" width="60" height="50" rx="8" fill="#fecaca"/><text x="30" y="32" text-anchor="middle" font-size="24" font-weight="bold">101</text>
+                <text x="80" y="34" font-size="28" font-weight="bold">+</text>
+                <rect x="105" y="0" width="60" height="50" rx="8" fill="#fecaca"/><text x="135" y="32" text-anchor="middle" font-size="24" font-weight="bold">103</text>
+                <text x="185" y="34" font-size="28" font-weight="bold">+</text>
+                <rect x="210" y="0" width="60" height="50" rx="8" fill="#fecaca"/><text x="240" y="32" text-anchor="middle" font-size="24" font-weight="bold">105</text>
+                <text x="290" y="34" font-size="28" font-weight="bold">=</text>
+                <text x="340" y="35" font-size="40" font-weight="bold" fill="#ef4444">309</text>
+            </g>
+            <path d="M 30 220 L 530 220" stroke="#0ea5e9" stroke-width="4" stroke-dasharray="8,4"/>
+            <circle cx="30" cy="220" r="8" fill="#16a34a"/>
+            <circle cx="530" cy="220" r="8" fill="#ef4444"/>
+            <text x="280" y="260" font-size="22" font-weight="bold" fill="#0ea5e9" text-anchor="middle">所有的可能答案必定落在 9 到 309 的「奇數」</text>
+        </g>
+
+        <!-- Scene 5: Pattern +2 -->
+        <g id="scene-pattern" class="scene" transform="translate(220, 140)">
+            <rect x="0" y="0" width="50" height="50" rx="8" fill="#e2e8f0"/><text x="25" y="32" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+            <text x="75" y="34" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="0" width="50" height="50" rx="8" fill="#e2e8f0"/><text x="125" y="32" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+            <text x="175" y="34" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="0" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="225" y="32" text-anchor="middle" font-size="24" font-weight="bold">5</text>
+            <text x="275" y="34" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="35" font-size="36" font-weight="bold" fill="#1e293b">9</text>
+
+            <path d="M 225 60 L 225 90" stroke="#16a34a" stroke-width="3" marker-end="url(#arrow-green)"/>
+            <path d="M 335 60 L 335 90" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)"/>
+            <text x="365" y="82" font-size="24" font-weight="bold" fill="#ef4444">+ 2</text>
+
+            <rect x="0" y="100" width="50" height="50" rx="8" fill="#e2e8f0"/><text x="25" y="132" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+            <text x="75" y="134" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="100" width="50" height="50" rx="8" fill="#e2e8f0"/><text x="125" y="132" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+            <text x="175" y="134" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="100" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="225" y="132" text-anchor="middle" font-size="24" font-weight="bold">7</text>
+            <text x="275" y="134" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="135" font-size="36" font-weight="bold" fill="#1e293b">11</text>
+
+            <path d="M 225 160 L 225 190" stroke="#16a34a" stroke-width="3" marker-end="url(#arrow-green)"/>
+            <path d="M 335 160 L 335 190" stroke="#ef4444" stroke-width="3" marker-end="url(#arrow-red)"/>
+            <text x="365" y="182" font-size="24" font-weight="bold" fill="#ef4444">+ 2</text>
+
+            <rect x="0" y="200" width="50" height="50" rx="8" fill="#e2e8f0"/><text x="25" y="232" text-anchor="middle" font-size="24" font-weight="bold">1</text>
+            <text x="75" y="234" font-size="28" font-weight="bold">+</text>
+            <rect x="100" y="200" width="50" height="50" rx="8" fill="#e2e8f0"/><text x="125" y="232" text-anchor="middle" font-size="24" font-weight="bold">3</text>
+            <text x="175" y="234" font-size="28" font-weight="bold">+</text>
+            <rect x="200" y="200" width="50" height="50" rx="8" fill="#bbf7d0"/><text x="225" y="232" text-anchor="middle" font-size="24" font-weight="bold">9</text>
+            <text x="275" y="234" font-size="28" font-weight="bold">=</text>
+            <text x="325" y="235" font-size="36" font-weight="bold" fill="#1e293b">13</text>
+
+            <rect x="-70" y="280" width="500" height="50" rx="10" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2"/>
+            <text x="180" y="312" font-size="20" font-weight="bold" fill="#0369a1" text-anchor="middle">每次替換數字，總和剛好 +2，沒有空隙！</text>
+        </g>
+
+        <!-- Scene 6: Sequence -->
+        <g id="scene-seq" class="scene" transform="translate(400, 260)">
+            <text x="0" y="-10" text-anchor="middle" font-size="32" font-weight="bold" fill="#1e293b">我們確定了所有可能的總和為：</text>
+            <rect x="-260" y="40" width="520" height="90" rx="15" fill="#fef2f2" stroke="#ef4444" stroke-width="4"/>
+            <text x="0" y="100" text-anchor="middle" font-size="46" font-weight="bold" fill="#ef4444" letter-spacing="2">9, 11, 13, ..., 309</text>
+        </g>
+
+        <!-- Scene 7: Shift method (國小魔法) -->
+        <g id="scene-shift" class="scene" transform="translate(400, 160)">
+            <text x="0" y="0" text-anchor="middle" font-size="40" font-weight="bold" fill="#1e293b">9, 11, 13, 15, ..., 309</text>
+            
+            <path d="M 0 20 L 0 60" stroke="#0ea5e9" stroke-width="4" marker-end="url(#arrow-blue)"/>
+            <text x="30" y="48" font-size="22" font-weight="bold" fill="#0ea5e9">全部 + 1 (變偶數)</text>
+
+            <text x="0" y="100" text-anchor="middle" font-size="40" font-weight="bold" fill="#0ea5e9">10, 12, 14, 16, ..., 310</text>
+
+            <path d="M 0 120 L 0 160" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-red)"/>
+            <text x="30" y="148" font-size="22" font-weight="bold" fill="#ef4444">全部 ÷ 2 (變連續整數)</text>
+
+            <text x="0" y="210" text-anchor="middle" font-size="42" font-weight="bold" fill="#ef4444">5, 6, 7, 8, ..., 155</text>
+
+            <rect x="-250" y="250" width="500" height="70" rx="15" fill="#f0fdf4" stroke="#16a34a" stroke-width="4"/>
+            <text x="0" y="295" text-anchor="middle" font-size="30" font-weight="bold" fill="#16a34a">總數量 = 155 - 4 = 151 個</text>
+        </g>
+        
+        <!-- Scene 8: Formula method (國中公式) -->
+        <g id="scene-formula" class="scene" transform="translate(400, 150)">
+            <text x="0" y="0" text-anchor="middle" font-size="36" font-weight="bold" fill="#1e293b">9, 11, 13, 15, ..., 309</text>
+
+            <rect x="-220" y="40" width="440" height="80" rx="10" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="3"/>
+            <text x="0" y="75" text-anchor="middle" font-size="22" font-weight="bold" fill="#0369a1">等差數列項數公式</text>
+            <text x="0" y="105" text-anchor="middle" font-size="24" font-weight="bold" fill="#1e293b">n = (末項 - 首項) ÷ 公差 + 1</text>
+
+            <text x="0" y="160" text-anchor="middle" font-size="22" font-weight="bold" fill="#334155">首項 = 9, 末項 = 309, 公差 = 2</text>
+
+            <rect x="-220" y="190" width="440" height="100" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="3"/>
+            <text x="0" y="230" text-anchor="middle" font-size="26" font-weight="bold" fill="#ef4444">n = (309 - 9) ÷ 2 + 1</text>
+            <text x="0" y="270" text-anchor="middle" font-size="26" font-weight="bold" fill="#ef4444">= 300 ÷ 2 + 1 = 151</text>
+
+            <rect x="-110" y="320" width="220" height="60" rx="12" fill="#ef4444" stroke="#b91c1c" stroke-width="2" />
+            <text x="0" y="360" text-anchor="middle" font-size="30" font-weight="bold" fill="#fff">答：151 個</text>
+        </g>
+      </svg>
+    </div>
+    
+    <!-- 右側文字解說區 (手機版時會自動往下排) -->
+    <div class="text-area">
+      <!-- 在內部允許滾動 -->
+      <div class="dynamic-content">
+        <div id="step-counter" class="step-counter">STEP 1 / 8</div>
+        <h2 id="step-title" class="step-title">什麼是「相異和」？</h2>
+        <p id="step-desc" class="step-desc">我們要在頂部的「奇數池」中，挑選三個不重複的數字相加。<br><br>一開始，我們先試著隨便挑幾個數字，例如挑最小的 <b>1, 3, 5</b> 來算算看，總和是 9。<br><br>換個數字變成 <b>1, 3, 7</b>，總和是 11... 看起來可以慢慢湊出很多不同的答案！</p>
+        <div id="step-conclusion" class="conclusion-card hidden"></div>
+      </div>
+
+      <!-- 控制列 -->
+      <div class="control-panel">
+        <button id="btn-prev" class="btn btn-prev" disabled><i class="fa-solid fa-arrow-left"></i> 上一步</button>
+        <button id="btn-next" class="btn btn-next">下一步 <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const steps = [
+    {
+      title: "嘗試湊出總和",
+      desc: "我們要在頂部的「奇數池」中，挑選三個不重複的數字相加。<br><br>一開始，我們先試著隨便挑幾個數字，例如挑最小的 <b>1, 3, 5</b> 來算算看，總和是 9。<br><br>換個數字變成 <b>1, 3, 7</b>，總和是 11... 看起來可以慢慢湊出很多不同的答案！",
+      showTargetSeq: false,
+      action: () => showOnly(['scene-try'])
+    },
+    {
+      title: "發現「重複」的陷阱",
+      desc: "等等！如果你繼續湊數字，會發現有些組合加出來的<span class='hl-red'>「總和是一樣的」</span>。<br><br>例如：1+5+9=15，3+5+7 也是 15。<br><br>題目問的是「相異的總和」，所以我們絕對不能用「排列組合公式」來算，那樣會重複計算！",
+      showTargetSeq: false,
+      action: () => showOnly(['scene-dup'])
+    },
+    {
+      title: "尋找最小和與奇偶性",
+      desc: "既然不能算挑法，我們改看「結果的範圍」。<br><br>首先，找出能湊出的<b>最小和</b>：1+3+5 = <span class='hl-red'>9</span>。<br><br>另外，因為我們挑的數字都是奇數，奇數相加的結果<b>必為奇數</b>！所以總和絕對不可能是偶數。",
+      showTargetSeq: false,
+      action: () => showOnly(['scene-min-odd'])
+    },
+    {
+      title: "尋找最大和與範圍",
+      desc: "再來，我們找出能湊出的<b>最大和</b>：挑最大的三個數字 101+103+105 = <span class='hl-red'>309</span>。<br><br>結合前面的發現，我們知道所有可能的總和答案，都會落在 <span class='hl-red'>9 到 309 之間的奇數</span>。",
+      showTargetSeq: false,
+      action: () => showOnly(['scene-max'])
+    },
+    {
+      title: "確認 +2 連續規律",
+      desc: "但是，9 到 309 之間的「每一個」奇數都能被湊出來嗎？<br><br>觀察左邊的算式，只要我們把其中一個數字「換成下一個奇數」(例如將 5 換成 7)，總和就會剛好 <span class='hl-red'>+2</span>。<br><br>這代表 9 到 309 之間的所有奇數，我們都能連續湊出來！完全沒有空隙！",
+      showTargetSeq: false,
+      action: () => showOnly(['scene-pattern'])
+    },
+    {
+      title: "列出目標數列",
+      desc: "現在問題變得很簡單！<br><br>既然 9 到 309 之間的所有奇數都可以被湊出來，我們只需要算出這串數列有幾個數字：<br><br><b>9, 11, 13, 15 ... 一直到 309</b>。",
+      showTargetSeq: true,
+      action: () => showOnly(['scene-seq'])
+    },
+    {
+      title: "國小魔法平移法",
+      desc: "跳號的數列很難算，我們用一個簡單的平移魔法：<br>1. 先把所有數字 <b>+1</b>，變成偶數：10, 12... 310。<br>2. 再把大家 <b>÷2</b>，變成連續整數：5, 6... 155！<br><br>現在從 5 連續數到 155，拿 155 減去前方沒數到的 1~4 共四個數字即可！",
+      showTargetSeq: true,
+      conclusion: "計算結果：<span class='hl-red'>151</span> 個！",
+      action: () => showOnly(['scene-shift'])
+    },
+    {
+      title: "等差數列公式 (國中解法)",
+      desc: "到了國中，我們可以把這串數字當作「等差數列」。<br>套用項數公式：<b>(末項 - 首項) ÷ 公差 + 1</b><br><br>已知首項 9，末項 309，公差 2。<br>代入公式：(309 - 9) ÷ 2 + 1 = 150 + 1 = <span class='hl-red'>151</span>！",
+      showTargetSeq: true,
+      conclusion: "最終答案：<span class='hl-red'>151</span>，兩種方法皆可！",
+      action: () => showOnly(['scene-formula'])
+    }
+  ];
+
+  let currentStep = 0;
+
+  const titleEl = document.getElementById('step-title');
+  const descEl = document.getElementById('step-desc');
+  const counterEl = document.getElementById('step-counter');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const targetSeqBox = document.getElementById('target-seq-box');
+  const conclusionBox = document.getElementById('step-conclusion');
+
+  function updateUI() {
+    titleEl.innerHTML = steps[currentStep].title;
+    descEl.innerHTML = steps[currentStep].desc;
+    counterEl.innerText = `STEP ${currentStep + 1} / ${steps.length}`;
+
+    if(steps[currentStep].showTargetSeq) {
+        targetSeqBox.classList.remove('hidden');
+    } else {
+        targetSeqBox.classList.add('hidden');
+    }
+
+    if(steps[currentStep].conclusion) {
+        conclusionBox.innerHTML = steps[currentStep].conclusion;
+        conclusionBox.classList.remove('hidden');
+    } else {
+        conclusionBox.classList.add('hidden');
+    }
+
+    btnPrev.disabled = currentStep === 0;
+    btnNext.disabled = currentStep === steps.length - 1;
+    
+    if(currentStep === steps.length - 1) {
+        btnNext.innerHTML = "解析完成 <i class='fa-solid fa-check'></i>";
+        btnNext.style.background = "#16a34a";
+        btnNext.style.boxShadow = "0 4px 10px rgba(22, 163, 74, 0.3)";
+    } else {
+        btnNext.innerHTML = "下一步 <i class='fa-solid fa-arrow-right'></i>";
+        btnNext.style.background = "#0ea5e9";
+        btnNext.style.boxShadow = "0 4px 10px rgba(14, 165, 233, 0.3)";
+    }
+
+    steps[currentStep].action();
+  }
+
+  const allScenes = ['scene-try', 'scene-dup', 'scene-min-odd', 'scene-max', 'scene-pattern', 'scene-seq', 'scene-shift', 'scene-formula'];
+  
+  function showOnly(idsToShow) {
+    allScenes.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) {
+        if(idsToShow.includes(id)) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      }
+    });
+  }
+
+  btnNext.addEventListener('click', () => {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      updateUI();
+      // 在手機版時，自動將文字區捲到最上方方便閱讀新內容
+      document.querySelector('.dynamic-content').scrollTop = 0;
+    }
+  });
+
+  btnPrev.addEventListener('click', () => {
+    if (currentStep > 0) {
+      currentStep--;
+      updateUI();
+      document.querySelector('.dynamic-content').scrollTop = 0;
+    }
+  });
+
+  updateUI();
+</script>
+
+</body>
+</html>
