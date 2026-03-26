@@ -29,7 +29,7 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // --- 圖示元件庫 (安全轉換版，不使用 import) ---
+    // --- 圖示元件庫 ---
     const IconChevronRight = ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
     const IconArrowLeft = ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
     const IconArrowRight = ({className}) => <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>;
@@ -246,8 +246,10 @@
         </div>
       );
 
+      // ===== 更新的學習單視圖 (加入產生器連結) =====
       const WorksheetsView = () => {
         const worksheetsData = [
+          { id: 'tool-truth', title: '實話直說：解碼學習單產生器', desc: '自訂英文短句自動生成座標解碼任務，支援全班批次隨機抽題與解答總表列印。', isTool: true, url: 'truth_teller.html' },
           { id: 'w1', title: '代數精粹：方程式與絕對值', desc: '淬鍊代數直覺，從絕對值拆解到高次方程式的圖解心法。' },
           { id: 'w2', title: '幾何透視：空間與平面', desc: '打破二維限制，培養大腦建構立體輔助線的高階空間感。' },
           { id: 'w3', title: '數論探微：質數與因數', desc: '回歸數字本質，透過餘數與質因數分解破解AMC經典難題。' },
@@ -257,16 +259,18 @@
           <div className="animate-in fade-in duration-700 max-w-5xl mx-auto">
             <div className="mb-12 border-b border-white/5 pb-6">
               <h2 className="font-serif text-3xl text-white tracking-widest mb-3">奕數咖學學習單</h2>
-              <p className="text-gray-500 text-sm tracking-widest font-light">淬鍊解題直覺的獨家特調講義</p>
+              <p className="text-gray-500 text-sm tracking-widest font-light">淬鍊解題直覺的獨家特調講義與互動工具</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {worksheetsData.map((sheet, index) => (
-                <div key={sheet.id} className="flex flex-col p-8 lg:p-10 bg-[#1A1A24] border border-white/5 hover:border-[#D4AF37]/50 hover:bg-white/[0.02] transition-all duration-500 group cursor-pointer relative overflow-hidden">
+                <div key={sheet.id} onClick={() => sheet.isTool ? window.open(sheet.url, '_blank') : alert('講義建置中，敬請期待！')} className="flex flex-col p-8 lg:p-10 bg-[#1A1A24] border border-white/5 hover:border-[#D4AF37]/50 hover:bg-white/[0.02] transition-all duration-500 group cursor-pointer relative overflow-hidden">
                   <div className="absolute -bottom-6 -right-6 text-white/[0.02] group-hover:text-[#D4AF37]/[0.05] transition-colors duration-500">
                     <IconFileSignature className="w-40 h-40" />
                   </div>
                   <div className="relative z-10">
-                    <span className="text-[#D4AF37] text-[10px] md:text-xs tracking-[0.3em] mb-4 uppercase block">Volume {String(index + 1).padStart(2, '0')}</span>
+                    <span className="text-[#D4AF37] text-[10px] md:text-xs tracking-[0.3em] mb-4 uppercase block">
+                      {sheet.isTool ? 'Interactive Tool' : `Volume ${String(index).padStart(2, '0')}`}
+                    </span>
                     <h3 className="font-serif text-xl md:text-2xl text-white group-hover:text-[#D4AF37] tracking-widest mb-4 transition-colors duration-500 leading-snug">{sheet.title}</h3>
                     <p className="text-gray-500 text-sm font-light leading-relaxed tracking-wide mb-8">{sheet.desc}</p>
                   </div>
@@ -330,13 +334,11 @@
         
         const has3D = !!data.interactiveUrl;
         
-        // 🌟 動態讀取多重解法
         const availableMethods = [];
         if (data.method1) availableMethods.push({ id: 'method1', name: data.method1.methodName || '解法一', color: 'bg-[#0ea5e9]', borderColor: 'border-[#0ea5e9]' });
         if (data.method2) availableMethods.push({ id: 'method2', name: data.method2.methodName || '解法二', color: 'bg-[#ef4444]', borderColor: 'border-[#ef4444]' });
         if (data.method3) availableMethods.push({ id: 'method3', name: data.method3.methodName || '解法三', color: 'bg-[#10b981]', borderColor: 'border-[#10b981]' });
 
-        // 決定目前要顯示的資料
         let activeData = data;
         let activeBorderClass = 'border-[#D4AF37]';
         
