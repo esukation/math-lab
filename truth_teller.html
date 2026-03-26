@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>實話直說學習單產生器</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style id="app-style">
+        /* 列印專用樣式，確保 SVG 完美填滿 A4 並強制分頁 */
+        @media print {
+            body {
+                background-color: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .print-hidden {
+                display: none !important;
+            }
+            .print-block {
+                display: block !important;
+            }
+            .print-page {
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                width: 100vw !important;
+                height: 100vh !important;
+                page-break-after: always; /* 強制分頁 */
+                break-after: page;
+                background-color: white !important;
+            }
+            .print-page svg {
+                max-width: 100vw !important;
+                max-height: 100vh !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            /* 教師總表與學生字庫專用樣式 */
+            .teacher-table {
+                width: 90%;
+                margin: 0 auto;
+                border-collapse: collapse;
+            }
+            .teacher-table th, .teacher-table td {
+                border: 2px solid #334155;
+                padding: 12px;
+                text-align: left;
+                font-size: 18px;
+            }
+            .teacher-table th {
+                background-color: #f1f5f9 !important;
+                font-weight: bold;
+            }
+            .dict-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr); /* 學生字庫改為一排 3 個，容納更多干擾項 */
+                gap: 12px;
+                width: 95%;
+                margin: 0 auto;
+            }
+            .dict-card {
+                border: 2px dashed #94a3b8;
+                padding: 12px 8px;
+                border-radius: 8px;
+                background-color: #f8fafc !important;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen scroll-smooth">
+    <div id="root"></div>
+
+    <script type="text/babel" id="app-source">
+        const { useState, useEffect, useRef } = React;
+
+        const App = () => {
+            const [sentence, setSentence] = useState("I LIKE DOING HOMEWORK");
+            const [showAnswers, setShowAnswers] = useState(false);
+            const [previewData, setPreviewData] = useState({ points: [], serial: '000', text: '' });
+            
+            const [printAmount, setPrintAmount] = useState(1);
+            const [printPagesData, setPrintPagesData] = useState([]);
+            const [batchMode, setBatchMode] = useState('same'); 
+            const [answerMode, setAnswerMode] = useState('summary'); 
+            const [printStudentDict, setPrintStudentDict] = useState(true); 
+            const [isPreparingPrint, setIsPreparingPrint] = useState(false);
+
+            const previewRef = useRef(null); 
+
+            // 大量擴充：長度相近 (約 12~18 字母)，並加入音標與翻譯
+            const phrases = [
+                { en: "MATH IS SO FUN", zh: "數學很有趣", ipa: "/mæθ ɪz soʊ fʌn/" },
+                { en: "I REALLY LOVE MATH", zh: "我非常愛數學", ipa: "/aɪ ˈrɪli lʌv mæθ/" },
+                { en: "YOU ARE VERY SMART", zh: "你非常聰明", ipa: "/ju ɑr ˈvɛri smɑrt/" },
+                { en: "NEVER EVER GIVE UP", zh: "永遠不要放棄", ipa: "/ˈnɛvər ˈɛvər gɪv ʌp/" },
+                { en: "ALWAYS DO YOUR BEST", zh: "總是盡你所能", ipa: "/ˈɔlweɪz du jʊər bɛst/" },
+                { en: "YES YOU CAN DO IT", zh: "是的你可以做到", ipa: "/jɛs ju kæn du ɪt/" },
+                { en: "JUST KEEP ON TRYING", zh: "只要繼續嘗試", ipa: "/ʤʌst kip ɑn ˈtraɪɪŋ/" },
+                { en: "HAVE A GREAT DAY", zh: "祝你有個美好的一天", ipa: "/hæv ə greɪt deɪ/" },
+                { en: "BELIEVE IN YOURSELF", zh: "相信你自己", ipa: "/bɪˈliv ɪn jʊərˈsɛlf/" },
+                { en: "ALWAYS STAY CURIOUS", zh: "永遠保持好奇心", ipa: "/ˈɔlweɪz steɪ ˈkjʊriəs/" },
+                { en: "YOU DID A GOOD JOB", zh: "你做得很好", ipa: "/ju dɪd ə gʊd ʤɑb/" },
+                { en: "WE LEARN AND GROW", zh: "我們學習與成長", ipa: "/wi lɜrn ænd groʊ/" },
+                { en: "TRUST THE PROCESS", zh: "相信這個過程", ipa: "/trʌst ðə ˈprɑsɛs/" },
+                { en: "PRACTICE IS PERFECT", zh: "練習造就完美", ipa: "/ˈpræktəs ɪz ˈpɜrfɪkt/" },
+                { en: "MATH IS LIKE MAGIC", zh: "數學就像魔法", ipa: "/mæθ ɪz laɪk ˈmæʤɪk/" },
+                { en: "KNOWLEDGE IS POWER", zh: "知識就是力量", ipa: "/ˈnɑləʤ ɪz ˈpaʊər/" },
+                { en: "ALWAYS DARE TO DREAM", zh: "永遠勇於作夢", ipa: "/ˈɔlweɪz dɛr tu drim/" },
+                { en: "BE KIND TO OTHERS", zh: "對他人友善", ipa: "/bi kaɪnd tu ˈʌðərz/" },
+                { en: "WORK HARD PLAY HARD", zh: "認真學習，盡情玩樂", ipa: "/wɜrk hɑrd pleɪ hɑrd/" },
+                { en: "I LIKE DOING HOMEWORK", zh: "我喜歡寫作業", ipa: "/aɪ laɪk ˈduɪŋ ˈhoʊmˌwɜrk/" },
+                { en: "YOU ARE SO AMAZING", zh: "你太棒了", ipa: "/ju ɑr soʊ əˈmeɪzɪŋ/" },
+                { en: "LET US MAKE IT HAPPEN", zh: "讓我們實現它吧", ipa: "/lɛt ʌs meɪk ɪt ˈhæpən/" },
+                { en: "ALWAYS THINK POSITIVE", zh: "永遠往好處想", ipa: "/ˈɔlweɪz θɪŋk ˈpɑzətɪv/" },
+                { en: "DREAM BIG AIM HIGH", zh: "夢想遠大，志向高遠", ipa: "/drim bɪg eɪm haɪ/" },
+                { en: "I STUDY EVERY DAY", zh: "我每天學習", ipa: "/aɪ ˈstʌdi ˈɛvəri deɪ/" },
+                { en: "WE LOVE OUR SCHOOL", zh: "我們愛我們的學校", ipa: "/wi lʌv ˈaʊər skul/" },
+                { en: "MATH IS REALLY COOL", zh: "數學真的很酷", ipa: "/mæθ ɪz ˈrɪli kul/" },
+                { en: "I AM A GOOD STUDENT", zh: "我是一個好學生", ipa: "/aɪ æm ə gʊd ˈstudənt/" },
+                { en: "WE LOVE TO LEARN", zh: "我們熱愛學習", ipa: "/wi lʌv tu lɜrn/" },
+                { en: "JUST ASK A QUESTION", zh: "儘管發問吧", ipa: "/ʤʌst æsk ə ˈkwɛsʧən/" },
+                { en: "NUMBERS ARE SO FUN", zh: "數字非常有趣", ipa: "/ˈnʌmbərz ɑr soʊ fʌn/" },
+                { en: "BE A BETTER FRIEND", zh: "當個更好的朋友", ipa: "/bi ə ˈbɛtər frɛnd/" },
+                { en: "HELP YOUR BEST FRIEND", zh: "幫助你最好的朋友", ipa: "/hɛlp jʊər bɛst frɛnd/" },
+                { en: "ENJOY YOUR OWN LIFE", zh: "享受你的人生", ipa: "/ɛnˈʤɔɪ jʊər oʊn laɪf/" },
+                { en: "MAKE SOME NEW FRIENDS", zh: "結交一些新朋友", ipa: "/meɪk sʌm nu frɛndz/" },
+                { en: "BE HAPPY EVERY DAY", zh: "每天都要快樂", ipa: "/bi ˈhæpi ˈɛvəri deɪ/" },
+                { en: "YOU ARE THE BEST ONE", zh: "你是最棒的", ipa: "/ju ɑr ðə bɛst wʌn/" },
+                { en: "I AM VERY STRONG NOW", zh: "我現在很堅強", ipa: "/aɪ æm ˈvɛri strɔŋ naʊ/" },
+                { en: "ALWAYS BE VERY BRAVE", zh: "永遠保持勇敢", ipa: "/ˈɔlweɪz bi ˈvɛri breɪv/" },
+                { en: "TIME IS MORE THAN MONEY", zh: "時間比金錢更重要", ipa: "/taɪm ɪz mɔr ðæn ˈmʌni/" },
+                { en: "JUST DO IT RIGHT NOW", zh: "現在就去做", ipa: "/ʤʌst du ɪt raɪt naʊ/" },
+                { en: "PLEASE TAKE A BREAK", zh: "請休息一下", ipa: "/pliz teɪk ə breɪk/" },
+                { en: "YOU CAN SHINE BRIGHT", zh: "你可以閃閃發光", ipa: "/ju kæn ʃaɪn braɪt/" },
+                { en: "I LISTEN TO POP MUSIC", zh: "我聽流行音樂", ipa: "/aɪ ˈlɪsən tu pɑp ˈmjuzɪk/" },
+                { en: "HAVE SOME FUN TODAY", zh: "今天找點樂子吧", ipa: "/hæv sʌm fʌn təˈdeɪ/" },
+                { en: "ALWAYS KEEP A SMILE", zh: "永遠保持微笑", ipa: "/ˈɔlweɪz kip ə smaɪl/" },
+                { en: "READ A VERY GOOD BOOK", zh: "讀一本很好的書", ipa: "/rid ə ˈvɛri gʊd bʊk/" },
+                { en: "ALWAYS BE SO HONEST", zh: "永遠保持誠實", ipa: "/ˈɔlweɪz bi soʊ ˈɑnəst/" },
+                { en: "FIND YOUR OWN PASSION", zh: "找到你自己的熱情", ipa: "/faɪnd jʊər oʊn ˈpæʃən/" },
+                { en: "ENJOY THIS GOOD MOMENT", zh: "享受這個美好的當下", ipa: "/ɛnˈʤɔɪ ðɪs gʊd ˈmoʊmənt/" },
+                { en: "WASH YOUR HANDS DAILY", zh: "每天洗手", ipa: "/wɑʃ jʊər hændz ˈdeɪli/" },
+                { en: "CLEAN YOUR OWN DESK", zh: "清理你自己的書桌", ipa: "/klin jʊər oʊn dɛsk/" },
+                { en: "DRINK MORE PURE WATER", zh: "多喝純水", ipa: "/drɪŋk mɔr pjʊr ˈwɔtər/" },
+                { en: "EAT MORE FRESH FRUITS", zh: "多吃新鮮水果", ipa: "/it mɔr frɛʃ fruts/" },
+                { en: "SLEEP EARLY WAKE EARLY", zh: "早睡早起", ipa: "/slip ˈɜrli weɪk ˈɜrli/" },
+                { en: "RESPECT YOUR TEACHERS", zh: "尊敬你的老師", ipa: "/rɪˈspɛkt jʊər ˈtiʧərz/" },
+                { en: "HELP YOUR DEAR PARENTS", zh: "幫助你親愛的父母", ipa: "/hɛlp jʊər dɪr ˈpɛrənts/" },
+                { en: "PLAY SPORTS EVERY WEEK", zh: "每週做運動", ipa: "/pleɪ spɔrts ˈɛvəri wik/" },
+                { en: "RIDE A BICYCLE TODAY", zh: "今天騎腳踏車", ipa: "/raɪd ə ˈbaɪsɪkəl təˈdeɪ/" },
+                { en: "DRAW A BEAUTIFUL TREE", zh: "畫一棵美麗的樹", ipa: "/drɔ ə ˈbjutəfəl tri/" },
+                { en: "SING A HAPPY SONG NOW", zh: "現在唱首快樂的歌", ipa: "/sɪŋ ə ˈhæpi sɔŋ naʊ/" },
+                { en: "LOOK AT THE BLUE SKY", zh: "看看藍天", ipa: "/lʊk æt ðə blu skaɪ/" },
+                { en: "SAY HELLO TO EVERYONE", zh: "對每個人說哈囉", ipa: "/seɪ həˈloʊ tu ˈɛvəriˌwʌn/" },
+                { en: "BE PROUD OF YOURSELF", zh: "為你自己感到驕傲", ipa: "/bi praʊd ʌv jʊərˈsɛlf/" },
+                { en: "MAKE SOME GOOD CHOICES", zh: "做出好的選擇", ipa: "/meɪk sʌm gʊd ˈʧɔɪsəz/" },
+                { en: "LEARN FROM YOUR MISTAKE", zh: "從錯誤中學習", ipa: "/lɜrn frʌm jʊər mɪˈsteɪk/" },
+                { en: "CREATE YOUR OWN FUTURE", zh: "創造你自己的未來", ipa: "/kriˈeɪt jʊər oʊn ˈfjuʧər/" },
+                { en: "KEEP YOUR ROOM SO CLEAN", zh: "保持房間非常乾淨", ipa: "/kip jʊər rum soʊ klin/" },
+                { en: "TAKE A DEEP BREATH NOW", zh: "現在深呼吸", ipa: "/teɪk ə dip brɛθ naʊ/" },
+                { en: "GIVE ME A HIGH FIVE", zh: "跟我擊個掌", ipa: "/gɪv mi ə haɪ faɪv/" },
+                { en: "SHARE WITH YOUR FRIENDS", zh: "與你的朋友分享", ipa: "/ʃɛr wɪð jʊər frɛndz/" },
+                { en: "SMILE AT THE BRIGHT SUN", zh: "對著明亮的太陽微笑", ipa: "/smaɪl æt ðə braɪt sʌn/" },
+                { en: "FOLLOW YOUR OWN HEART", zh: "跟隨你自己的心", ipa: "/ˈfɑloʊ jʊər oʊn hɑrt/" },
+                { en: "THINK BEFORE YOU SPEAK", zh: "說話前先思考", ipa: "/θɪŋk bɪˈfɔr ju spik/" },
+                { en: "FOCUS ON YOUR STUDY", zh: "專注於你的課業", ipa: "/ˈfoʊkəs ɑn jʊər ˈstʌdi/" },
+                { en: "ENJOY EVERY LITTLE THING", zh: "享受每一件小事", ipa: "/ɛnˈʤɔɪ ˈɛvəri ˈlɪtəl θɪŋ/" },
+                { en: "BE A VERY GOOD LISTENER", zh: "做一個很好的傾聽者", ipa: "/bi ə ˈvɛri gʊd ˈlɪsənər/" },
+                { en: "WRITE A LETTER TO HIM", zh: "寫封信給他", ipa: "/raɪt ə ˈlɛtər tu hɪm/" },
+                { en: "SAY THANK YOU TO HER", zh: "對她說謝謝", ipa: "/seɪ θæŋk ju tu hɜr/" },
+                { en: "BE POLITE TO EVERYONE", zh: "對每個人都有禮貌", ipa: "/bi pəˈlaɪt tu ˈɛvəriˌwʌn/" },
+                { en: "EVERY DAY IS A NEW START", zh: "每一天都是新的開始", ipa: "/ˈɛvəri deɪ ɪz ə nu stɑrt/" },
+                { en: "ACTION SPEAKS VERY LOUD", zh: "行動勝於空談", ipa: "/ˈækʃən spiks ˈvɛri laʊd/" },
+                { en: "DO NOT BE AFRAID NOW", zh: "現在不要害怕", ipa: "/du nɑt bi əˈfreɪd naʊ/" },
+                { en: "EVERYTHING WILL BE OKAY", zh: "一切都會好起來的", ipa: "/ˈɛvriˌθɪŋ wɪl bi ˌoʊˈkeɪ/" },
+                { en: "STAY CALM AND CARRY ON", zh: "保持冷靜，繼續前進", ipa: "/steɪ kɑm ænd ˈkæri ɑn/" },
+                { en: "BE THE BEST YOU CAN BE", zh: "做最好的自己", ipa: "/bi ðə bɛst ju kæn bi/" },
+                { en: "HOPE FOR THE VERY BEST", zh: "抱持最好的希望", ipa: "/hoʊp fɔr ðə ˈvɛri bɛst/" },
+                { en: "WORK SMART NOT JUST HARD", zh: "聰明工作，不僅是努力", ipa: "/wɜrk smɑrt nɑt ʤʌst hɑrd/" },
+                { en: "LITTLE BY LITTLE WE GROW", zh: "我們一點一滴地成長", ipa: "/ˈlɪtəl baɪ ˈlɪtəl wi groʊ/" },
+                { en: "ENJOY THE LONG WEEKEND", zh: "享受這個長週末", ipa: "/ɛnˈʤɔɪ ðə lɔŋ ˈwiˌkɛnd/" },
+                { en: "PLAY CHESS WITH MY DAD", zh: "和我爸爸下西洋棋", ipa: "/pleɪ ʧɛs wɪð maɪ dæd/" },
+                { en: "COOK DINNER FOR MY MOM", zh: "為我媽媽煮晚餐", ipa: "/kʊk ˈdɪnər fɔr maɪ mɑm/" },
+                { en: "WATCH A FUNNY MOVIE", zh: "看一部有趣的電影", ipa: "/wɑʧ ə ˈfʌni ˈmuvi/" },
+                { en: "CLEAN THE WHITE BOARD", zh: "擦乾淨白板", ipa: "/klin ðə waɪt bɔrd/" },
+                { en: "TURN OFF THE BRIGHT LIGHT", zh: "關掉明亮的燈", ipa: "/tɜrn ɔf ðə braɪt laɪt/" },
+                { en: "OPEN THE BIG WINDOW NOW", zh: "現在打開大窗戶", ipa: "/ˈoʊpən ðə bɪg ˈwɪndoʊ naʊ/" },
+                { en: "STAND UP AND SIT DOWN", zh: "起立然後坐下", ipa: "/stænd ʌp ænd sɪt daʊn/" },
+                { en: "RAISE YOUR RIGHT HAND", zh: "舉起你的右手", ipa: "/reɪz jʊər raɪt hænd/" },
+                { en: "OPEN YOUR ENGLISH BOOK", zh: "打開你的英文課本", ipa: "/ˈoʊpən jʊər ˈɪŋglɪʃ bʊk/" },
+                { en: "WRITE DOWN YOUR NAME", zh: "寫下你的名字", ipa: "/raɪt daʊn jʊər neɪm/" }
+            ];
+
+            const generatePoints = (text, serialNumber) => {
+                const words = text.trim().toUpperCase().split(/\s+/).filter(w => w.length > 0);
+                const usedCoords = new Set();
+                const newPoints = [];
+
+                words.forEach(word => {
+                    const wordPoints = [];
+                    for (let i = 0; i < word.length; i++) {
+                        const char = word[i];
+                        if (!/[A-Z]/.test(char)) continue;
+
+                        let x, y, key;
+                        do {
+                            // 安全邊界防裁切
+                            x = Math.floor(Math.random() * 37) - 18; 
+                            y = Math.floor(Math.random() * 37) - 18; 
+                            if (x === 0 && y === 0) continue;
+                            key = `${x},${y}`;
+                        } while (usedCoords.has(key));
+
+                        usedCoords.add(key);
+                        wordPoints.push({ char, x, y, pos: i % 2 === 0 ? 'below' : 'above' });
+                    }
+                    if (wordPoints.length > 0) newPoints.push(wordPoints);
+                });
+                return { points: newPoints, serial: serialNumber, text: text };
+            };
+
+            const generateWorksheet = (text = sentence) => {
+                setPreviewData(generatePoints(text, '範例'));
+            };
+
+            const handleRandomPhrase = () => {
+                const randomObj = phrases[Math.floor(Math.random() * phrases.length)];
+                setSentence(randomObj.en);
+                generateWorksheet(randomObj.en);
+            };
+
+            const handleApplyAndScroll = () => {
+                generateWorksheet();
+                if (window.innerWidth < 768 && previewRef.current) {
+                    previewRef.current.scrollIntoView({ behavior: 'smooth' });
+                }
+            };
+
+            useEffect(() => {
+                generateWorksheet();
+            }, []);
+
+            const handlePrint = () => {
+                setIsPreparingPrint(true);
+                setTimeout(() => {
+                    const pages = [];
+                    for (let i = 0; i < printAmount; i++) {
+                        let targetSentence = sentence;
+                        if (batchMode === 'random') {
+                            const randomObj = phrases[Math.floor(Math.random() * phrases.length)];
+                            targetSentence = randomObj.en;
+                        }
+                        const serialNum = String(i + 1).padStart(3, '0');
+                        pages.push(generatePoints(targetSentence, serialNum));
+                    }
+                    setPrintPagesData(pages);
+                    
+                    const renderDelay = Math.max(1000, printAmount * 50);
+                    setTimeout(() => {
+                        setIsPreparingPrint(false); 
+                        requestAnimationFrame(() => {
+                            setTimeout(() => {
+                                try {
+                                    window.print();
+                                } catch (e) {
+                                    console.error("列印功能受阻", e);
+                                    alert("列印受阻，請下載單機版後再試！");
+                                }
+                            }, 500);
+                        });
+                    }, renderDelay);
+                }, 100);
+            };
+
+            // 取得包含「干擾句」的完整字庫
+            const getUniquePrintDict = () => {
+                const uniqueTexts = Array.from(new Set(printPagesData.map(p => p.text)));
+                let dictItems = uniqueTexts.map(enText => {
+                    const found = phrases.find(p => p.en === enText);
+                    return found || { en: enText, zh: "（自訂短句）", ipa: "" };
+                });
+
+                // 加入干擾選項
+                const targetCount = Math.max(30, uniqueTexts.length + 15);
+                const availableDistractors = phrases.filter(p => !uniqueTexts.includes(p.en));
+                availableDistractors.sort(() => Math.random() - 0.5);
+
+                while (dictItems.length < targetCount && availableDistractors.length > 0) {
+                    dictItems.push(availableDistractors.pop());
+                }
+
+                return dictItems.sort(() => Math.random() - 0.5);
+            };
+
+            // DOWNLOADER-LOGIC-START
+            const handleDownloadHtml = () => {
+                try {
+                    const sourceScript = document.getElementById('app-source').innerText;
+                    const styleTag = document.getElementById('app-style').innerText;
+                    let cleanScript = sourceScript.replace(/\/\/ DOWNLOADER-LOGIC-START[\s\S]*?\/\/ DOWNLOADER-LOGIC-END/g, '');
+                    cleanScript = cleanScript.replace(/\{\/\*\s*DOWNLOADER-UI-START\s*\*\/\}[\s\S]*?\{\/\*\s*DOWNLOADER-UI-END\s*\*\/\}/g, '');
+                    const htmlContent = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>實話直說學習單產生器 (乾淨版)</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js">\x3C/script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js">\x3C/script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js">\x3C/script>
+    <script src="https://cdn.tailwindcss.com">\x3C/script>
+    <style id="app-style">\n${styleTag}\n    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen scroll-smooth">
+    <div id="root"></div>
+    <script type="text/babel" id="app-source">\n${cleanScript}\n    \x3C/script>
+</body>
+</html>`;
+                    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = '實話直說_學習單產生器_乾淨版.html';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                } catch (err) { console.error('下載失敗:', err); }
+            };
+            // DOWNLOADER-LOGIC-END
+
+            return (
+                <div className="relative">
+                    {/* 載入中遮罩 */}
+                    {isPreparingPrint && (
+                        <div className="fixed inset-0 bg-slate-900/60 flex justify-center items-center z-50 print-hidden backdrop-blur-sm transition-opacity">
+                            <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-11/12 text-center border-t-4 border-emerald-500 transform transition-all">
+                                <svg className="animate-spin h-12 w-12 text-emerald-500 mx-auto mb-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2 font-sans">繪製排版中，請稍候...</h3>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="flex flex-col md:flex-row min-h-screen md:h-screen w-full md:overflow-hidden print-hidden">
+                        
+                        <div className="w-full md:w-[420px] bg-white shadow-xl z-10 p-5 md:p-6 flex flex-col md:overflow-y-auto shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
+                            <div className="flex items-center gap-3 mb-5 md:mb-6 text-blue-600">
+                                <svg className="w-7 h-7 md:w-8 md:h-8 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                                <h1 className="text-lg md:text-xl font-bold tracking-wide">實話直說學習單產生器</h1>
+                            </div>
+
+                            <div className="space-y-5 md:space-y-6 flex-1">
+                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <label className="flex items-center justify-between block text-sm font-bold text-gray-800 mb-2">
+                                        <span>1. 自訂解碼句子 (英文)</span>
+                                        <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md">內建近百句等長題庫</span>
+                                    </label>
+                                    <textarea 
+                                        className="w-full border border-gray-300 rounded-lg p-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 uppercase shadow-sm" 
+                                        rows="2" 
+                                        value={sentence} 
+                                        onChange={(e) => setSentence(e.target.value)} 
+                                    />
+                                    <div className="flex justify-between items-center mt-3 gap-2">
+                                        <button onClick={handleRandomPhrase} className="flex-1 text-xs md:text-sm bg-indigo-600 text-white hover:bg-indigo-700 px-3 py-2 rounded-md font-bold shadow-sm whitespace-nowrap transition-colors">✨ 隨機抽題</button>
+                                        <button onClick={handleApplyAndScroll} className="flex-1 text-xs md:text-sm bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-md font-bold shadow-sm whitespace-nowrap transition-colors">套用自訂 / 刷新座標</button>
+                                    </div>
+                                </div>
+                                <label className="flex items-center gap-3 cursor-pointer group bg-white p-3 rounded-lg border border-slate-200 shadow-sm transition-colors hover:border-blue-300">
+                                    <input type="checkbox" className="w-5 h-5 text-blue-600 rounded cursor-pointer shrink-0" checked={showAnswers} onChange={(e) => setShowAnswers(e.target.checked)} />
+                                    <span className="text-sm md:text-base text-gray-700 font-medium">預覽畫面顯示答案</span>
+                                </label>
+                            </div>
+
+                            <div className="pt-5 md:pt-6 border-t border-gray-200 mt-5 md:mt-4">
+                                <label className="block text-[15px] font-bold text-gray-800 mb-3">3. 批次列印設定</label>
+                                <div className="space-y-3 mb-4">
+                                    <select className="w-full border border-gray-300 rounded-lg p-2.5 text-[14px] font-bold text-indigo-700 bg-white focus:ring-2 focus:ring-indigo-200 focus:outline-none" value={batchMode} onChange={(e) => setBatchMode(e.target.value)}>
+                                        <option value="same">全班同題 (座標不同，防作弊)</option>
+                                        <option value="random">全班隨機題 (短句完全不同)</option>
+                                    </select>
+                                    <select className="w-full border border-amber-300 rounded-lg p-2.5 text-[14px] font-bold text-amber-900 bg-white focus:ring-2 focus:ring-amber-200 focus:outline-none" value={answerMode} onChange={(e) => setAnswerMode(e.target.value)}>
+                                        <option value="summary">解答總表模式 (省紙好對答案)</option>
+                                        <option value="full">每題完整附解答版 (耗紙)</option>
+                                        <option value="none">不印解答</option>
+                                    </select>
+                                    
+                                    <label className="flex items-start gap-2 pt-2 cursor-pointer">
+                                        <input type="checkbox" className="w-4 h-4 mt-0.5 text-amber-600 rounded cursor-pointer shrink-0" checked={printStudentDict} onChange={(e) => setPrintStudentDict(e.target.checked)} />
+                                        <span className="text-[13px] text-amber-900 font-bold leading-snug">附加 1 張「學生字庫」(含音標與干擾選項)</span>
+                                    </label>
+
+                                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 mt-2">
+                                        <span className="text-sm md:text-base text-gray-700 font-bold">要產生幾張？</span>
+                                        <div className="flex items-center gap-2">
+                                            <input type="number" min="1" max="100" className="w-16 md:w-20 border border-gray-300 rounded-lg p-1.5 text-center text-lg font-bold text-emerald-700 bg-white focus:ring-2 focus:ring-emerald-200 focus:outline-none" value={printAmount} onChange={(e) => setPrintAmount(Math.max(1, parseInt(e.target.value) || 1))} />
+                                            <span className="text-gray-600 font-bold pr-1">張</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={handlePrint} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 md:py-4 px-4 rounded-xl shadow-md text-base md:text-lg transition-transform active:scale-95">呼叫列印 (A4)</button>
+                                
+                                {/* DOWNLOADER-UI-START */}
+                                <div className="mt-4 p-4 bg-blue-50/80 rounded-xl border border-blue-200 shadow-sm">
+                                    <button onClick={handleDownloadHtml} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
+                                        <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        下載單機版 (若列印遭阻擋使用)
+                                    </button>
+                                </div>
+                                {/* DOWNLOADER-UI-END */}
+                            </div>
+                        </div>
+
+                        <div ref={previewRef} className="flex-1 bg-slate-200 p-4 md:p-8 overflow-y-auto flex justify-center items-start min-h-[500px]">
+                            <div className="w-full max-w-[800px] bg-white shadow-2xl aspect-[1/1.414] relative">
+                                <WorksheetSVG pointsData={previewData.points} serialNumber={previewData.serial} showAnswers={showAnswers} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="hidden print-block w-full bg-white">
+                        {printPagesData.map((data, index) => (
+                            <React.Fragment key={`print-group-${index}`}>
+                                <div className="print-page bg-white">
+                                    <WorksheetSVG pointsData={data.points} serialNumber={data.serial} showAnswers={false} />
+                                </div>
+                                {answerMode === 'full' && (
+                                    <div className="print-page bg-white relative">
+                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[120px] font-black text-red-500 opacity-20 rotate-[-30deg] pointer-events-none">解答卷</div>
+                                        <WorksheetSVG pointsData={data.points} serialNumber={data.serial} showAnswers={true} />
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                        {answerMode === 'summary' && printPagesData.length > 0 && (
+                            <div className="print-page bg-white p-12 flex-col justify-start items-center pt-20">
+                                <h1 className="text-4xl font-black mb-10 text-slate-800">解答快速對照總表</h1>
+                                <table className="teacher-table">
+                                    <thead><tr><th width="20%">編號</th><th width="80%">答案</th></tr></thead>
+                                    <tbody>
+                                        {printPagesData.map((data) => (
+                                            <tr key={`sum-${data.serial}`}><td className="font-bold text-center text-blue-700">No. {data.serial}</td><td className="font-bold text-2xl uppercase tracking-widest">{data.text}</td></tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
+                        {printStudentDict && printPagesData.length > 0 && (
+                            <div className="print-page bg-white p-12 flex-col justify-start items-center pt-20">
+                                <h1 className="text-4xl font-black mb-6 text-indigo-700 font-sans">📝 解碼任務：中英參考字庫</h1>
+                                <div className="dict-grid">
+                                    {getUniquePrintDict().map((dict, idx) => (
+                                        <div key={`dict-${idx}`} className="dict-card">
+                                            <div className="font-black text-[1.3rem] uppercase mb-1">{dict.en}</div>
+                                            {dict.ipa && <div className="font-mono text-sm text-slate-500 mb-1.5">{dict.ipa}</div>}
+                                            <div className="font-bold text-lg text-indigo-600">{dict.zh}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const WorksheetSVG = ({ pointsData, serialNumber, showAnswers }) => {
+            const svgWidth = 800, svgHeight = 1131, gridStartX = 100, gridStartY = 180, gridSize = 600, units = 40; 
+            const pxPerUnit = gridSize / units, originX = gridStartX + gridSize / 2, originY = gridStartY + gridSize / 2; 
+
+            const getX = (val) => originX + (val * pxPerUnit);
+            const getY = (val) => originY - (val * pxPerUnit);
+
+            const gridLines = [];
+            for (let i = -20; i <= 20; i += 2) {
+                // 視覺層次優化：讓網格線較淺，主軸與重要刻度較深
+                const isAxis = i === 0;
+                const isMajor = i % 10 === 0;
+                const strokeColor = isAxis ? "#000000" : (isMajor ? "#94a3b8" : "#cbd5e1");
+                const strokeWidth = isAxis ? "2.5" : (isMajor ? "1.5" : "1");
+
+                gridLines.push(<line key={`v${i}`} x1={getX(i)} y1={getY(20)} x2={getX(i)} y2={getY(-20)} stroke={strokeColor} strokeWidth={strokeWidth} />);
+                gridLines.push(<line key={`h${i}`} x1={getX(-20)} y1={getY(i)} x2={getX(20)} y2={getY(i)} stroke={strokeColor} strokeWidth={strokeWidth} />);
+            }
+
+            // 嚴謹的數學標示：加上 x, y 軸箭頭與斜體變數標示
+            const axisArrows = (
+                <g fill="#000000">
+                    <polygon points={`${getX(20.6)},${originY} ${getX(19.8)},${originY-5} ${getX(19.8)},${originY+5}`} />
+                    <polygon points={`${originX},${getY(20.6)} ${originX-5},${getY(19.8)} ${originX+5},${getY(19.8)}`} />
+                    <text x={getX(20.5)} y={originY + 20} fontSize="18" fontStyle="italic" fontWeight="bold" fill="#000">x</text>
+                    <text x={originX + 10} y={getY(20.5)} fontSize="18" fontStyle="italic" fontWeight="bold" fill="#000">y</text>
+                </g>
+            );
+
+            const axisLabels = [];
+            for (let i = -20; i <= 20; i += 2) {
+                if (i !== 0) {
+                    axisLabels.push(<text key={`tx${i}`} x={getX(i)} y={originY + 16} textAnchor="middle" fontSize="11" fill="#475569">{i}</text>);
+                    axisLabels.push(<text key={`ty${i}`} x={originX + 6} y={getY(i) + 4} fontSize="11" fill="#475569">{i}</text>);
+                }
+            }
+            axisLabels.push(<text key="t0" x={originX + 6} y={originY + 14} fontSize="12" fill="#475569">0</text>);
+
+            const plotElements = [];
+            pointsData.forEach(word => word.forEach(pt => {
+                const cx = getX(pt.x), cy = getY(pt.y);
+                plotElements.push(<g key={`pt-${pt.char}-${pt.x}-${pt.y}`}><circle cx={cx} cy={cy} r="3.5" fill="#0f172a" /><text x={cx + 6} y={cy + 4} fontSize="15" fontWeight="bold" fill="#0f172a" fontFamily="Arial, Helvetica, sans-serif">{pt.char}</text></g>);
+            }));
+
+            const boxSize = 36, wordSpacing = 28, maxRowWidth = 740, rowHeight = 110, startY = 850;
+            const boxElements = [];
+            let currentRows = [], currentRow = [], currentWidth = 0;
+            pointsData.forEach(word => {
+                const wordWidth = word.length * boxSize;
+                if (currentRow.length > 0 && currentWidth + wordSpacing + wordWidth > maxRowWidth) {
+                    currentRows.push({ words: currentRow, width: currentWidth });
+                    currentRow = [word]; currentWidth = wordWidth;
+                } else {
+                    currentRow.push(word); currentWidth += (currentRow.length > 1 ? wordSpacing : 0) + wordWidth;
+                }
+            });
+            if (currentRow.length > 0) currentRows.push({ words: currentRow, width: currentWidth });
+
+            let rY = startY;
+            currentRows.forEach((row, rowIndex) => {
+                let currentX = (svgWidth - row.width) / 2;
+                row.words.forEach((word) => {
+                    word.forEach((pt) => {
+                        const boxX = currentX, boxY = rY;
+                        boxElements.push(<rect key={`box-${pt.x}-${pt.y}`} x={boxX} y={boxY} width={boxSize} height={boxSize} fill="none" stroke="#334155" strokeWidth="1.5" />);
+                        if (showAnswers) boxElements.push(<text key={`ans-${pt.x}-${pt.y}`} x={boxX + boxSize/2} y={boxY + 25} textAnchor="middle" fontSize="22" fontWeight="bold" fill="#2563eb" fontFamily="Arial, Helvetica, sans-serif">{pt.char}</text>);
+                        const centerX = boxX + boxSize/2;
+                        if (pt.pos === 'below') {
+                            boxElements.push(<line key={`l-b-${pt.x}-${pt.y}`} x1={centerX} y1={boxY + boxSize} x2={centerX} y2={boxY + boxSize + 12} stroke="#334155" />);
+                            boxElements.push(<text key={`c-b-${pt.x}-${pt.y}`} x={centerX} y={boxY + boxSize + 28} textAnchor="middle" fontSize="14">({pt.x},{pt.y})</text>);
+                        } else {
+                            boxElements.push(<line key={`l-a-${pt.x}-${pt.y}`} x1={centerX} y1={boxY} x2={centerX} y2={boxY - 12} stroke="#334155" />);
+                            boxElements.push(<text key={`c-a-${pt.x}-${pt.y}`} x={centerX} y={boxY - 18} textAnchor="middle" fontSize="14">({pt.x},{pt.y})</text>);
+                        }
+                        currentX += boxSize;
+                    });
+                    currentX += wordSpacing;
+                });
+                rY += rowHeight;
+            });
+
+            return (
+                <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-full bg-white" style={{fontFamily: 'Arial, Helvetica, sans-serif'}} xmlns="http://www.w3.org/2000/svg">
+                    <g className="header">
+                        <text x="330" y="85" fontSize="46" fontWeight="bold" fill="#1e293b" textAnchor="end">實話</text>
+                        <text x="400" y="100" fontSize="76" fontWeight="900" fill="#0f172a" textAnchor="middle">「直」</text>
+                        <text x="470" y="85" fontSize="46" fontWeight="bold" fill="#1e293b" textAnchor="start">說</text>
+                        <text x="400" y="140" fontSize="22" fill="#475569" textAnchor="middle">角座標</text>
+                        
+                        {/* 恢復原狀：完美的班級座號姓名與編號對齊位置 */}
+                        <g transform="translate(560, 45)" fontSize="18" fill="#1e293b">
+                            <text y="-10" fontSize="22" fill="#0369a1" fontWeight="900">編號：{serialNumber}</text>
+                            <text y="25">班級：_________________</text>
+                            <text y="60">座號：_________________</text>
+                            <text y="95">姓名：_________________</text>
+                        </g>
+                    </g>
+
+                    <g className="grid">{gridLines}{axisLabels}{axisArrows}</g>
+                    <g className="points">{plotElements}</g>
+                    <g className="boxes">{boxElements}</g>
+
+                    <g className="logo" transform="translate(400, 1055)">
+                        <g transform="translate(-117, 0)">
+                            <text x="0" y="0" fontSize="38" fontWeight="900" fill="#1e293b" textLength="234" lengthAdjust="spacing">EsukaTION</text>
+                            <rect x="0" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="12" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">奕</text>
+                            <rect x="30" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="42" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">數</text>
+                            <rect x="60" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="72" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">咖</text>
+                            <rect x="90" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="102" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">學</text>
+                            <rect x="120" y="10" width="114" height="24" fill="#1e293b" rx="4" />
+                            <text x="177" y="27" fontSize="15" fontWeight="900" fill="#ffffff" textAnchor="middle" letterSpacing="1.5">education</text>
+                        </g>
+                    </g>
+                </svg>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
