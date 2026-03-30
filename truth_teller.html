@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style id="app-style">
-        /* 列印專用樣式，確保 SVG 完美填滿 A4 並強制分頁 */
+        /* 列印專用樣式 */
         @media print {
             body {
                 background-color: white !important;
@@ -18,59 +18,76 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            .print-hidden {
+            .no-print, .print-hidden {
                 display: none !important;
             }
             .print-block {
                 display: block !important;
             }
-            .print-page {
+            @page {
+                size: A4 portrait;
+                margin: 15mm; 
+            }
+            .print-page-svg {
                 display: flex !important;
                 justify-content: center;
                 align-items: center;
-                width: 100vw !important;
-                height: 100vh !important;
-                page-break-after: always; /* 強制分頁 */
-                break-after: page;
+                width: 100% !important;
+                height: 260mm !important; 
+                page-break-after: always !important;
+                break-after: page !important;
                 background-color: white !important;
+                overflow: hidden;
             }
-            .print-page svg {
-                max-width: 100vw !important;
-                max-height: 100vh !important;
+            .print-page-svg svg {
+                max-width: 100% !important;
+                max-height: 100% !important;
             }
-            @page {
-                size: A4 portrait;
-                margin: 0;
+            .print-page-text {
+                display: block !important;
+                width: 100% !important;
+                page-break-before: always !important;
+                break-before: page !important;
+                clear: both !important;
+                padding: 5mm 0 !important; 
+                background-color: white !important;
+                color: black !important;
             }
-            /* 教師總表與學生字庫專用樣式 */
             .teacher-table {
-                width: 90%;
-                margin: 0 auto;
+                width: 100%;
                 border-collapse: collapse;
+                margin-top: 15px;
             }
             .teacher-table th, .teacher-table td {
-                border: 2px solid #334155;
-                padding: 12px;
+                border: 2px solid #000;
+                padding: 10px; 
                 text-align: left;
                 font-size: 18px;
+                color: #000;
             }
             .teacher-table th {
                 background-color: #f1f5f9 !important;
                 font-weight: bold;
             }
+            .teacher-table tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
             .dict-grid {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr); /* 學生字庫改為一排 3 個，容納更多干擾項 */
-                gap: 12px;
-                width: 95%;
-                margin: 0 auto;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px; 
+                width: 100%;
+                margin-top: 15px;
             }
             .dict-card {
-                border: 2px dashed #94a3b8;
-                padding: 12px 8px;
+                border: 2px solid #000 !important;
+                padding: 10px 8px !important; 
                 border-radius: 8px;
-                background-color: #f8fafc !important;
+                background-color: white !important;
                 text-align: center;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
         }
     </style>
@@ -95,7 +112,6 @@
 
             const previewRef = useRef(null); 
 
-            // 大量擴充：長度相近 (約 12~18 字母)，並加入音標與翻譯
             const phrases = [
                 { en: "MATH IS SO FUN", zh: "數學很有趣", ipa: "/mæθ ɪz soʊ fʌn/" },
                 { en: "I REALLY LOVE MATH", zh: "我非常愛數學", ipa: "/aɪ ˈrɪli lʌv mæθ/" },
@@ -146,57 +162,7 @@
                 { en: "READ A VERY GOOD BOOK", zh: "讀一本很好的書", ipa: "/rid ə ˈvɛri gʊd bʊk/" },
                 { en: "ALWAYS BE SO HONEST", zh: "永遠保持誠實", ipa: "/ˈɔlweɪz bi soʊ ˈɑnəst/" },
                 { en: "FIND YOUR OWN PASSION", zh: "找到你自己的熱情", ipa: "/faɪnd jʊər oʊn ˈpæʃən/" },
-                { en: "ENJOY THIS GOOD MOMENT", zh: "享受這個美好的當下", ipa: "/ɛnˈʤɔɪ ðɪs gʊd ˈmoʊmənt/" },
-                { en: "WASH YOUR HANDS DAILY", zh: "每天洗手", ipa: "/wɑʃ jʊər hændz ˈdeɪli/" },
-                { en: "CLEAN YOUR OWN DESK", zh: "清理你自己的書桌", ipa: "/klin jʊər oʊn dɛsk/" },
-                { en: "DRINK MORE PURE WATER", zh: "多喝純水", ipa: "/drɪŋk mɔr pjʊr ˈwɔtər/" },
-                { en: "EAT MORE FRESH FRUITS", zh: "多吃新鮮水果", ipa: "/it mɔr frɛʃ fruts/" },
-                { en: "SLEEP EARLY WAKE EARLY", zh: "早睡早起", ipa: "/slip ˈɜrli weɪk ˈɜrli/" },
-                { en: "RESPECT YOUR TEACHERS", zh: "尊敬你的老師", ipa: "/rɪˈspɛkt jʊər ˈtiʧərz/" },
-                { en: "HELP YOUR DEAR PARENTS", zh: "幫助你親愛的父母", ipa: "/hɛlp jʊər dɪr ˈpɛrənts/" },
-                { en: "PLAY SPORTS EVERY WEEK", zh: "每週做運動", ipa: "/pleɪ spɔrts ˈɛvəri wik/" },
-                { en: "RIDE A BICYCLE TODAY", zh: "今天騎腳踏車", ipa: "/raɪd ə ˈbaɪsɪkəl təˈdeɪ/" },
-                { en: "DRAW A BEAUTIFUL TREE", zh: "畫一棵美麗的樹", ipa: "/drɔ ə ˈbjutəfəl tri/" },
-                { en: "SING A HAPPY SONG NOW", zh: "現在唱首快樂的歌", ipa: "/sɪŋ ə ˈhæpi sɔŋ naʊ/" },
-                { en: "LOOK AT THE BLUE SKY", zh: "看看藍天", ipa: "/lʊk æt ðə blu skaɪ/" },
-                { en: "SAY HELLO TO EVERYONE", zh: "對每個人說哈囉", ipa: "/seɪ həˈloʊ tu ˈɛvəriˌwʌn/" },
-                { en: "BE PROUD OF YOURSELF", zh: "為你自己感到驕傲", ipa: "/bi praʊd ʌv jʊərˈsɛlf/" },
-                { en: "MAKE SOME GOOD CHOICES", zh: "做出好的選擇", ipa: "/meɪk sʌm gʊd ˈʧɔɪsəz/" },
-                { en: "LEARN FROM YOUR MISTAKE", zh: "從錯誤中學習", ipa: "/lɜrn frʌm jʊər mɪˈsteɪk/" },
-                { en: "CREATE YOUR OWN FUTURE", zh: "創造你自己的未來", ipa: "/kriˈeɪt jʊər oʊn ˈfjuʧər/" },
-                { en: "KEEP YOUR ROOM SO CLEAN", zh: "保持房間非常乾淨", ipa: "/kip jʊər rum soʊ klin/" },
-                { en: "TAKE A DEEP BREATH NOW", zh: "現在深呼吸", ipa: "/teɪk ə dip brɛθ naʊ/" },
-                { en: "GIVE ME A HIGH FIVE", zh: "跟我擊個掌", ipa: "/gɪv mi ə haɪ faɪv/" },
-                { en: "SHARE WITH YOUR FRIENDS", zh: "與你的朋友分享", ipa: "/ʃɛr wɪð jʊər frɛndz/" },
-                { en: "SMILE AT THE BRIGHT SUN", zh: "對著明亮的太陽微笑", ipa: "/smaɪl æt ðə braɪt sʌn/" },
-                { en: "FOLLOW YOUR OWN HEART", zh: "跟隨你自己的心", ipa: "/ˈfɑloʊ jʊər oʊn hɑrt/" },
-                { en: "THINK BEFORE YOU SPEAK", zh: "說話前先思考", ipa: "/θɪŋk bɪˈfɔr ju spik/" },
-                { en: "FOCUS ON YOUR STUDY", zh: "專注於你的課業", ipa: "/ˈfoʊkəs ɑn jʊər ˈstʌdi/" },
-                { en: "ENJOY EVERY LITTLE THING", zh: "享受每一件小事", ipa: "/ɛnˈʤɔɪ ˈɛvəri ˈlɪtəl θɪŋ/" },
-                { en: "BE A VERY GOOD LISTENER", zh: "做一個很好的傾聽者", ipa: "/bi ə ˈvɛri gʊd ˈlɪsənər/" },
-                { en: "WRITE A LETTER TO HIM", zh: "寫封信給他", ipa: "/raɪt ə ˈlɛtər tu hɪm/" },
-                { en: "SAY THANK YOU TO HER", zh: "對她說謝謝", ipa: "/seɪ θæŋk ju tu hɜr/" },
-                { en: "BE POLITE TO EVERYONE", zh: "對每個人都有禮貌", ipa: "/bi pəˈlaɪt tu ˈɛvəriˌwʌn/" },
-                { en: "EVERY DAY IS A NEW START", zh: "每一天都是新的開始", ipa: "/ˈɛvəri deɪ ɪz ə nu stɑrt/" },
-                { en: "ACTION SPEAKS VERY LOUD", zh: "行動勝於空談", ipa: "/ˈækʃən spiks ˈvɛri laʊd/" },
-                { en: "DO NOT BE AFRAID NOW", zh: "現在不要害怕", ipa: "/du nɑt bi əˈfreɪd naʊ/" },
-                { en: "EVERYTHING WILL BE OKAY", zh: "一切都會好起來的", ipa: "/ˈɛvriˌθɪŋ wɪl bi ˌoʊˈkeɪ/" },
-                { en: "STAY CALM AND CARRY ON", zh: "保持冷靜，繼續前進", ipa: "/steɪ kɑm ænd ˈkæri ɑn/" },
-                { en: "BE THE BEST YOU CAN BE", zh: "做最好的自己", ipa: "/bi ðə bɛst ju kæn bi/" },
-                { en: "HOPE FOR THE VERY BEST", zh: "抱持最好的希望", ipa: "/hoʊp fɔr ðə ˈvɛri bɛst/" },
-                { en: "WORK SMART NOT JUST HARD", zh: "聰明工作，不僅是努力", ipa: "/wɜrk smɑrt nɑt ʤʌst hɑrd/" },
-                { en: "LITTLE BY LITTLE WE GROW", zh: "我們一點一滴地成長", ipa: "/ˈlɪtəl baɪ ˈlɪtəl wi groʊ/" },
-                { en: "ENJOY THE LONG WEEKEND", zh: "享受這個長週末", ipa: "/ɛnˈʤɔɪ ðə lɔŋ ˈwiˌkɛnd/" },
-                { en: "PLAY CHESS WITH MY DAD", zh: "和我爸爸下西洋棋", ipa: "/pleɪ ʧɛs wɪð maɪ dæd/" },
-                { en: "COOK DINNER FOR MY MOM", zh: "為我媽媽煮晚餐", ipa: "/kʊk ˈdɪnər fɔr maɪ mɑm/" },
-                { en: "WATCH A FUNNY MOVIE", zh: "看一部有趣的電影", ipa: "/wɑʧ ə ˈfʌni ˈmuvi/" },
-                { en: "CLEAN THE WHITE BOARD", zh: "擦乾淨白板", ipa: "/klin ðə waɪt bɔrd/" },
-                { en: "TURN OFF THE BRIGHT LIGHT", zh: "關掉明亮的燈", ipa: "/tɜrn ɔf ðə braɪt laɪt/" },
-                { en: "OPEN THE BIG WINDOW NOW", zh: "現在打開大窗戶", ipa: "/ˈoʊpən ðə bɪg ˈwɪndoʊ naʊ/" },
-                { en: "STAND UP AND SIT DOWN", zh: "起立然後坐下", ipa: "/stænd ʌp ænd sɪt daʊn/" },
-                { en: "RAISE YOUR RIGHT HAND", zh: "舉起你的右手", ipa: "/reɪz jʊər raɪt hænd/" },
-                { en: "OPEN YOUR ENGLISH BOOK", zh: "打開你的英文課本", ipa: "/ˈoʊpən jʊər ˈɪŋglɪʃ bʊk/" },
-                { en: "WRITE DOWN YOUR NAME", zh: "寫下你的名字", ipa: "/raɪt daʊn jʊər neɪm/" }
+                { en: "ENJOY THIS GOOD MOMENT", zh: "享受這個美好的當下", ipa: "/ɛnˈʤɔɪ ðɪs gʊd ˈmoʊmənt/" }
             ];
 
             const generatePoints = (text, serialNumber) => {
@@ -212,7 +178,6 @@
 
                         let x, y, key;
                         do {
-                            // 安全邊界防裁切
                             x = Math.floor(Math.random() * 37) - 18; 
                             y = Math.floor(Math.random() * 37) - 18; 
                             if (x === 0 && y === 0) continue;
@@ -272,7 +237,7 @@
                                     window.print();
                                 } catch (e) {
                                     console.error("列印功能受阻", e);
-                                    alert("列印無法自動啟動，請手動列印 (Ctrl+P / Cmd+P)。");
+                                    alert("列印受阻，請手動按下 Ctrl+P (或 Cmd+P) 列印！");
                                 }
                             }, 500);
                         });
@@ -280,7 +245,6 @@
                 }, 100);
             };
 
-            // 取得包含「干擾句」的完整字庫
             const getUniquePrintDict = () => {
                 const uniqueTexts = Array.from(new Set(printPagesData.map(p => p.text)));
                 let dictItems = uniqueTexts.map(enText => {
@@ -288,8 +252,7 @@
                     return found || { en: enText, zh: "（自訂短句）", ipa: "" };
                 });
 
-                // 加入干擾選項
-                const targetCount = Math.max(30, uniqueTexts.length + 15);
+                const targetCount = Math.ceil(Math.max(uniqueTexts.length, 1) / 14) * 14;
                 const availableDistractors = phrases.filter(p => !uniqueTexts.includes(p.en));
                 availableDistractors.sort(() => Math.random() - 0.5);
 
@@ -302,7 +265,6 @@
 
             return (
                 <div className="relative">
-                    {/* 載入中遮罩 */}
                     {isPreparingPrint && (
                         <div className="fixed inset-0 bg-slate-900/60 flex justify-center items-center z-50 print-hidden backdrop-blur-sm transition-opacity">
                             <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-11/12 text-center border-t-4 border-emerald-500 transform transition-all">
@@ -316,7 +278,6 @@
                     )}
 
                     <div className="flex flex-col md:flex-row min-h-screen md:h-screen w-full md:overflow-hidden print-hidden">
-                        
                         <div className="w-full md:w-[420px] bg-white shadow-xl z-10 p-5 md:p-6 flex flex-col md:overflow-y-auto shrink-0 border-b md:border-b-0 md:border-r border-gray-200">
                             <div className="flex items-center gap-3 mb-5 md:mb-6 text-blue-600">
                                 <svg className="w-7 h-7 md:w-8 md:h-8 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
@@ -324,7 +285,7 @@
                             </div>
 
                             <div className="space-y-5 md:space-y-6 flex-1">
-                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
                                     <label className="flex items-center justify-between block text-sm font-bold text-gray-800 mb-2">
                                         <span>1. 自訂解碼句子 (英文)</span>
                                         <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md">內建近百句等長題庫</span>
@@ -361,10 +322,10 @@
                                     
                                     <label className="flex items-start gap-2 pt-2 cursor-pointer">
                                         <input type="checkbox" className="w-4 h-4 mt-0.5 text-amber-600 rounded cursor-pointer shrink-0" checked={printStudentDict} onChange={(e) => setPrintStudentDict(e.target.checked)} />
-                                        <span className="text-[13px] text-amber-900 font-bold leading-snug">附加 1 張「學生字庫」(含音標與干擾選項)</span>
+                                        <span className="text-[13px] text-amber-900 font-bold leading-snug">附加「學生字庫」(以 14 句為單位列印)</span>
                                     </label>
 
-                                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 mt-2">
+                                    <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 mt-2 shadow-sm">
                                         <span className="text-sm md:text-base text-gray-700 font-bold">要產生幾張？</span>
                                         <div className="flex items-center gap-2">
                                             <input type="number" min="1" max="100" className="w-16 md:w-20 border border-gray-300 rounded-lg p-1.5 text-center text-lg font-bold text-emerald-700 bg-white focus:ring-2 focus:ring-emerald-200 focus:outline-none" value={printAmount} onChange={(e) => setPrintAmount(Math.max(1, parseInt(e.target.value) || 1))} />
@@ -372,7 +333,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button onClick={handlePrint} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 md:py-4 px-4 rounded-xl shadow-md text-base md:text-lg transition-transform active:scale-95">呼叫列印 (A4)</button>
+                                <button onClick={handlePrint} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 md:py-4 px-4 rounded-xl shadow-md text-base md:text-lg transition-transform active:scale-95">開始列印 (A4)</button>
                             </div>
                         </div>
 
@@ -385,45 +346,60 @@
 
                     <div className="hidden print-block w-full bg-white">
                         {printPagesData.map((data, index) => (
-                            <React.Fragment key={`print-group-${index}`}>
-                                <div className="print-page bg-white">
+                            <React.Fragment key={`prt-group-${index}`}>
+                                <div className="print-page-svg">
                                     <WorksheetSVG pointsData={data.points} serialNumber={data.serial} showAnswers={false} />
                                 </div>
                                 {answerMode === 'full' && (
-                                    <div className="print-page bg-white relative">
-                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[120px] font-black text-red-500 opacity-20 rotate-[-30deg] pointer-events-none">解答卷</div>
+                                    <div className="print-page-svg relative">
+                                        <div className="absolute text-[120px] font-black text-red-500 opacity-10 rotate-[-30deg] pointer-events-none">解答卷</div>
                                         <WorksheetSVG pointsData={data.points} serialNumber={data.serial} showAnswers={true} />
                                     </div>
                                 )}
                             </React.Fragment>
                         ))}
+                        
                         {answerMode === 'summary' && printPagesData.length > 0 && (
-                            <div className="print-page bg-white p-12 flex-col justify-start items-center pt-20">
-                                <h1 className="text-4xl font-black mb-10 text-slate-800">解答快速對照總表</h1>
+                            <div className="print-page-text" style={{ pageBreakBefore: 'always', clear: 'both' }}>
+                                <h1 className="text-3xl font-black mb-6 text-black text-center tracking-wide whitespace-nowrap">教師專用解答總表</h1>
                                 <table className="teacher-table">
-                                    <thead><tr><th width="20%">編號</th><th width="80%">答案</th></tr></thead>
+                                    <thead><tr><th width="15%">編號</th><th>正確解答短句</th></tr></thead>
                                     <tbody>
                                         {printPagesData.map((data) => (
-                                            <tr key={`sum-${data.serial}`}><td className="font-bold text-center text-blue-700">No. {data.serial}</td><td className="font-bold text-2xl uppercase tracking-widest">{data.text}</td></tr>
+                                            <tr key={`sum-${data.serial}`}>
+                                                <td className="font-bold text-center text-black">No. {data.serial}</td>
+                                                <td className="font-bold text-xl text-black uppercase tracking-widest">{data.text}</td>
+                                            </tr>
                                         ))}
                                     </tbody>
                                 </table>
                             </div>
                         )}
-                        {printStudentDict && printPagesData.length > 0 && (
-                            <div className="print-page bg-white p-12 flex-col justify-start items-center pt-20">
-                                <h1 className="text-4xl font-black mb-6 text-indigo-700 font-sans">📝 解碼任務：中英參考字庫</h1>
-                                <div className="dict-grid">
-                                    {getUniquePrintDict().map((dict, idx) => (
-                                        <div key={`dict-${idx}`} className="dict-card">
-                                            <div className="font-black text-[1.3rem] uppercase mb-1">{dict.en}</div>
-                                            {dict.ipa && <div className="font-mono text-sm text-slate-500 mb-1.5">{dict.ipa}</div>}
-                                            <div className="font-bold text-lg text-indigo-600">{dict.zh}</div>
-                                        </div>
-                                    ))}
+
+                        {printStudentDict && printPagesData.length > 0 && (() => {
+                            const fullDict = getUniquePrintDict();
+                            const dictPages = [];
+                            for (let i = 0; i < fullDict.length; i += 14) {
+                                dictPages.push(fullDict.slice(i, i + 14));
+                            }
+                            
+                            return dictPages.map((pageItems, pageIndex) => (
+                                <div key={`dict-page-${pageIndex}`} className="print-page-text" style={{ pageBreakBefore: 'always', clear: 'both' }}>
+                                    <h1 className="text-3xl font-black mb-5 text-black text-center tracking-wide font-sans whitespace-nowrap">
+                                        📝 解碼任務：中英參考字庫 (Word Bank) {dictPages.length > 1 ? `(${pageIndex + 1}/${dictPages.length})` : ''}
+                                    </h1>
+                                    <div className="dict-grid">
+                                        {pageItems.map((dict, idx) => (
+                                            <div key={`dict-${pageIndex}-${idx}`} className="dict-card">
+                                                <div className="font-black text-[1.15rem] text-black uppercase mb-1">{dict.en}</div>
+                                                {dict.ipa && <div className="font-mono text-sm text-gray-700 mb-1">{dict.ipa}</div>}
+                                                <div className="font-bold text-[1.05rem] text-black">{dict.zh}</div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            ));
+                        })()}
                     </div>
                 </div>
             );
@@ -438,7 +414,6 @@
 
             const gridLines = [];
             for (let i = -20; i <= 20; i += 2) {
-                // 視覺層次優化：讓網格線較淺，主軸與重要刻度較深
                 const isAxis = i === 0;
                 const isMajor = i % 10 === 0;
                 const strokeColor = isAxis ? "#000000" : (isMajor ? "#94a3b8" : "#cbd5e1");
@@ -448,7 +423,6 @@
                 gridLines.push(<line key={`h${i}`} x1={getX(-20)} y1={getY(i)} x2={getX(20)} y2={getY(i)} stroke={strokeColor} strokeWidth={strokeWidth} />);
             }
 
-            // 嚴謹的數學標示：加上 x, y 軸箭頭與斜體變數標示
             const axisArrows = (
                 <g fill="#000000">
                     <polygon points={`${getX(20.6)},${originY} ${getX(19.8)},${originY-5} ${getX(19.8)},${originY+5}`} />
@@ -467,62 +441,60 @@
             }
             axisLabels.push(<text key="t0" x={originX + 6} y={originY + 14} fontSize="12" fill="#475569">0</text>);
 
-            const plotElements = [];
-            pointsData.forEach(word => word.forEach(pt => {
-                const cx = getX(pt.x), cy = getY(pt.y);
-                plotElements.push(<g key={`pt-${pt.char}-${pt.x}-${pt.y}`}><circle cx={cx} cy={cy} r="3.5" fill="#0f172a" /><text x={cx + 6} y={cy + 4} fontSize="15" fontWeight="bold" fill="#0f172a" fontFamily="Arial, Helvetica, sans-serif">{pt.char}</text></g>);
-            }));
+            const plotElements = pointsData.flatMap((w, wIdx) => w.map((pt, pIdx) => (
+                <g key={`pt-${wIdx}-${pIdx}-${pt.x}-${pt.y}`}><circle cx={getX(pt.x)} cy={getY(pt.y)} r="3.5" fill="#0f172a" /><text x={getX(pt.x) + 6} y={getY(pt.y) + 4} fontSize="15" fontWeight="bold" fontFamily="Arial, sans-serif">{pt.char}</text></g>
+            )));
 
             const boxSize = 36, wordSpacing = 28, maxRowWidth = 740, rowHeight = 110, startY = 850;
             const boxElements = [];
             let currentRows = [], currentRow = [], currentWidth = 0;
             pointsData.forEach(word => {
-                const wordWidth = word.length * boxSize;
-                if (currentRow.length > 0 && currentWidth + wordSpacing + wordWidth > maxRowWidth) {
-                    currentRows.push({ words: currentRow, width: currentWidth });
-                    currentRow = [word]; currentWidth = wordWidth;
-                } else {
-                    currentRow.push(word); currentWidth += (currentRow.length > 1 ? wordSpacing : 0) + wordWidth;
+                const w = word.length * boxSize;
+                if (currentRow.length > 0 && currentWidth + wordSpacing + w > maxRowWidth) { 
+                    currentRows.push({ words: currentRow, width: currentWidth }); 
+                    currentRow = [word]; currentWidth = w; 
+                } else { 
+                    currentRow.push(word); currentWidth += (currentRow.length > 1 ? wordSpacing : 0) + w; 
                 }
             });
             if (currentRow.length > 0) currentRows.push({ words: currentRow, width: currentWidth });
 
-            let rY = startY;
-            currentRows.forEach((row, rowIndex) => {
-                let currentX = (svgWidth - row.width) / 2;
-                row.words.forEach((word) => {
-                    word.forEach((pt) => {
-                        const boxX = currentX, boxY = rY;
-                        boxElements.push(<rect key={`box-${pt.x}-${pt.y}`} x={boxX} y={boxY} width={boxSize} height={boxSize} fill="none" stroke="#334155" strokeWidth="1.5" />);
-                        if (showAnswers) boxElements.push(<text key={`ans-${pt.x}-${pt.y}`} x={boxX + boxSize/2} y={boxY + 25} textAnchor="middle" fontSize="22" fontWeight="bold" fill="#2563eb" fontFamily="Arial, Helvetica, sans-serif">{pt.char}</text>);
-                        const centerX = boxX + boxSize/2;
+            currentRows.forEach((row, rIdx) => {
+                let curX = (svgWidth - row.width) / 2;
+                row.words.forEach(word => {
+                    word.forEach(pt => {
+                        const bX = curX, bY = startY + rIdx * rowHeight, cX = bX + boxSize/2;
+                        boxElements.push(<rect key={`box-${pt.x}-${pt.y}-${rIdx}`} x={bX} y={bY} width={boxSize} height={boxSize} fill="none" stroke="#334155" strokeWidth="1.5" />);
+                        if (showAnswers) boxElements.push(<text key={`ans-${pt.x}-${pt.y}-${rIdx}`} x={cX} y={bY + 25} textAnchor="middle" fontSize="22" fontWeight="bold" fill="#2563eb" fontFamily="Arial, sans-serif">{pt.char}</text>);
                         if (pt.pos === 'below') {
-                            boxElements.push(<line key={`l-b-${pt.x}-${pt.y}`} x1={centerX} y1={boxY + boxSize} x2={centerX} y2={boxY + boxSize + 12} stroke="#334155" />);
-                            boxElements.push(<text key={`c-b-${pt.x}-${pt.y}`} x={centerX} y={boxY + boxSize + 28} textAnchor="middle" fontSize="14">({pt.x},{pt.y})</text>);
+                            boxElements.push(<line key={`lb-${pt.x}-${pt.y}-${rIdx}`} x1={cX} y1={bY + boxSize} x2={cX} y2={bY + boxSize + 12} stroke="#334155" strokeWidth="1" />);
+                            boxElements.push(<text key={`cb-${pt.x}-${pt.y}-${rIdx}`} x={cX} y={bY + boxSize + 28} textAnchor="middle" fontSize="14">({pt.x},{pt.y})</text>);
                         } else {
-                            boxElements.push(<line key={`l-a-${pt.x}-${pt.y}`} x1={centerX} y1={boxY} x2={centerX} y2={boxY - 12} stroke="#334155" />);
-                            boxElements.push(<text key={`c-a-${pt.x}-${pt.y}`} x={centerX} y={boxY - 18} textAnchor="middle" fontSize="14">({pt.x},{pt.y})</text>);
+                            boxElements.push(<line key={`la-${pt.x}-${pt.y}-${rIdx}`} x1={cX} y1={bY} x2={cX} y2={bY - 12} stroke="#334155" strokeWidth="1" />);
+                            boxElements.push(<text key={`ca-${pt.x}-${pt.y}-${rIdx}`} x={cX} y={bY - 18} textAnchor="middle" fontSize="14">({pt.x},{pt.y})</text>);
                         }
-                        currentX += boxSize;
+                        curX += boxSize;
                     });
-                    currentX += wordSpacing;
+                    curX += wordSpacing;
                 });
-                rY += rowHeight;
             });
 
             return (
-                <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-full bg-white" style={{fontFamily: 'Arial, Helvetica, sans-serif'}} xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="w-full h-full bg-white" style={{fontFamily: 'Arial, sans-serif'}} xmlns="http://www.w3.org/2000/svg">
                     <g className="header">
-                        <text x="330" y="85" fontSize="46" fontWeight="bold" fill="#1e293b" textAnchor="end">實話</text>
-                        <text x="400" y="100" fontSize="76" fontWeight="900" fill="#0f172a" textAnchor="middle">「直」</text>
-                        <text x="470" y="85" fontSize="46" fontWeight="bold" fill="#1e293b" textAnchor="start">說</text>
-                        <text x="400" y="140" fontSize="22" fill="#475569" textAnchor="middle">角座標</text>
-                        
-                        <g transform="translate(560, 45)" fontSize="18" fill="#1e293b">
-                            <text y="-10" fontSize="22" fill="#0369a1" fontWeight="900">編號：{serialNumber}</text>
-                            <text y="25">班級：_________________</text>
-                            <text y="60">座號：_________________</text>
-                            <text y="95">姓名：_________________</text>
+                        <text x="315" y="95" fontSize="46" fontWeight="bold" fill="#1e293b" textAnchor="end">實話</text>
+                        <g transform="translate(400, 100)">
+                            <text x="0" y="0" fontSize="76" fontWeight="900" fill="#0f172a" textAnchor="middle">直</text>
+                            <text x="-65" y="-15" fontSize="70" fill="#0f172a" fontWeight="bold" textAnchor="middle">「</text>
+                            <text x="65" y="15" fontSize="70" fill="#0f172a" fontWeight="bold" textAnchor="middle">」</text>
+                        </g>
+                        <text x="485" y="95" fontSize="46" fontWeight="bold" fill="#1e293b" textAnchor="start">說</text>
+                        <text x="400" y="148" fontSize="22" fill="#475569" textAnchor="middle" letterSpacing="6">角坐標</text>
+
+                        <g transform="translate(550, 55)" fontSize="18" fill="#1e293b">
+                            <text y="0">班級：_____________</text>
+                            <text y="40">座號：_____________</text>
+                            <text y="80">姓名：_____________</text>
                         </g>
                     </g>
 
@@ -531,19 +503,26 @@
                     <g className="boxes">{boxElements}</g>
 
                     <g className="logo" transform="translate(400, 1055)">
-                        <g transform="translate(-117, 0)">
-                            <text x="0" y="0" fontSize="38" fontWeight="900" fill="#1e293b" textLength="234" lengthAdjust="spacing">EsukaTION</text>
-                            <rect x="0" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
-                            <text x="12" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">奕</text>
-                            <rect x="30" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
-                            <text x="42" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">數</text>
-                            <rect x="60" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
-                            <text x="72" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">咖</text>
-                            <rect x="90" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
-                            <text x="102" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">學</text>
-                            <rect x="120" y="10" width="114" height="24" fill="#1e293b" rx="4" />
-                            <text x="177" y="27" fontSize="15" fontWeight="900" fill="#ffffff" textAnchor="middle" letterSpacing="1.5">education</text>
+                        {/* 修正點：將內容向右推 1px (-117 改為 -118，內部座標全+1)，避免最左側框線被畫布邊緣吃掉半條 */}
+                        <g transform="translate(-118, 0)">
+                            <text x="1" y="0" fontSize="38" fontWeight="900" fill="#1e293b" textLength="234" lengthAdjust="spacing">EsukaTION</text>
+                            
+                            <rect x="1" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="13" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">奕</text>
+                            
+                            <rect x="31" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="43" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">數</text>
+                            
+                            <rect x="61" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="73" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">咖</text>
+                            
+                            <rect x="91" y="10" width="24" height="24" fill="none" stroke="#1e293b" strokeWidth="1.5" rx="3" />
+                            <text x="103" y="27" fontSize="14" fontWeight="bold" textAnchor="middle" fill="#1e293b">學</text>
+
+                            <rect x="121" y="10" width="114" height="24" fill="#1e293b" rx="4" />
+                            <text x="178" y="27" fontSize="15" fontWeight="900" fill="#ffffff" textAnchor="middle" letterSpacing="1.5">education</text>
                         </g>
+                        <text x="0" y="65" fontSize="20" fill="#0369a1" fontWeight="900" textAnchor="middle" letterSpacing="1">編號：{serialNumber}</text>
                     </g>
                 </svg>
             );
