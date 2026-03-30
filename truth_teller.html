@@ -12,7 +12,6 @@
         /* 列印專用樣式 */
         @media print {
             /* === 🛡️ 終極外掛防禦裝甲 (白名單可見性) === */
-            /* 1. 預設將整個網頁隱藏，強制封殺所有瀏覽器外掛的懸浮幽靈圖示 */
             body {
                 visibility: hidden !important;
                 background-color: white !important;
@@ -21,20 +20,14 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            
-            /* 2. 將不想印出來的 UI 介面，與非本程式的外部注入元素徹底拔除佔位 */
             .no-print, .print-hidden, 
             body > *:not(#root) {
                 display: none !important;
             }
-
-            /* 3. 獨家白名單：只有列印區塊以及它裡面的所有內容可以顯示 */
             .print-block, 
             .print-block * {
                 visibility: visible !important;
             }
-            
-            /* 確保列印區塊正常顯示為區塊元素 */
             .print-block {
                 display: block !important;
             }
@@ -128,7 +121,9 @@
 
             const previewRef = useRef(null); 
 
+            // 內建 100 句符合國七程度之短句題庫 (等長均勻)
             const phrases = [
+                // 第一波：原始 50 句
                 { en: "MATH IS SO FUN", zh: "數學很有趣", ipa: "/mæθ ɪz soʊ fʌn/" },
                 { en: "I REALLY LOVE MATH", zh: "我非常愛數學", ipa: "/aɪ ˈrɪli lʌv mæθ/" },
                 { en: "YOU ARE VERY SMART", zh: "你非常聰明", ipa: "/ju ɑr ˈvɛri smɑrt/" },
@@ -178,7 +173,59 @@
                 { en: "READ A VERY GOOD BOOK", zh: "讀一本很好的書", ipa: "/rid ə ˈvɛri gʊd bʊk/" },
                 { en: "ALWAYS BE SO HONEST", zh: "永遠保持誠實", ipa: "/ˈɔlweɪz bi soʊ ˈɑnəst/" },
                 { en: "FIND YOUR OWN PASSION", zh: "找到你自己的熱情", ipa: "/faɪnd jʊər oʊn ˈpæʃən/" },
-                { en: "ENJOY THIS GOOD MOMENT", zh: "享受這個美好的當下", ipa: "/ɛnˈʤɔɪ ðɪs gʊd ˈmoʊmənt/" }
+                { en: "ENJOY THIS GOOD MOMENT", zh: "享受這個美好的當下", ipa: "/ɛnˈʤɔɪ ðɪs gʊd ˈmoʊmənt/" },
+
+                // 第二波：全新擴充 50 句 (國七校園/生活/勵志)
+                { en: "READ BOOKS EVERY DAY", zh: "每天看書", ipa: "/rid bʊks ˈɛvəri deɪ/" },
+                { en: "ENGLISH IS NOT HARD", zh: "英文不難", ipa: "/ˈɪŋglɪʃ ɪz nɑt hɑrd/" },
+                { en: "WE CAN STUDY TOGETHER", zh: "我們可以一起讀書", ipa: "/wi kæn ˈstʌdi təˈgɛðər/" },
+                { en: "I ALWAYS DO MY BEST", zh: "我總是盡力而為", ipa: "/aɪ ˈɔlweɪz du maɪ bɛst/" },
+                { en: "LISTEN TO THE TEACHER", zh: "聽老師的話", ipa: "/ˈlɪsən tu ðə ˈtiʧər/" },
+                { en: "MAKE YOUR PARENTS PROUD", zh: "讓你的父母驕傲", ipa: "/meɪk jʊər ˈpɛrənts praʊd/" },
+                { en: "REVIEW YOUR NOTES DAILY", zh: "每天複習筆記", ipa: "/rɪˈvju jʊər noʊts ˈdeɪli/" },
+                { en: "FINISH YOUR HOMEWORK NOW", zh: "現在完成你的作業", ipa: "/ˈfɪnɪʃ jʊər ˈhoʊmˌwɜrk naʊ/" },
+                { en: "BE A GOOD CLASSMATE", zh: "當個好同學", ipa: "/bi ə gʊd ˈklæsˌmeɪt/" },
+                { en: "WE CAN PASS THE TEST", zh: "我們能通過考試", ipa: "/wi kæn pæs ðə tɛst/" },
+                { en: "SMILE AT THE WORLD", zh: "對世界微笑", ipa: "/smaɪl æt ðə wɜrld/" },
+                { en: "YOU ARE VERY SPECIAL", zh: "你非常特別", ipa: "/ju ɑr ˈvɛri ˈspɛʃəl/" },
+                { en: "TODAY IS A GOOD DAY", zh: "今天是美好的一天", ipa: "/təˈdeɪ ɪz ə gʊd deɪ/" },
+                { en: "KEEP A HAPPY HEART", zh: "保持快樂的心", ipa: "/kip ə ˈhæpi hɑrt/" },
+                { en: "NEVER FEAR THE FUTURE", zh: "永遠不要害怕未來", ipa: "/ˈnɛvər fɪr ðə ˈfjuʧər/" },
+                { en: "YOU ARE DOING GREAT", zh: "你做得很好", ipa: "/ju ɑr ˈduɪŋ greɪt/" },
+                { en: "ALWAYS TELL THE TRUTH", zh: "永遠說實話", ipa: "/ˈɔlweɪz tɛl ðə truθ/" },
+                { en: "BE A POLITE PERSON", zh: "當個有禮貌的人", ipa: "/bi ə pəˈlaɪt ˈpɜrsən/" },
+                { en: "YOU HAVE GREAT IDEAS", zh: "你有很棒的點子", ipa: "/ju hæv greɪt aɪˈdiəz/" },
+                { en: "DO NOT WORRY TOO MUCH", zh: "不要太擔心", ipa: "/du nɑt ˈwɜri tu mʌʧ/" },
+                { en: "I LIKE TO PLAY SPORTS", zh: "我喜歡做運動", ipa: "/aɪ laɪk tu pleɪ spɔrts/" },
+                { en: "RIDE A BIKE EVERY DAY", zh: "每天騎腳踏車", ipa: "/raɪd ə baɪk ˈɛvəri deɪ/" },
+                { en: "WATCHING MOVIES IS FUN", zh: "看電影很有趣", ipa: "/ˈwɑʧɪŋ ˈmuviz ɪz fʌn/" },
+                { en: "MY FAMILY LOVES ME", zh: "我的家人愛我", ipa: "/maɪ ˈfæməli lʌvz mi/" },
+                { en: "WE EAT LUNCH TOGETHER", zh: "我們一起吃午餐", ipa: "/wi it lʌnʧ təˈgɛðər/" },
+                { en: "DRINK MORE WATER DAILY", zh: "每天多喝水", ipa: "/drɪŋk mɔr ˈwɔtər ˈdeɪli/" },
+                { en: "I CAN RUN VERY FAST", zh: "我可以跑很快", ipa: "/aɪ kæn rʌn ˈvɛri fæst/" },
+                { en: "SING A BEAUTIFUL SONG", zh: "唱一首美麗的歌", ipa: "/sɪŋ ə ˈbjutəfəl sɔŋ/" },
+                { en: "DRAW A CUTE PICTURE", zh: "畫一張可愛的圖", ipa: "/drɔ ə kjut ˈpɪkʧər/" },
+                { en: "I CAN COOK GOOD FOOD", zh: "我會煮好吃的食物", ipa: "/aɪ kæn kʊk gʊd fud/" },
+                { en: "HELP OTHERS EVERY DAY", zh: "每天幫助他人", ipa: "/hɛlp ˈʌðərz ˈɛvəri deɪ/" },
+                { en: "SHARE WITH YOUR FRIENDS", zh: "和你的朋友分享", ipa: "/ʃɛr wɪð jʊər frɛndz/" },
+                { en: "ALWAYS SAY THANK YOU", zh: "總是說謝謝", ipa: "/ˈɔlweɪz seɪ θæŋk ju/" },
+                { en: "WE PLAY GAMES TOGETHER", zh: "我們一起玩遊戲", ipa: "/wi pleɪ geɪmz təˈgɛðər/" },
+                { en: "YOU ARE MY BEST FRIEND", zh: "你是我最好的朋友", ipa: "/ju ɑr maɪ bɛst frɛnd/" },
+                { en: "RESPECT OLDER PEOPLE", zh: "尊敬長輩", ipa: "/rɪˈspɛkt ˈoʊldər ˈpipəl/" },
+                { en: "ANIMALS ARE OUR FRIENDS", zh: "動物是我們的朋友", ipa: "/ˈænəməlz ɑr ˈaʊər frɛndz/" },
+                { en: "SAVE THE EARTH TOGETHER", zh: "一起拯救地球", ipa: "/seɪv ðə ɜrθ təˈgɛðər/" },
+                { en: "KEEP YOUR ROOM CLEAN", zh: "保持你的房間乾淨", ipa: "/kip jʊər rum klin/" },
+                { en: "WAKE UP EARLY EVERY DAY", zh: "每天早起", ipa: "/weɪk ʌp ˈɜrli ˈɛvəri deɪ/" },
+                { en: "THE SKY IS VERY BLUE", zh: "天空非常藍", ipa: "/ðə skaɪ ɪz ˈvɛri blu/" },
+                { en: "STARS SHINE IN THE NIGHT", zh: "星星在夜晚閃耀", ipa: "/stɑrz ʃaɪn ɪn ðə naɪt/" },
+                { en: "SPRING IS COMING SOON", zh: "春天即將到來", ipa: "/sprɪŋ ɪz ˈkʌmɪŋ sun/" },
+                { en: "SUMMER DAYS ARE VERY HOT", zh: "夏天非常熱", ipa: "/ˈsʌmər deɪz ɑr ˈvɛri hɑt/" },
+                { en: "AUTUMN WIND IS SO COOL", zh: "秋天的風很涼爽", ipa: "/ˈɔtəm wɪnd ɪz soʊ kul/" },
+                { en: "WINTER SNOW IS SO WHITE", zh: "冬天的雪很白", ipa: "/ˈwɪntər snoʊ ɪz soʊ waɪt/" },
+                { en: "SUNSHINE MAKES ME HAPPY", zh: "陽光讓我快樂", ipa: "/ˈsʌnˌʃaɪn meɪks mi ˈhæpi/" },
+                { en: "RAINBOW AFTER THE RAIN", zh: "雨後有彩虹", ipa: "/ˈreɪnˌboʊ ˈæftər ðə reɪn/" },
+                { en: "MUSIC BRINGS US JOY", zh: "音樂帶給我們歡樂", ipa: "/ˈmjuzɪk brɪŋz ʌs ʤɔɪ/" },
+                { en: "WE ARE A BIG FAMILY", zh: "我們是一個大家庭", ipa: "/wi ɑr ə bɪg ˈfæməli/" }
             ];
 
             const generatePoints = (text, serialNumber) => {
@@ -194,6 +241,7 @@
 
                         let x, y, key;
                         do {
+                            // 安全邊界防裁切 (-18 ~ 18)
                             x = Math.floor(Math.random() * 37) - 18; 
                             y = Math.floor(Math.random() * 37) - 18; 
                             if (x === 0 && y === 0) continue;
@@ -233,11 +281,18 @@
                 setIsPreparingPrint(true);
                 setTimeout(() => {
                     const pages = [];
+                    // 💡 洗牌邏輯：創建一個隨機排列的題庫池，不放回抽樣 (池子現在有 100 句了！)
+                    let shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5);
+
                     for (let i = 0; i < printAmount; i++) {
                         let targetSentence = sentence;
                         if (batchMode === 'random') {
-                            const randomObj = phrases[Math.floor(Math.random() * phrases.length)];
-                            targetSentence = randomObj.en;
+                            // 💡 如果題庫抽完了，重新洗一副牌補充
+                            if (shuffledPhrases.length === 0) {
+                                shuffledPhrases = [...phrases].sort(() => Math.random() - 0.5);
+                            }
+                            // 從池子裡抽出一句 (保證與前幾句不重複)
+                            targetSentence = shuffledPhrases.pop().en;
                         }
                         const serialNum = String(i + 1).padStart(3, '0');
                         pages.push(generatePoints(targetSentence, serialNum));
@@ -261,6 +316,7 @@
                 }, 100);
             };
 
+            // 以「不重複的解答數量」為基準，14 的倍數計算字庫總量，精準分頁不卡邊
             const getUniquePrintDict = () => {
                 const uniqueTexts = Array.from(new Set(printPagesData.map(p => p.text)));
                 let dictItems = uniqueTexts.map(enText => {
@@ -281,6 +337,7 @@
 
             return (
                 <div className="relative">
+                    {/* 載入中遮罩 */}
                     {isPreparingPrint && (
                         <div className="fixed inset-0 bg-slate-900/60 flex justify-center items-center z-50 print-hidden backdrop-blur-sm transition-opacity">
                             <div className="bg-white p-8 rounded-2xl shadow-2xl max-w-sm w-11/12 text-center border-t-4 border-emerald-500 transform transition-all">
@@ -304,7 +361,7 @@
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner">
                                     <label className="flex items-center justify-between block text-sm font-bold text-gray-800 mb-2">
                                         <span>1. 自訂解碼句子 (英文)</span>
-                                        <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md">內建近百句等長題庫</span>
+                                        <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-md">內建百句等長題庫</span>
                                     </label>
                                     <textarea 
                                         className="w-full border border-gray-300 rounded-lg p-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-200 uppercase shadow-sm" 
@@ -328,7 +385,7 @@
                                 <div className="space-y-3 mb-4">
                                     <select className="w-full border border-gray-300 rounded-lg p-2.5 text-[14px] font-bold text-indigo-700 bg-white focus:ring-2 focus:ring-indigo-200 focus:outline-none" value={batchMode} onChange={(e) => setBatchMode(e.target.value)}>
                                         <option value="same">全班同題 (座標不同，防作弊)</option>
-                                        <option value="random">全班隨機題 (短句完全不同)</option>
+                                        <option value="random">全班隨機題 (不重複抽樣)</option>
                                     </select>
                                     <select className="w-full border border-amber-300 rounded-lg p-2.5 text-[14px] font-bold text-amber-900 bg-white focus:ring-2 focus:ring-amber-200 focus:outline-none" value={answerMode} onChange={(e) => setAnswerMode(e.target.value)}>
                                         <option value="summary">解答總表模式 (省紙好對答案)</option>
@@ -360,6 +417,7 @@
                         </div>
                     </div>
 
+                    {/* 列印專區：隱藏於 UI，僅在列印時顯示 */}
                     <div className="hidden print-block w-full bg-white">
                         {printPagesData.map((data, index) => (
                             <React.Fragment key={`prt-group-${index}`}>
@@ -392,6 +450,7 @@
                             </div>
                         )}
 
+                        {/* 強制切分：每 14 個項目產生一張全新的 A4 字庫頁面 */}
                         {printStudentDict && printPagesData.length > 0 && (() => {
                             const fullDict = getUniquePrintDict();
                             const dictPages = [];
@@ -519,7 +578,6 @@
                     <g className="boxes">{boxElements}</g>
 
                     <g className="logo" transform="translate(400, 1055)">
-                        {/* 修正點：將內容向右推 1px (-117 改為 -118，內部座標全+1)，避免最左側框線被畫布邊緣吃掉半條 */}
                         <g transform="translate(-118, 0)">
                             <text x="1" y="0" fontSize="38" fontWeight="900" fill="#1e293b" textLength="234" lengthAdjust="spacing">EsukaTION</text>
                             
