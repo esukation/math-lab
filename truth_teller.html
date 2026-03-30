@@ -11,19 +11,35 @@
     <style id="app-style">
         /* 列印專用樣式 */
         @media print {
+            /* === 🛡️ 終極外掛防禦裝甲 (白名單可見性) === */
+            /* 1. 預設將整個網頁隱藏，強制封殺所有瀏覽器外掛的懸浮幽靈圖示 */
             body {
+                visibility: hidden !important;
                 background-color: white !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
-            .no-print, .print-hidden {
+            
+            /* 2. 將不想印出來的 UI 介面，與非本程式的外部注入元素徹底拔除佔位 */
+            .no-print, .print-hidden, 
+            body > *:not(#root) {
                 display: none !important;
             }
+
+            /* 3. 獨家白名單：只有列印區塊以及它裡面的所有內容可以顯示 */
+            .print-block, 
+            .print-block * {
+                visibility: visible !important;
+            }
+            
+            /* 確保列印區塊正常顯示為區塊元素 */
             .print-block {
                 display: block !important;
             }
+            /* =========================================== */
+
             @page {
                 size: A4 portrait;
                 margin: 15mm; 
